@@ -3,7 +3,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-PROJECT_ROOT_DIR = BASE_DIR.parent
+FRONTEND_DIR = BASE_DIR.parent / "frontend"
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
@@ -39,7 +39,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / "templates"
+            FRONTEND_DIR / "templates"
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -87,11 +87,11 @@ USE_TZ = True
 
 LOGIN_REDIRECT_URL = "home"
 
-STATIC_URL = 'static/'
+STATIC_URL = FRONTEND_DIR / 'static/'
 STATICFILES_DIRS = [
-    BASE_DIR / "assets"
+    FRONTEND_DIR / "assets"
 ]
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = FRONTEND_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
