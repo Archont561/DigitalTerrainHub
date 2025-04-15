@@ -20,7 +20,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_cotton',
     'django_vite',
-    ######
+    ######,
+    "Users",
+    "Payment",
+    "PyODM",
 ]
 
 MIDDLEWARE = [
