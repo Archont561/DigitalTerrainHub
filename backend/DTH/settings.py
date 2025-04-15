@@ -1,15 +1,16 @@
 import os
+from dotenv import load_dotenv
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 FRONTEND_DIR = BASE_DIR.parent / "frontend"
 
+load_dotenv(dotenv_path=BASE_DIR / ".env")
+
+DEBUG = bool(int(os.environ.get("DEBUG", 0)))
 SECRET_KEY = os.environ.get("SECRET_KEY", "DEV_SECRET_KEY")
-
-DEBUG = bool(int(os.environ.get("DEBUG", 1)))
-
 ALLOWED_HOSTS = [] + list(filter(None, os.environ.get("ALLOWED_HOSTS", "*").split(",")))
+NODEODM_URL = os.environ.get("NODEODM_URL", "http://localhost:3000")
 
 INSTALLED_APPS = [
     'django.contrib.admin',

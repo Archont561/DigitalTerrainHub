@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>ODM Options Cheat Sheet</h1>
+
+  <div class="section modeling">
+    <h2>🏗️ Modeling & Reconstruction</h2>
+    <ul>
+      <li><code>3d-tiles</code> – Generate OGC 3D Tiles outputs.</li>
+      <li><code>skip-3dmodel</code> – Skip full 3D model generation.</li>
+      <li><code>fast-orthophoto</code> – Generate orthophoto directly from sparse reconstruction.</li>
+      <li><code>mesh-octree-depth</code> – Control mesh octree depth.</li>
+      <li><code>mesh-size</code> – Set maximum mesh vertex count.</li>
+      <li><code>texturing-keep-unseen-faces</code> – Keep mesh faces not visible in any image.</li>
+      <li><code>texturing-single-material</code> – Use single material for OBJs.</li>
+      <li><code>texturing-skip-global-seam-leveling</code> – Disable seam leveling.</li>
+      <li><code>use-3dmesh</code> – Use full 3D mesh for orthophoto.</li>
+      <li><code>align &lt;path&gt;</code> – Align output to existing DEM/LAS/LAZ file.</li>
+    </ul>
+  </div>
+
+  <div class="section camera">
+    <h2>📸 Camera & Image Handling</h2>
+    <ul>
+      <li><code>camera-lens</code>, <code>cameras</code>, <code>feature-quality</code>, <code>feature-type</code></li>
+      <li><code>min-num-features</code>, <code>force-gps</code>, <code>geo</code>, <code>gcp</code></li>
+      <li><code>primary-band</code>, <code>use-exif</code>, <code>use-fixed-camera-params</code></li>
+      <li><code>use-hybrid-bundle-adjustment</code>, <code>rolling-shutter</code>, <code>rolling-shutter-readout</code></li>
+    </ul>
+  </div>
+
+  <div class="section ai">
+    <h2>🧠 AI-Based Enhancements & Filtering</h2>
+    <ul>
+      <li><code>bg-removal</code> – Remove background using AI.</li>
+      <li><code>sky-removal</code> – Remove sky using AI.</li>
+      <li><code>auto-boundary</code> – Auto-set boundary based on shot locations.</li>
+      <li><code>auto-boundary-distance</code> – Set distance for auto-boundary.</li>
+    </ul>
+  </div>
+
+  <div class="section geospatial">
+    <h2>🗺️ Geospatial Output & DEM</h2>
+    <ul>
+      <li><code>dem-resolution</code>, <code>dem-decimation</code>, <code>dem-gapfill-steps</code></li>
+      <li><code>dem-euclidean-map</code>, <code>dsm</code>, <code>dtm</code></li>
+      <li><code>boundary</code>, <code>smrf-scalar</code>, <code>smrf-slope</code>, <code>smrf-threshold</code>, <code>smrf-window</code></li>
+    </ul>
+  </div>
+
+  <div class="section pointcloud">
+    <h2>🧮 Point Cloud Processing</h2>
+    <ul>
+      <li><code>pc-classify</code>, <code>pc-copc</code>, <code>pc-csv</code>, <code>pc-ept</code>, <code>pc-las</code></li>
+      <li><code>pc-filter</code>, <code>pc-sample</code>, <code>pc-rectify</code>, <code>pc-quality</code></li>
+      <li><code>pc-skip-geometric</code></li>
+    </ul>
+  </div>
+
+  <div class="section orthophoto">
+    <h2>🖼️ Orthophoto Options</h2>
+    <ul>
+      <li><code>orthophoto-compression</code>, <code>orthophoto-resolution</code>, <code>orthophoto-cutline</code></li>
+      <li><code>orthophoto-kmz</code>, <code>orthophoto-no-tiled</code>, <code>orthophoto-png</code></li>
+      <li><code>skip-orthophoto</code></li>
+    </ul>
+  </div>
+
+  <div class="section project">
+    <h2>📁 Project & File Handling</h2>
+    <ul>
+      <li><code>project-path</code>, <code>name</code>, <code>copy-to</code></li>
+      <li><code>split-image-groups</code>, <code>help</code>, <code>version</code></li>
+    </ul>
+  </div>
+
+  <div class="section performance">
+    <h2>⚙️ Performance & Settings</h2>
+    <ul>
+      <li><code>max-concurrency</code>, <code>optimize-disk-space</code>, <code>ignore-gsd</code></li>
+      <li><code>matcher-neighbors</code>, <code>matcher-order</code>, <code>matcher-type</code></li>
+      <li><code>sfm-algorithm</code>, <code>sfm-no-partial</code></li>
+    </ul>
+  </div>
+
+  <div class="section pipeline">
+    <h2>🔄 Pipeline Control</h2>
+    <ul>
+      <li><code>end-with</code>, <code>rerun</code>, <code>rerun-from</code>, <code>rerun-all</code></li>
+    </ul>
+  </div>
+
+  <div class="section splitmerge">
+    <h2>🔀 Split & Merge</h2>
+    <ul>
+      <li><code>split</code>, <code>split-overlap</code>, <code>merge</code>, <code>sm-cluster</code>, <code>sm-no-align</code></li>
+    </ul>
+  </div>
+
+  <div class="section video">
+    <h2>📽️ Video Support</h2>
+    <ul>
+      <li><code>video-limit</code>, <code>video-resolution</code></li>
+    </ul>
+  </div>
+
+  <div class="section radiometric">
+    <h2>🌞 Radiometric Calibration</h2>
+    <ul>
+      <li><code>radiometric-calibration</code>, <code>skip-band-alignment</code></li>
+    </ul>
+  </div>
+
+{% endblock %}
