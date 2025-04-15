@@ -5,7 +5,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 FRONTEND_DIR = BASE_DIR.parent / "frontend"
 
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY", "DEV_SECRET_KEY")
 
 DEBUG = bool(int(os.environ.get("DEBUG", 1)))
 
@@ -88,7 +88,8 @@ USE_I18N = True
 
 USE_TZ = True
 
-LOGIN_REDIRECT_URL = "home"
+LOGIN_URL = "/users/login/"
+LOGIN_REDIRECT_URL = "/"
 
 STATIC_URL = str(FRONTEND_DIR / 'static') + "/"
 STATICFILES_DIRS = [
