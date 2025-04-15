@@ -1,13 +1,15 @@
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-j1$i=9*2dfj&@4*m5&(ppy*mk(ixhawtwo(=$brk4i0&wb9(+o'
+PROJECT_ROOT_DIR = BASE_DIR.parent
 
-DEBUG = True
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
-ALLOWED_HOSTS = [
-]
+DEBUG = bool(int(os.environ.get("DEBUG", 1)))
+
+ALLOWED_HOSTS = [] + list(filter(None, os.environ.get("ALLOWED_HOSTS", "*").split(",")))
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -83,7 +85,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-
+LOGIN_REDIRECT_URL = "home"
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
