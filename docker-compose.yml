@@ -1,0 +1,19 @@
+services:
+  app:
+    build: 
+      context: .
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/app
+    environment:
+      - SECRET_KEY=devsecretkey
+      - DEBUG=0
+      - NODEODM_URL=http://nodeodm:3000
+    depends_on:
+      - nodeodm
+
+  nodeodm:
+    image: opendronemap/nodeodm
+    ports:
+      - 3000:3000
