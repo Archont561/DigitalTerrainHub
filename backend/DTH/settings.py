@@ -90,11 +90,11 @@ USE_TZ = True
 
 LOGIN_REDIRECT_URL = "home"
 
-STATIC_URL = FRONTEND_DIR / 'static/'
+STATIC_URL = str(FRONTEND_DIR / 'static') + "/"
 STATICFILES_DIRS = [
-    FRONTEND_DIR / "assets"
+    FRONTEND_DIR / "dist"
 ]
-STATIC_ROOT = FRONTEND_DIR / "staticfiles"
+STATIC_ROOT = str(FRONTEND_DIR / "staticfiles") + "/"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
