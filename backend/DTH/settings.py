@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     "Users",
     "Payment",
     "PyODM",
+    "MapViewer",
 ]
 
 MIDDLEWARE = [
@@ -45,13 +46,19 @@ TEMPLATES = [
         'DIRS': [
             FRONTEND_DIR / "templates"
         ],
-        'APP_DIRS': True,
+        'APP_DIRS': False,
         'OPTIONS': {
+            'loaders': [
+                'django_cotton.cotton_loader.loader',
+            ],
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'buildins': [
+                'django_cotton.templatetags.cotton',
+            ]
         },
     },
 ]
