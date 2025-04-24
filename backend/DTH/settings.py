@@ -19,7 +19,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_cotton',
     'django_vite',
     ######,
     "Users",
@@ -48,17 +47,11 @@ TEMPLATES = [
         ],
         'APP_DIRS': False,
         'OPTIONS': {
-            'loaders': [
-                'django_cotton.cotton_loader.loader',
-            ],
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
-            'buildins': [
-                'django_cotton.templatetags.cotton',
-            ]
         },
     },
 ]
