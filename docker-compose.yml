@@ -6,14 +6,25 @@ services:
       - 8000:8000
     volumes:
       - .:/app
-    environment:
-      - SECRET_KEY=devsecretkey
-      - DEBUG=0
-      - NODEODM_URL=http://nodeodm:3000
     depends_on:
       - nodeodm
+      - postgres
 
   nodeodm:
     image: opendronemap/nodeodm
     ports:
       - 3000:3000
+
+  postgres:
+    image: postgres:15
+    ports:
+      - 5432:5432
+    environment:
+      PG_DB: mydb
+      PG_USER: user
+      PG_PASSWORD: password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
