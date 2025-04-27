@@ -17,4 +17,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 ]
 
-handler404 = "DTH.views.custom_404"
+handler404 = views.Custom404View.as_view()
