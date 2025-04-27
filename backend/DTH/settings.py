@@ -7,6 +7,7 @@ FRONTEND_DIR = BASE_DIR.parent / "frontend"
 
 load_dotenv(dotenv_path=BASE_DIR / ".env")
 
+APP_NAME = "Digital Terrain Hub"
 DEBUG = bool(int(os.environ.get("DEBUG", 0)))
 SECRET_KEY = os.environ.get("SECRET_KEY", "DEV_SECRET_KEY")
 ALLOWED_HOSTS = [] + list(filter(None, os.environ.get("ALLOWED_HOSTS", "*").split(",")))
@@ -19,9 +20,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # django extensions
     'django_vite',    
     'django_htmx',
-    ######,
+    'widget_tweaks',
+    # created apps,
     "Users",
     "Payment",
     "PyODM",
@@ -95,11 +98,12 @@ USE_TZ = True
 LOGIN_URL = "/users/login/"
 LOGIN_REDIRECT_URL = "/"
 
-STATIC_URL = str(FRONTEND_DIR / 'static') + "/"
+STATIC_URL = "/static/"
 STATICFILES_DIRS = [
-    FRONTEND_DIR / "dist"
+    FRONTEND_DIR / "dist",
+    FRONTEND_DIR / "static",
 ]
-STATIC_ROOT = str(FRONTEND_DIR / "staticfiles") + "/"
+STATIC_ROOT = FRONTEND_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
