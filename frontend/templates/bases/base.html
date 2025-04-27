@@ -1,0 +1,35 @@
+{% load django_vite %}
+{% load django_htmx %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Django App{% endblock title %}</title>
+
+    {% vite_hmr_client %}
+
+    {% block vite_assets %}
+        {% vite_asset 'static/js/main.js' %}
+    {% endblock vite_assets %}
+
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://unpkg.com/htmx.org@1.8.4" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>
+    <style> [x-cloak] { display: none !important; } </style>
+    <script src="{% static 'js/loader.js' %}" defer></script>
+    
+    {% block extra_head %}{% endblock extra_head %}
+</head>
+<body 
+    style="height: 100dvh; width: 100dvw" 
+    hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
+>
+    {% block body %}{% endblock body %}
+    {% block loader %}{% endblock loader %}
+    </div>
+</body>
+</html>

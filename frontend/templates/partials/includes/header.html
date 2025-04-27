@@ -1,0 +1,29 @@
+<header class="bg-gray-800 p-4">
+    <nav>
+        <ul class="flex justify-center space-x-8">
+            {% if not home %}
+                <li><a href="/" class="text-white font-bold hover:text-yellow-500">Home</a></li>
+            {% endif %}
+            {% if not about %}
+                <li><a href="{% url 'about' %}" class="text-white font-bold hover:text-yellow-500">About</a></li>
+            {% endif %}
+            {% if not contact %}
+                <li><a href="{% url 'contact' %}" class="text-white font-bold hover:text-yellow-500">Contact</a></li>
+            {% endif %}
+            {% if user.is_authenticated %}
+                {% if not profile%}
+                    <li><a href="{% url 'profile:home' %}" class="text-white font-bold hover:text-yellow-500">Profile</a></li>
+                {% endif %}
+                <li>
+                    <form action="{% url 'user:logout' %}" method="post" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" class="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-600 transition">Logout</button>
+                    </form>
+                </li>
+            {% else %}
+                <li><a href="{% url 'user:login' %}" class="text-white font-bold hover:text-yellow-500">Login</a></li>
+                <li><a href="{% url 'user:register' %}" class="text-white font-bold hover:text-yellow-500">Register</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</header>
