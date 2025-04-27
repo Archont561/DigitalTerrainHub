@@ -69,7 +69,7 @@ class CreateTaskView(LoginRequiredMixin, View):
 
 class TaskActionMixin(LoginRequiredMixin, View):
     def dispatch(self, request, *args, **kwargs):
-        self.task = get_object_or_404(NodeODMTask, uuid=kwargs["uuid"])
+        self.task: NodeODMTask = get_object_or_404(NodeODMTask, uuid=kwargs["uuid"])
         if self.task.workspace.user != request.user:
             raise Http404("Not allowed.")
         self.node = Node.from_url(settings.NODEODM_URL)
@@ -95,7 +95,7 @@ class TaskCancelView(TaskActionMixin):
     def post(self, request, *args, **kwargs):
         odm_task = self.get_odm_task()
         odm_task.cancel()
-        return JsonResponse({"status": self.task.status.value})
+        return JsonResponse({"message": "Task canceled"}, status=201)
 
 
 class TaskDeleteView(TaskActionMixin):
@@ -104,21 +104,25 @@ class TaskDeleteView(TaskActionMixin):
         odm_task.cancel()
         odm_task.remove()
         self.task.delete()
-        return JsonResponse({"status": "deleted"})
+        return JsonResponse({"message": "Task deleted"}, status=201)
 
 
 class TaskRestartView(TaskActionMixin):
     def post(self, request, *args, **kwargs):
         odm_task = self.get_odm_task()
         odm_task.restart()
-        return JsonResponse({"status": "restarted"})
+        return JsonResponse({"message": "Task restarted"}, status=201)
 
 
 class TaskOutputView(TaskActionMixin):
     def post(self, request, *args, **kwargs):
         odm_task = self.get_odm_task()
-        # output implementation
-        return JsonResponse({"status": "restarted"})
+        return JsonResponse(odm_task.output)
+
+
+class TaskStatusView(TaskActionMixin):
+    def post(self, request, *args, **kwargs):
+        return JsonResponse({"status": self.task.status.name})
 
 
 class WorkspaceCreateView(LoginRequiredMixin, CreateView):
@@ -159,31 +163,36 @@ class WorkspaceDeleteView(LoginRequiredMixin, DeleteView):
         return workspace
 
 
-class WorkspaceUploadImagesView(LoginRequiredMixin, View):
-    def post(self, request, slug, *args, **kwargs):
-        workspace = Workspace.objects.get(uuid=kwargs.get("uuid")).first()
+class WorkspaceActionMixin(LoginRequiredMixin, View):
+    def dispatch(self, request, *args, **kwargs):
+        self.workspace: Workspace = get_object_or_404(Workspace, uuid=kwargs.get("uuid"))
+        if self.workspace.user != request.user:
+            raise Http404("Not allowed.")
         
-        files = request.FILES.getlist('images')  # Assuming multiple images are uploaded
+        return super().dispatch(request, *args, **kwargs)
+
+
+class WorkspaceUploadImagesView(WorkspaceActionMixin):
+    def post(self, request, *args, **kwargs):        
+        files = request.FILES.getlist('images')
         for file in files:
-            workspace.save_image(file)
+            self.workspace.save_image(file)
 
         return JsonResponse({"message": "Images uploaded successfully."}, status=200)
 
 
-class WorkspaceShareView(LoginRequiredMixin, View):
-    def post(self, request, slug, *args, **kwargs):
-        workspace = Workspace.objects.filter(slug=slug, user=request.user).first()
-
-        if not workspace:
-            raise PermissionDenied("Workspace not found or you do not have permission to share it.")
+class WorkspaceShareView(WorkspaceActionMixin):
+    def post(self, request, *args, **kwargs):
+        if not self.workspace:
+            raise PermissionDenied("Workspace not found")
 
         shared_with_user = request.POST.get('shared_with')
         # Assuming shared_with_user is a valid username
         user_to_share_with = User.objects.filter(username=shared_with_user).first()
 
         if user_to_share_with:
-            workspace.user = user_to_share_with  # Optionally: Share workspace with another user
-            workspace.save()
+            self.workspace.user = user_to_share_with  # Optionally: Share workspace with another user
+            self.workspace.save()
 
             return JsonResponse({"message": f"Workspace shared with {shared_with_user}."}, status=200)
         else:

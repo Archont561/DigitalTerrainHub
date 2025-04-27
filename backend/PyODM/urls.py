@@ -10,6 +10,7 @@ task_patterns = [
     path("<uuid:uuid>/restart/", views.TaskRestartView.as_view(), name="restart"),
     path("<uuid:uuid>/delete/", views.TaskDeleteView.as_view(), name="delete"),
     path("<uuid:uuid>/output/", views.TaskOutputView.as_view(), name="output"),
+    path("<uuid:uuid>/status/", views.TaskStatusView.as_view(), name="status"),
 ]
 
 workspace_patterns = [
