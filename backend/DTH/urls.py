@@ -1,11 +1,20 @@
+
+from django.conf import settings
 from django.contrib import admin
+from django.conf.urls import handler404
 from django.urls import path, include
-from .views import home
+from . import views
+
 
 urlpatterns = [
-    path('', home, name='home'),
+    path('', views.HomeView.as_view(), name='home'),
+    path('about/', views.AboutView.as_view(), name='about'),
+    path('contact/', views.ContactView.as_view(), name='contact'),
     path('users/', include('Users.urls')),
     path('payment/', include('Payment.urls')),
     path('pyodm/', include('PyODM.urls')),
+    path('map/', include('MapViewer.urls')),
     path('admin/', admin.site.urls),
 ]
+
+handler404 = "DTH.views.custom_404"
