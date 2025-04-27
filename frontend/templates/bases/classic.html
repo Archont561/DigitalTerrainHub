@@ -1,18 +1,15 @@
 {% extends 'bases/base.html' %}
 
-{% block body %}
-<div id="page" class="w-full h-full flex flex-col">
+{% block page %}
+<div id="layout" class="w-full h-full flex flex-col justify-content">
     <!-- Header -->
     {% include "partials/includes/header.html" %}
 
-    <main
-        {% block main_attrs %}
-        {% endblock main_attrs %}
-    >
-        {% block content %}{% endblock %}
+    <main class="flex-grow">
+        {% block content %}{% endblock content %}
     </main>
 
     <!-- Footer -->
     {% include "partials/includes/footer.html" %}
 </div>
-{% endblock body %}
+{% endblock page %}

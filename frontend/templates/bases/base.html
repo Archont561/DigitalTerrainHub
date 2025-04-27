@@ -28,7 +28,9 @@
     style="height: 100dvh; width: 100dvw" 
     hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
 >
-    {% block body %}{% endblock body %}
+    <div id="page" class="w-full h-full bg-gray-100 overflow-x-hidden">
+        {% block page %}{% endblock page %}
+    </div>
     {% block loader %}{% endblock loader %}
     </div>
 </body>
