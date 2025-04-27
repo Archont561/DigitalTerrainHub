@@ -1,10 +1,11 @@
 import shutil
 from django.db.models.signals import post_save, post_delete
+from django.conf import settings
 from django.dispatch import receiver
 from .models import Workspace
 from pathlib import Path
 
-WORKSPACES_DIR = Path(__file__).resolve().parent / "workspaces"
+WORKSPACES_DIR = settings.DATA_DIR / "workspaces"
 
 @receiver(post_save, sender=Workspace)
 def create_workspace_folder(sender, instance, created, **kwargs):
