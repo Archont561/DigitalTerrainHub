@@ -1,6 +1,7 @@
 import json
-from django.views.generic import View, DetailView, CreateView, DeleteView, ListView
+from django.views.generic import View, DetailView, CreateView, DeleteView, ListView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.template.loader import render_to_string
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.http import HttpResponse, HttpRequest, JsonResponse
@@ -15,9 +16,8 @@ def get_task_statuses(request: HttpRequest):
    return JsonResponse({status.name: status.value for status in TaskStatus})
 
 
-class NewTaskCreationView(LoginRequiredMixin, View):
-    def get(self, request):
-        return render(request, template_name="pyodm/options.html")
+class NewTaskCreationView(LoginRequiredMixin, TemplateView):
+    template_name = ""
 
 
 class CreateTaskView(LoginRequiredMixin, View):
@@ -127,7 +127,7 @@ class TaskStatusView(TaskActionMixin):
 
 class WorkspaceCreateView(LoginRequiredMixin, CreateView):
     model = Workspace
-    template_name = 'workspace/create_workspace.html'
+    template_name = 'pages/workspaces/create.html'
     fields = ['name']
 
     def form_valid(self, form):
@@ -139,16 +139,23 @@ class WorkspaceCreateView(LoginRequiredMixin, CreateView):
 
 class WorkspaceListView(LoginRequiredMixin, ListView):
     model = Workspace
-    template_name = 'workspace/workspace_list.html'
-    context_object_name = 'workspaces'
+    template_name = 'partials/components/cards/workspace.html'
 
     def get_queryset(self):
         return Workspace.objects.filter(user=self.request.user)
 
+    def render_to_response(self, context, **response_kwargs):
+        workspaces = self.get_queryset()
+        rendered = [
+            render_to_string(self.template_name, {'workspace': workspace}, request=self.request)
+            for workspace in workspaces
+        ]
+        return HttpResponse("".join(rendered))
+
 
 class WorkspaceDetailView(LoginRequiredMixin, DetailView):
     model = Workspace
-    template_name = 'workspace/workspace_detail.html'
+    template_name = 'partials/components/cards/workspace.html'
     context_object_name = 'workspace'
 
 

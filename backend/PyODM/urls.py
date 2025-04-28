@@ -15,6 +15,7 @@ task_patterns = [
 
 workspace_patterns = [
     path("create/", views.WorkspaceCreateView.as_view(), name="create"),
+    path("list/", views.WorkspaceListView.as_view(), name="list"),
     path("<uuid:uuid>", views.WorkspaceDetailView.as_view(), name="detail"),
     path("<uuid:uuid>/delete/", views.WorkspaceDeleteView.as_view(), name="delete"),
     path("<uuid:uuid>/upload/", views.WorkspaceUploadImagesView.as_view(), name="upload-images"),
