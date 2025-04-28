@@ -10,7 +10,6 @@ from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django_htmx.http import HttpResponseClientRedirect
-from DTH.mixins import ExtraContextMixin
 from .models import Profile
 from .forms import UserRegisterForm, UserUpdateForm, UserProfileUpdateForm
 
@@ -113,7 +112,7 @@ class UserDeleteView(LoginRequiredMixin, DeleteView):
         return self.request.user
 
 
-class UserProfileView(ExtraContextMixin, LoginRequiredMixin, DetailView):
+class UserProfileView(LoginRequiredMixin, DetailView):
     model = User
     template_name = 'pages/profile/user_profile.html'
     context_object_name = 'user'

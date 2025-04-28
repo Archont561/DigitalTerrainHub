@@ -1,35 +1,34 @@
 from django.conf import settings
 from django.views.generic import TemplateView
-from .mixins import ExtraContextMixin
 
 
-class HomeView(ExtraContextMixin, TemplateView):
+class HomeView(TemplateView):
     template_name = "pages/classic/home.html"
-    context_extra = {
+    extra_context = {
         "home": True, 
         "app_name": settings.APP_NAME,
     }
 
 
-class AboutView(ExtraContextMixin, TemplateView):
+class AboutView(TemplateView):
     template_name = "pages/classic/about.html"
-    context_extra = {
+    extra_context = {
         "about": True, 
         "app_name": settings.APP_NAME,
     }
 
 
-class ContactView(ExtraContextMixin, TemplateView):
+class ContactView(TemplateView):
     template_name = "pages/classic/contact.html"    
-    context_extra = {
+    extra_context = {
         "contact": True, 
         "app_name": settings.APP_NAME,
     }
 
 
-class Custom404View(ExtraContextMixin, TemplateView):
+class Custom404View(TemplateView):
     template_name = "pages/classic/404.html"
-    context_extra = {
+    extra_context = {
         "app_name": settings.APP_NAME,
     }
 
