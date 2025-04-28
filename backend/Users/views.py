@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, reverse
+from django.conf import settings
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
@@ -9,6 +10,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django_htmx.http import HttpResponseClientRedirect
+from DTH.mixins import ExtraContextMixin
 from .models import Profile
 from .forms import UserRegisterForm, UserUpdateForm, UserProfileUpdateForm
 
@@ -111,20 +113,31 @@ class UserDeleteView(LoginRequiredMixin, DeleteView):
         return self.request.user
 
 
-class UserProfileView(LoginRequiredMixin, DetailView):
+class UserProfileView(ExtraContextMixin, LoginRequiredMixin, DetailView):
     model = User
     template_name = 'pages/profile/user_profile.html'
     context_object_name = 'user'
+    extra_context = {
+        "profile": True,
+        "app_name": settings.APP_NAME,
+        "tabs": [
+            {
+                "name": "settings",
+                "template": (template_root := "partials/components/tabs/") + "settings.html" 
+            },
+            {
+                "name": "workspaces",
+                "template": template_root + "workspaces.html" 
+            },
+            {
+                "name": "notifications",
+                "template": template_root + "notifications.html" 
+            },
+        ]
+    }
     
     def get_object(self):
         return self.request.user
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.update({
-            "profile": True,
-        })
-        return context
     
 
 class UserProfileUpdateView(LoginRequiredMixin, UpdateView):

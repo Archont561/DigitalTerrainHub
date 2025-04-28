@@ -12,7 +12,7 @@ user_password_patterns = [
     path('reset/<uidb64>/<token>/', views.UserPasswordResetConfirmView.as_view(), name='reset-confirm'),
     path('reset-complete/', views.UserPasswordResetCompleteView.as_view(), name='reset-complete'),
     path('change/', views.UserPasswordChangeView.as_view(), name='change'),
-    path('hange-done/', views.UserPasswordChangeDoneView.as_view(), name='change-done'),
+    path('change-done/', views.UserPasswordChangeDoneView.as_view(), name='change-done'),
 ]
 
 user_patterns = [
