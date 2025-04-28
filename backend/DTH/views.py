@@ -1,17 +1,9 @@
 from django.conf import settings
 from django.views.generic import TemplateView
-    
-
-class ContextMixin:
-    context_extra = {}
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.update(self.context_extra)
-        return context
+from .mixins import ExtraContextMixin
 
 
-class HomeView(ContextMixin, TemplateView):
+class HomeView(ExtraContextMixin, TemplateView):
     template_name = "pages/classic/home.html"
     context_extra = {
         "home": True, 
@@ -19,7 +11,7 @@ class HomeView(ContextMixin, TemplateView):
     }
 
 
-class AboutView(ContextMixin, TemplateView):
+class AboutView(ExtraContextMixin, TemplateView):
     template_name = "pages/classic/about.html"
     context_extra = {
         "about": True, 
@@ -27,7 +19,7 @@ class AboutView(ContextMixin, TemplateView):
     }
 
 
-class ContactView(ContextMixin, TemplateView):
+class ContactView(ExtraContextMixin, TemplateView):
     template_name = "pages/classic/contact.html"    
     context_extra = {
         "contact": True, 
@@ -35,7 +27,7 @@ class ContactView(ContextMixin, TemplateView):
     }
 
 
-class Custom404View(ContextMixin, TemplateView):
+class Custom404View(ExtraContextMixin, TemplateView):
     template_name = "pages/classic/404.html"
     context_extra = {
         "app_name": settings.APP_NAME,
