@@ -1,4 +1,5 @@
 import json
+from django.shortcuts import get_object_or_404
 from django.views.generic import View, DetailView, CreateView, DeleteView, ListView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template.loader import render_to_string
@@ -153,54 +154,49 @@ class WorkspaceListView(LoginRequiredMixin, ListView):
         return HttpResponse("".join(rendered))
 
 
-class WorkspaceDetailView(LoginRequiredMixin, DetailView):
+class WorkspaceActionMixin(LoginRequiredMixin, View):
+    def dispatch(self, request, *args, **kwargs):
+        self.workspace = get_object_or_404(Workspace, uuid=kwargs.get("uuid"))
+        if self.workspace.user != request.user:
+            raise PermissionDenied
+        
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_object(self):
+        return self.workspace
+
+
+class WorkspaceDetailView(WorkspaceActionMixin, DetailView):
     model = Workspace
-    template_name = 'partials/components/cards/workspace.html'
+    template_name = 'pages/workspace/index.html'
     context_object_name = 'workspace'
 
 
-class WorkspaceDeleteView(LoginRequiredMixin, DeleteView):
+class WorkspaceDeleteView(WorkspaceActionMixin, DeleteView):
     model = Workspace
     template_name = 'workspace/confirm_delete_workspace.html'
-
-    def get_object(self):
-        workspace = super().get_object()
-        if workspace.user != self.request.user:
-            raise PermissionDenied
-        return workspace
-
-
-class WorkspaceActionMixin(LoginRequiredMixin, View):
-    def dispatch(self, request, *args, **kwargs):
-        self.workspace: Workspace = get_object_or_404(Workspace, uuid=kwargs.get("uuid"))
-        if self.workspace.user != request.user:
-            raise Http404("Not allowed.")
-        
-        return super().dispatch(request, *args, **kwargs)
 
 
 class WorkspaceUploadImagesView(WorkspaceActionMixin):
     def post(self, request, *args, **kwargs):        
         files = request.FILES.getlist('images')
+        workspace = self.get_object()
         for file in files:
-            self.workspace.save_image(file)
+            workspace.save_image(file)
 
         return JsonResponse({"message": "Images uploaded successfully."}, status=200)
 
 
 class WorkspaceShareView(WorkspaceActionMixin):
     def post(self, request, *args, **kwargs):
-        if not self.workspace:
-            raise PermissionDenied("Workspace not found")
+        workspace = self.get_object()
 
         shared_with_user = request.POST.get('shared_with')
-        # Assuming shared_with_user is a valid username
         user_to_share_with = User.objects.filter(username=shared_with_user).first()
 
-        if user_to_share_with:
-            self.workspace.user = user_to_share_with  # Optionally: Share workspace with another user
-            self.workspace.save()
-
-            return JsonResponse({"message": f"Workspace shared with {shared_with_user}."}, status=200)
-        else:
+        if not user_to_share_with:
             return JsonResponse({"error": "User to share with not found."}, status=400)
+        
+        workspace.user = user_to_share_with
+        workspace.save()
+        return JsonResponse({"message": f"Workspace shared with {shared_with_user}."}, status=200)
