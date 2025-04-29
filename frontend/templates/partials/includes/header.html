@@ -1,6 +1,4 @@
-{% load static %}
-
-<header class="bg-gray-800">
+<header class="bg-gray-800 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-auto">
         <div class="h-16 flex justify-between items-center">
             <div class="flex gap-4 items-center">
@@ -10,17 +8,17 @@
                 </a>
 
                 <nav aria-label="Global" class="hidden md:block">
-                    <ul class="flex items-center gap-6 text-sm">
+                    <ul class="flex items-center gap-6 text-sm text-white">
                         {% if not about %}
                             <li>
-                                <a class="text-gray-500 transition hover:text-gray-500/75" href="{% url 'about' %}">
+                                <a class="transition hover:text-blue-300" href="{% url 'about' %}">
                                     About
                                 </a>
                             </li>
                         {% endif %}
                         {% if not contact %}
-                            <li>
-                                <a class="text-gray-500 transition hover:text-gray-500/75" href="{% url 'contact' %}">
+                            <li >
+                                <a class="transition hover:text-blue-300" href="{% url 'contact' %}">
                                     Contact
                                 </a>
                             </li>
@@ -29,86 +27,7 @@
                 </nav>
             </div>
 
-            <div
-                x-data="{ dropdownOpen: false }"
-                class="flex gap-4 items-center justify-between relative"
-            >
-                {% if user.is_authenticated %}
-                    <p class="block text-white font-medium">
-                        <span>Cześć</span>
-                        <span class="font-semibold text-red-400">{{ user.username }}</span>
-                        <span>!</span>
-                    </p>
-                    <div 
-                        class="h-16 overflow-hidden rounded-full flex"
-                        @click="dropdownOpen = !dropdownOpen"
-                    >
-                        <img class="w-16"
-                            src="{% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}{% static 'assets/anonymus.svg' %}{% endif %}" 
-                            alt="User">
-                        <svg 
-                            x-bind:class="{ 'rotate-180': !dropdownOpen }"
-                            class="w-4 text-white transform" viewBox="0 0 18 20" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M4.3125 8.65625L9 13.3437L13.6875 8.65625" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                        </svg>
-                    </div>
-                {% else %}
-                    <div class="flex gap-4 items-center">
-                        <a class="hidden sm:block rounded-md bg-red-600 px-4 py-1.5 sm:px-5 sm:py-2.5 text-sm font-medium text-white transition hover:bg-red-700"
-                            href="{% url 'user:login' %}">
-                            Login
-                        </a>
-
-                        <a class="hidden sm:block rounded-md bg-gray-100 px-5 py-2.5 text-sm font-medium text-red-600 transition hover:text-red-600/75"
-                            href="{% url 'user:register' %}">
-                            Register
-                        </a>
-                    </div>
-                    <button
-                        class="block rounded-sm p-2.5 md:hidden"
-                        @click="dropdownOpen = !dropdownOpen"
-                    >
-                        <span class="sr-only">Toggle menu</span>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="w-10 h-10 text-white"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            stroke-width="2"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M4 6h16M4 12h16M4 18h16"
-                            />
-                        </svg>
-                    </button>
-                {% endif %}
-                <ul 
-                    x-cloak
-                    x-show="dropdownOpen"
-                    @click.away="dropdownOpen = false"
-                    class="absolute top-full right-0 w-48 bg-white rounded-md shadow-lg py-2 z-50"
-                >
-                    {% if user.is_authenticated %}
-                        <li><a href="{% url 'profile:home' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a></li>
-                        <li>
-                            <form 
-                                method="POST" 
-                                action="{% url 'user:logout' %}" 
-                                class="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                            >
-                                {% csrf_token %}
-                                <button type="submit">Logout</button>
-                            </form>
-                        </li>
-                    {% else %}
-                        <li><a href="{% url 'user:login' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Login</a></li>
-                        <li><a href="{% url 'user:register' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Register</a></li>
-                    {% endif %}
-                </ul>
-            </div>
+            {% include "partials/components/menus/settings.html" %}
         </div>
     </div>
 </header>
