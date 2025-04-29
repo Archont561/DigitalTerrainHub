@@ -31,7 +31,13 @@
     <div id="page" class="w-full h-full bg-gray-100 overflow-x-hidden">
         {% block page %}{% endblock page %}
     </div>
-    {% block loader %}{% endblock loader %}
+    <div id="dialogs">
+        {% block loader %}
+            <dialog id="loader" class="bg-transparent w-20 h-20 border-8 border-t-0 border-white border-t-blue-600 rounded-full animate-spin"></dialog>
+        {% endblock loader %}
+        {% block dialogs %}
+            {% include "partials/components/dialogs/error.html" with id="error-dialog"%}
+        {% endblock dialogs %}
     </div>
 </body>
 </html>
