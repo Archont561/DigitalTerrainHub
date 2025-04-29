@@ -1,0 +1,25 @@
+<dialog 
+    {% if id %} id="{{ id }}" {% endif %}
+    x-data="{ isShaking: false }"
+    x-bind:class="{ 'animate-shake': isShaking }"
+    @click.self="isShaking = true; setTimeout(() => { isShaking = false; }, 500);"
+    class="p-0 bg-white rounded-3xl shadow-xl w-3/4 md:w-1/2 lg:w-2/5"
+>
+    <div class="w-full p-4">
+        <h2 class="text-red-600 font-semibold text-4xl text-center mb-4">Form Error</h2>
+        <ul class="error-list space-y-2 text-left text-red-700">
+            {% for error in errors %}
+                <li class="whitespace-pre-wrap">{{ error }}</li>
+            {% endfor %}
+        </ul>
+        <div class="mt-6 text-right">
+            <button
+                @click="
+                    isVisible = false;
+                    setTimeout(() => $el.close(), 300);
+                "
+                class="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200"
+            >OK</button>
+        </div>
+    <div>
+</dialog>

@@ -33,10 +33,10 @@
     </div>
     <div id="dialogs">
         {% block loader %}
-            <dialog id="loader" class="bg-transparent w-20 h-20 border-8 border-t-0 border-white border-t-blue-600 rounded-full animate-spin"></dialog>
+            <dialog id="loader" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 - translate-y-1/2 bg-transparent w-20 h-20 border-8 border-t-0 border-white border-t-blue-600 rounded-full animate-spin"></dialog>
         {% endblock loader %}
         {% block dialogs %}
-            {% include "partials/components/dialogs/error.html" with id="error-dialog"%}
+            {% include "partials/dialogs/error.html" with id="error-dialog"%}
         {% endblock dialogs %}
     </div>
 </body>
