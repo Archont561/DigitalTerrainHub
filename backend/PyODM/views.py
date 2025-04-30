@@ -1,20 +1,37 @@
-import json
+import json, re
 from django.shortcuts import get_object_or_404
 from django.views.generic import View, DetailView, CreateView, DeleteView, ListView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.template.loader import render_to_string
 from django.shortcuts import render, redirect
 from django.conf import settings
-from django.http import HttpResponse, HttpRequest, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.urls import reverse_lazy
 from django.db import IntegrityError
 from pyodm import Node, Task
 from pyodm.types import TaskStatus
 from .models import Workspace, NodeODMTask
+from .enums import NodeODMOptions
 
 
-def get_task_statuses(request: HttpRequest):
+def get_task_statuses(request):
    return JsonResponse({status.name: status.value for status in TaskStatus})
+
+
+def get_task_options(request):
+    node = Node.from_url(settings.NODEODM_URL)
+    response = []
+    for option in node.options():
+        response.append({
+            "name": option.name,
+            "value": option.value,
+            "type": option.type,
+            "group": NodeODMOptions.find_group_by_option(option.name),
+            "domain": option.domain,
+            "help": re.sub(r'[^.]*%\([^)]+\)s[^.]*\.?', '', option.help),
+        })
+    return JsonResponse(response, safe=False)
 
 
 class NewTaskCreationView(LoginRequiredMixin, TemplateView):
@@ -72,7 +89,7 @@ class TaskActionMixin(LoginRequiredMixin, View):
     def dispatch(self, request, *args, **kwargs):
         self.task: NodeODMTask = get_object_or_404(NodeODMTask, uuid=kwargs["uuid"])
         if self.task.workspace.user != request.user:
-            raise Http404("Not allowed.")
+            raise PermissionDenied
         self.node = Node.from_url(settings.NODEODM_URL)
         return super().dispatch(request, *args, **kwargs)
     
@@ -200,3 +217,4 @@ class WorkspaceShareView(WorkspaceActionMixin):
         workspace.user = user_to_share_with
         workspace.save()
         return JsonResponse({"message": f"Workspace shared with {shared_with_user}."}, status=200)
+

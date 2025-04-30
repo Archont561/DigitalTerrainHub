@@ -2,8 +2,9 @@ from django.urls import path, include
 from . import views
 
 task_patterns = [
-    path("new/", views.NewTaskCreationView.as_view(), name="new-task"),
     path("statuses/", views.get_task_statuses, name="statuses"),
+    path("options/", views.get_task_options, name="options"),
+    path("new/", views.NewTaskCreationView.as_view(), name="new-task"),
     path("create/", views.CreateTaskView.as_view(), name="create"),
     path("<uuid:uuid>/info/", views.TaskInfoView.as_view(), name="info"),
     path("<uuid:uuid>/cancel/", views.TaskCancelView.as_view(), name="cancel"),
