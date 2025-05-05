@@ -1,0 +1,166 @@
+{% load django_vite %}
+
+<form 
+    id="task-options-form"
+    x-data="optionsForm"
+    x-plugins="anchor"
+    class="space-y-10"
+    method="POST"
+    action="{% url 'task:create' %}"
+    @submit.prevent="sumbitForm"
+>
+    {% csrf_token %}
+    <h2 class="text-2xl font-bold mb-4">Processing Options</h2>
+    {% for group_name, fields in options.items %}
+        <fieldset class="border border-gray-300 rounded p-4 bg-gray-50">
+            <legend class="text-lg font-semibold text-gray-700 mb-4">{{ group_name|default:"None" }}</legend>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {% for field in fields %}
+                    <div>
+                        <div 
+                            x-data="{ showTooltip: false }"
+                            class="flex justify-start items-center gap-2"
+                        >
+                            <label 
+                                for="{{ field.name }}" 
+                                class="font-medium text-gray-700"
+                            >{{ field.name }}</label>
+                            <div
+                                x-ref="trigger"
+                                @mouseover.debounce.100ms="showTooltip = true"
+                                @mouseout.debounce.100ms="showTooltip = false"
+                                class="size-4"
+                            >
+                                <svg 
+                                    class="size-full"
+                                    fill="#000000"
+                                    height="10" 
+                                    width="10" 
+                                    version="1.1"
+                                    xmlns="http://www.w3.org/2000/svg" 
+                                    xmlns:xlink="http://www.w3.org/1999/xlink"
+                                    viewBox="0 0 27.964 27.964" 
+                                    xml:space="preserve"
+                                >
+                                    <g stroke-width="0"></g>
+                                    <g stroke-linecap="round" stroke-linejoin="round"></g>
+                                    <g>
+                                    <g>
+                                        <g>
+                                        <path d="M13.982,0.001C6.259,0.001,0,6.259,0,13.984c0,7.721,6.259,13.98,13.982,13.98c7.722,0,13.982-6.26,13.982-13.98 C27.965,6.259,21.704,0.001,13.982,0.001z M13.982,26.533c-6.933,0-12.551-5.619-12.551-12.549 c0-6.935,5.618-12.552,12.551-12.552c6.931,0,12.55,5.617,12.55,12.552C26.532,20.914,20.913,26.533,13.982,26.533z"></path>
+                                        <rect x="12.004" y="10.551" width="3.931" height="12.649"></rect>
+                                        <path d="M13.995,5.072c-1.265,0-2.095,0.852-2.095,1.963c0,1.087,0.802,1.964,2.044,1.964c1.317,0,2.119-0.877,2.119-1.964 C16.037,5.924,15.262,5.072,13.995,5.072z"></path>
+                                        </g>
+                                    </g>
+                                    </g>
+                                </svg>
+                            </div>
+                            <div
+                                x-cloak
+                                x-show="showTooltip"
+                                x-anchor.top.offset.10="$refs.trigger"
+                                class="bg-white max-w-xs text-sm p-2 border rounded shadow text-center"
+                            >
+                              {{ field.help }}
+                            </div>                              
+                        </div>
+                        {% if field.type == 'enum' %}
+                            <select 
+                                id="{{ field.name }}" 
+                                name="{{ field.name }}"
+                                class="w-full border rounded px-3 py-2"
+                                x-model="formData['{{ field.name }}']"
+                            >
+                                {% for option in field.domain %}
+                                    <option value="{{ option }}">{{ option }}</option>
+                                {% endfor %}
+                            </select>
+                        {% elif field.type == 'int' or field.type == 'float' %}
+                            <input 
+                                class="w-full border rounded px-3 py-2 {% if field.type != 'int' %}no-spinner{% endif %}"
+                                type="number" 
+                                min="0"
+                                id="{{ field.name }}" 
+                                name="{{ field.name }}"
+                                {% if field.type == 'int' %}step="1"{% endif %}
+                                @keydown="inputKeydownHandler($event, '{{ field.type }}')"
+                                x-model="formData['{{ field.name }}']"
+                            />
+                        {% elif field.type == 'bool' %}
+                            <div class="flex items-center space-x-2">
+                                <input
+                                    type="checkbox"
+                                    id="{{ field.name }}"
+                                    name="{{ field.name }}"
+                                    class="form-checkbox h-5 w-5 text-blue-600"
+                                    x-model="formData['{{ field.name }}']"
+                                />
+                                <label for="{{ field.name }}" class="text-sm text-gray-600">(Check to enable)</label>
+                            </div>
+                        {% elif field.type == 'string' and field.domain == 'string' %}
+                            <input 
+                                id="{{ field.name }}" 
+                                name="{{ field.name }}"
+                                type="text"
+                                placeholder="Enter text"
+                                class="w-full border rounded px-3 py-2"
+                                x-model="formData['{{ field.name }}']"
+                            >
+                        {% elif field.type == 'string' and field.domain == 'json' %}
+                            <div
+                                x-data="{ inputMethod: '', fileUploaded: false, isJSONValid: true }"
+                                class="flex flex-col items-center space-y-2"
+                                id="{{ field.name }}" 
+                            >
+                                <select 
+                                    x-model="inputMethod" 
+                                    class="w-full border rounded px-3 py-2 mb-2"
+                                >   
+                                    <option value="" selected>Choose option</option>
+                                    <option value="manual">Manual Input</option>
+                                    <option value="file">Upload JSON File</option>
+                                </select>
+                                <textarea 
+                                    x-cloak
+                                    x-show="inputMethod === 'manual'"
+                                    x-ref="textarea"
+                                    :disabled="fileUploaded"
+                                    class="w-full border rounded px-3 py-2"
+                                    rows="3"
+                                    placeholder="Enter JSON"
+                                    @input.debounce.300ms="handleJSON($event, $data, '{{ field.name }}')"
+                                    @keydown="handleFocus($event)"
+                                ></textarea>
+                                <div
+                                    x-cloak
+                                    x-show="!isJSONValid"
+                                    x-text="'Not Valid JSON!!!'"
+                                ></div>
+                                <input 
+                                    x-cloak
+                                    x-show="inputMethod === 'file'"
+                                    x-ref="fileInput"
+                                    type="file" 
+                                    accept=".json" 
+                                    class="mt-2"
+                                    @change="handleFileUpload($event, $data, '{{ field.name }}'); $refs.textarea.value = '';"
+                                />
+                                <button 
+                                    x-show="fileUploaded"
+                                    @click="$refs.fileInput.value = ''; fileUploaded = false; formData['{{ field.name }}'] = ''"
+                                    type="button"
+                                    class="bg-red-500 text-white px-3 py-1 rounded w-fit"
+                                >
+                                    Remove File
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </fieldset>
+    {% endfor %}
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        Submit
+    </button>
+</form>

@@ -1,0 +1,29 @@
+{% extends 'bases/base.html' %}
+{% load static %}
+
+{% block page %}
+    <!-- Header -->
+    {% include "partials/includes/header.html" %}
+
+    {% if home %}
+        <!-- Hero Section -->
+        <section 
+            class="relative bg-cover bg-center text-white h-screen -mt-16" 
+            style="background-image: url('{% static 'assets/hero.jpg' %}');"
+            attribution="https://unsplash.com/photos/turned-on-drone-rSFxBGpnluw?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
+        >
+            <div class="absolute inset-0 bg-black opacity-50 z-0"></div>
+            <div class="py-10 relative size-full z-10 flex flex-col text-center justify-end items-center">
+                <h1 class="text-5xl font-bold leading-tight mb-4">DIGITAL TERRAIN HUB</h1>
+                <p class="text-xl mb-6"><i>Making fotogrametry simpler.</i></p>
+            </div>
+        </section>
+    {% endif %}
+
+    <main class="flex-grow">
+        {% block content %}{% endblock content %}
+    </main>
+
+    <!-- Footer -->
+    {% include "partials/includes/footer.html" %}
+{% endblock page %}

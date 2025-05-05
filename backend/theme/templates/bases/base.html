@@ -1,0 +1,42 @@
+{% load django_vite %}
+{% load django_htmx %}
+{% load static tailwind_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Django App{% endblock title %}</title>
+
+    {% tailwind_css %}
+    {% vite_hmr_client %}
+    {% vite_asset 'static/js/main.js' %}
+    {% htmx_script %}
+    
+</head>
+<body 
+    class="overflow-x-clip"
+    hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'
+>
+    <div id="page" class="min-h-screen min-w-screen bg-gray-100 flex flex-col">
+        {% block page %}{% endblock page %}
+        
+    </div>
+    <div id="dialogs" class="contents">
+        {% block loader %}
+            <dialog 
+                id="loader"
+                x-data
+                class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-transparent size-20 overflow-clip"
+                @dialog-action="$event.detail.action(); $el.blur();"
+            >
+                <div class="animate-spin size-full box-border border-8 border-black border-t-blue-700 rounded-full"></div>
+            </dialog>
+        {% endblock loader %}
+        {% block dialogs %}
+            {% include "partials/dialogs/error.html" with id="error-dialog"%}
+        {% endblock dialogs %}
+    </div>
+</body>
+</html>
