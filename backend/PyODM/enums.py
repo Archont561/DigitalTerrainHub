@@ -1,4 +1,8 @@
+from django.conf import settings
+from pyodm import Node, exceptions
 from enum import Enum
+from re import sub
+from typing import defaultdict
 
 class DatasetStageOptions(Enum):
     BG_REMOVAL = "bg-removal"
@@ -125,3 +129,33 @@ class NodeODMOptions:
                 if const.value == option_name:
                     return group
         return None
+
+    @classmethod
+    def to_dict(cls, group=False):
+        try:
+            node = Node.from_url(settings.NODEODM_URL)
+            node_options = node.options()
+        except (exceptions.NodeConnectionError, exceptions.NodeResponseError):
+            return {}
+        else:
+            if group:
+                grouped_options = defaultdict(list)
+                for option in node_options:
+                    group = NodeODMOptions.find_group_by_option(option.name)
+                    grouped_options[group].append({
+                        "name": option.name,
+                        "value": option.value,
+                        "type": option.type,
+                        "domain": "non-negative" if option.type in ["float", "int"] else option.domain,
+                        "help": sub(r'[^.]*%\([^)]+\)s[^.]*\.?', '', option.help),
+                    })
+                return dict(grouped_options)
+            else:
+                return [{
+                    "name": option.name,
+                    "value": option.value,
+                    "type": option.type,
+                    "group": NodeODMOptions.find_group_by_option(option.name),
+                    "domain": "non-negative" if option.type in ["float", "int"] else option.domain,
+                    "help": sub(r'[^.]*%\([^)]+\)s[^.]*\.?', '', option.help),
+                } for option in node_options]
