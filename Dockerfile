@@ -1,8 +1,11 @@
 FROM python:3.11-alpine
 
+RUN ["apk", "add", "--no-cache", "bash", "nodejs", "npm"]
+
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PORT=8000
+ENV PATH="/py/bin:$PATH"
 
 COPY . /app
 
@@ -14,8 +17,6 @@ RUN ["python", "-m", "venv", "/py", "&&", \
 RUN ["build.sh"]
 RUN ["adduser", "--disabled-password", "--no-create-home", "app"]
 RUN ["chown", "-R", "app:app", "/app"]
-
-ENV PATH="/py/bin:$PATH"
 
 USER app
 
