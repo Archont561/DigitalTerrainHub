@@ -1,0 +1,54 @@
+{% extends 'bases/classic.html' %}
+{% load static %}
+{% load django_vite %}
+
+{% block vite_assets_extra %}
+    {% vite_asset "static/css/pages/user_profile.css" %}
+{% endblock vite_assets_extra %}
+
+{% block content %}
+<div class="container bg-white p-6 mx-auto">
+    <!-- Profile Header -->
+    <div class="p-6 border-b border-gray-200">
+        <div class="flex items-center space-x-4">
+            <img 
+                src="{% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}{% static 'assets/anonymus.svg' %}{% endif %}" 
+                alt="Profile Image" 
+                class="w-24 h-24 rounded-full object-cover"
+                style="outline: 2px solid black"
+            >
+            <div>
+                <h1 class="text-2xl font-semibold text-gray-900">{{ user.username }}</h1>
+                <p class="mt-1 text-sm text-gray-600">
+                    {{ user.profile.bio }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div x-data="{ activeTab: 'settings' }">
+        <nav class="border-b border-gray-200 flex flex-wrap text-center">
+            {% for tab in tabs %}
+                <button 
+                    @click="activeTab = '{{ tab.name }}'"
+                    :class="{ 'border-blue-500 text-blue-600': activeTab === '{{ tab.name }}',
+                        'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== '{{ tab.name }}' }"
+                    class="w-full sm:w-1/3 py-4 px-1 text-center border-b-2 font-medium text-sm"
+                >
+                    {{ tab.name|title }}
+                </button>
+            {% endfor %}
+        </nav>
+
+        <!-- Tab Content -->
+        <div class="p-6">
+            {% for tab in tabs %}
+                <div x-cloak x-show="activeTab === '{{ tab.name }}'" class="space-y-6">
+                    {% include tab.template %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

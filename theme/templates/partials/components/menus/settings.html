@@ -1,0 +1,92 @@
+{% load static %}
+
+<div
+    x-data="{ showDropdown: false }"
+    x-plugins="anchor"
+    class="flex gap-4 items-center justify-between relative"
+>
+    {% if user.is_authenticated %}
+        <p class="hidden sm:block text-white font-medium">
+            <span>Cześć</span>
+            <a 
+                href="{% url 'profile:home' %}" 
+                class="font-semibold text-red-400"
+            >{{ user.username }}</a>
+            <span>!</span>
+        </p>
+        <div 
+            class="flex"
+            x-ref="trigger"
+            @click="showDropdown = !showDropdown;"
+            x-ref="trigger"
+        >
+            <img class="size-16 rounded-full transform scale-75"
+                src="{% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}{% static 'assets/anonymus.svg' %}{% endif %}" 
+                alt="User">
+            <svg 
+                x-bind:class="{ 'rotate-180': !showDropdown }"
+                class="w-4 text-white transform" viewBox="0 0 18 20" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4.3125 8.65625L9 13.3437L13.6875 8.65625" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            
+        </div>
+    {% else %}
+        <div class="flex gap-4 items-center">
+            <a class="hidden sm:block rounded-md bg-red-600 px-4 py-1.5 sm:px-5 sm:py-2.5 text-sm font-medium text-white transition hover:bg-red-700"
+                href="{% url 'user:login' %}">
+                Login
+            </a>
+
+            <a class="hidden sm:block rounded-md bg-gray-100 px-5 py-2.5 text-sm font-medium text-red-600 transition hover:text-red-600/75"
+                href="{% url 'user:register' %}">
+                Register
+            </a>
+        </div>
+        <button
+            class="block rounded-sm p-2.5 md:hidden"
+            @click="showDropdown = !showDropdown"
+            x-ref="trigger"
+        >
+            <span class="sr-only">Toggle menu</span>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-10 h-10 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M4 6h16M4 12h16M4 18h16"
+                />
+            </svg>
+        </button>
+    {% endif %}
+    <ul 
+        x-cloak
+        x-show="dropdownOpen"
+        x-anchor.bottom="$refs.trigger"
+        class="absolute w-48 bg-white rounded-md shadow-lg py-2"
+    >
+        {% if user.is_authenticated %}
+            {% if not profile %}
+                <li><a href="{% url 'profile:home' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a></li>
+            {% endif %}
+            <li>
+                <form 
+                    method="POST" 
+                    action="{% url 'user:logout' %}" 
+                    class="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                >
+                    {% csrf_token %}
+                    <button type="submit">Logout</button>
+                </form>
+            </li>
+        {% else %}
+            <li><a href="{% url 'user:login' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Login</a></li>
+            <li><a href="{% url 'user:register' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Register</a></li>
+        {% endif %}
+    </ul>
+</div>

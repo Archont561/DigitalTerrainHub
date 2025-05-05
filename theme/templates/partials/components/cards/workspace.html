@@ -1,0 +1,12 @@
+{% load humanize %}
+
+<div class="p-4 bg-gray-50 rounded-lg shadow-sm">
+    <h3 class="text-lg font-medium text-gray-900">{{ workspace }}</h3>
+    <p class="mt-1 text-sm text-gray-600">Created on: <span>{{ workspace.created_at|naturaltime }}</span></p>
+    <a 
+        href="{% url 'workspace:detail' uuid=workspace.uuid %}"
+        class="mt-2 inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-blue-600 bg-blue-100 hover:bg-blue-200"
+    >
+        Manage
+    </a>
+</div>
