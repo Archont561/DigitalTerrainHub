@@ -1,5 +1,0 @@
-@import "./base.css";
-@import "./utils.css";
-@import "./animations/shake.css";
-
-[x-cloak] { display: none !important; }
