@@ -8,7 +8,7 @@
     "build:clean": "rimraf ../static/dist",
     "build:tailwind": "cross-env NODE_ENV=production postcss ./src/css/main.css -o ../static/dist/styles.css --minify",
     "build:vite": "vite build",
-    "dev": "concurrently \"run dev:vite\" \"npm run dev:tailwind\"",
+    "dev": "concurrently \"npm run dev:vite\" \"npm run dev:tailwind\"",
     "dev:vite": "vite",
     "dev:tailwind": "cross-env NODE_ENV=development postcss ./src/css/main.css -o ../static/dist/styles.css --watch"
   },
