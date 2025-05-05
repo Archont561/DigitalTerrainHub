@@ -9,7 +9,7 @@ from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse_lazy
 from django.db import IntegrityError
-from pyodm import Node, Task
+from pyodm import Node
 from pyodm.types import TaskStatus
 from .models import Workspace, NodeODMTask
 from .enums import NodeODMOptions
@@ -20,18 +20,15 @@ def get_task_statuses(request):
 
 
 def get_task_options(request):
-    node = Node.from_url(settings.NODEODM_URL)
-    response = []
-    for option in node.options():
-        response.append({
-            "name": option.name,
-            "value": option.value,
-            "type": option.type,
-            "group": NodeODMOptions.find_group_by_option(option.name),
-            "domain": option.domain,
-            "help": re.sub(r'[^.]*%\([^)]+\)s[^.]*\.?', '', option.help),
-        })
-    return JsonResponse(response, safe=False)
+    response = NodeODMOptions.to_dict()
+    if response:
+        return JsonResponse(response, safe=False)
+    
+    error_response = {
+        "error": "Internal Server Error",
+        "message": "Failed to fetch task options"
+    }
+    return JsonResponse(error_response, status=500)
 
 
 class NewTaskCreationView(LoginRequiredMixin, TemplateView):
@@ -41,7 +38,6 @@ class NewTaskCreationView(LoginRequiredMixin, TemplateView):
 class CreateTaskView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         try:
-            # Parse JSON request body
             data = json.loads(request.body)
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON"}, status=400)
@@ -187,6 +183,14 @@ class WorkspaceDetailView(WorkspaceActionMixin, DetailView):
     model = Workspace
     template_name = 'pages/workspace/index.html'
     context_object_name = 'workspace'
+    extra_context = {}
+    
+    def get(self, request, *args, **kwargs):
+        options = NodeODMOptions.to_dict(group=True)
+        if options: 
+            self.extra_context["optionsFetched"] = True
+        self.extra_context["options"] = options
+        return super().get(request, *args, **kwargs)
 
 
 class WorkspaceDeleteView(WorkspaceActionMixin, DeleteView):
