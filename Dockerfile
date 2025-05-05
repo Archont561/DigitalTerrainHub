@@ -11,6 +11,7 @@ WORKDIR /app
 RUN ["python", "-m", "venv", "/py", "&&", \
     "/py/bin/pip", "install", "--upgrade", "pip", "&&", \
     "/py/bin/pip", "install", "-r", "/requirements.txt"]
+RUN ["build.sh"]
 RUN ["adduser", "--disabled-password", "--no-create-home", "app"]
 RUN ["chown", "-R", "app:app", "/app"]
 
@@ -20,4 +21,4 @@ USER app
 
 EXPOSE ${PORT}
 
-CMD ["python", "manage.py", "runserver"]
+CMD ["start.sh"]
