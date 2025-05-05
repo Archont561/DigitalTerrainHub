@@ -6,7 +6,7 @@ ENV PORT=8000
 
 COPY . /app
 
-WORKDIR /app/backend
+WORKDIR /app
 
 RUN ["python", "-m", "venv", "/py", "&&", \
     "/py/bin/pip", "install", "--upgrade", "pip", "&&", \
