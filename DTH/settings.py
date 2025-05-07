@@ -99,7 +99,7 @@ USE_I18N = True
 USE_TZ = True
 
 LOGIN_URL = "/users/login/"
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/users/profile/"
 
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
@@ -107,6 +107,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 TAILWIND_APP_NAME = 'theme'
+TAILWIND_CSS_PATH = 'dist/styles.css'
 NPM_BIN_PATH = shutil.which("npm")
 
 DJANGO_VITE = {
