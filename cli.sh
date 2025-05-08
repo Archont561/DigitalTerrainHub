@@ -1,22 +1,23 @@
 #!/bin/bash
 
 set -e
+MANAGE_PY="./app/manage.py"
 
 # Main command handler
 case "$1" in
   dev)
-    uv run manage.py tailwind start & uv run manage.py runserver
+    uv run $MANAGE_PY tailwind start & uv run $MANAGE_PY runserver
     ;;
   build)
-    uv run manage.py tailwind install --no-package-lock
-    uv run manage.py tailwind build
+    uv run $MANAGE_PY tailwind install --no-package-lock
+    uv run $MANAGE_PY tailwind build
     ;;
   start)
-    uv run manage.py runserver
+    uv run $MANAGE_PY runserver
     ;;
   manage)
     shift
-    uv run manage.py "$@"
+    uv run $MANAGE_PY "$@"
     ;;
   *)
     echo "❌ Unknown command: $1"
