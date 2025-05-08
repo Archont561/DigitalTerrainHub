@@ -1,0 +1,52 @@
+{% load widget_tweaks %}
+
+<form 
+    id="login-form"
+    hx-post="{% url 'user:login' %}"
+    hx-target="#login-form"
+    hx-swap="outerHTML"
+    data-show-loader="modal"
+    class="space-y-4"
+>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+        <template x-teleport="#error-dialog .dialog-content">
+            <div 
+                x-show="true" 
+                x-init="$dispatch('modal-open')"
+                class="contents"
+            >
+                <h2 class="text-lg font-bold">Login form errors</h2>
+                <ul class="list-disc list-inside text-sm text-red-600">
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </template>
+    {% endif %}
+    {% for field in form %}
+        <div class="form-control w-full">
+            <label 
+                for="{{ field.id_for_label }}"
+                class="label mb-2"
+            >
+                <span class="label-text font-semibold">{{ field.label }}</span>
+            </label>
+            {{ field|add_class:"input input-bordered w-full" }}
+            {% if field.errors %}
+                <ul class="mt-1">
+                    {% for error in field.errors %}
+                        <li class="text-error text-sm break-words">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    {% endfor %}
+    <button 
+        type="submit" 
+        class="btn btn-primary w-full"
+    >
+        Login
+    </button>
+</form>

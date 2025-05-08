@@ -1,0 +1,21 @@
+{% load django_vite %}
+
+<div class="sticky top-0 navbar bg-primary text-primary-content shadow-sm isolation z-100">
+    <div class="flex-1">
+      <a class="btn btn-ghost text-xl">LOGO</a>
+    </div>
+    <div class="flex gap-2">
+      <input type="text" placeholder="Search" class="input input-bordered w-24 md:w-auto" />
+      <div class="dropdown dropdown-end">
+        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+          <div class="w-10 rounded-full">
+            <img
+              alt="Profile avatar"
+              src="{% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}{% vite_asset_url 'src/assets/anonymus.svg' %}{% endif %}"
+            >
+          </div>
+        </div>
+        {% include "partials/components/menus/settings.html" %}
+      </div>
+    </div>
+  </div>

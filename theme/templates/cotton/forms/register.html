@@ -1,0 +1,76 @@
+{% load widget_tweaks %}
+
+<form 
+    id="register-form"
+    hx-post="{% url 'user:register' %}" 
+    hx-target="#register-form" 
+    hx-swap="outerHTML"
+    class="space-y-6"
+    data-show-loader="modal"
+>
+    {% csrf_token %}
+    
+    {% if form.non_field_errors %}
+        <template x-teleport="#error-dialog .dialog-content">
+            <div 
+                x-show="true" 
+                x-init="$dispatch('modal-open')"
+                class="contents"
+            >
+                <h2 class="text-lg font-bold">Register form errors</h2>
+                <ul class="list-disc list-inside text-sm text-red-600">
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </template>
+    {% endif %}
+    
+    {% for field in form %}
+      <div class="form-control isolate">
+        <label class="label mb-2" for="{{ field.id_for_label }}">
+            <span class="font-medium">{{ field.label }}</span>
+            {% if field.help_text %}
+                <div class="tooltip tooltip-right z-100">
+                    <div class="tooltip-content p-3 w-50">
+                        <div class="text-orange-400 text-sm flex flex-col">{{ field.help_text }}</div>
+                    </div>
+                    <svg 
+                        class="text-neutral-900 size-5 cursor-pointer"
+                        fill="currentColor"
+                        viewBox="0 0 416.979 416.979"
+                    >
+                        <g>
+                        <path d="M356.004,61.156c-81.37-81.47-213.377-81.551-294.848-0.182c-81.47,81.371-81.552,213.379-0.181,294.85
+                            c81.369,81.47,213.378,81.551,294.849,0.181C437.293,274.636,437.375,142.626,356.004,61.156z M237.6,340.786
+                            c0,3.217-2.607,5.822-5.822,5.822h-46.576c-3.215,0-5.822-2.605-5.822-5.822V167.885c0-3.217,2.607-5.822,5.822-5.822h46.576
+                            c3.215,0,5.822,2.604,5.822,5.822V340.786z M208.49,137.901c-18.618,0-33.766-15.146-33.766-33.765
+                            c0-18.617,15.147-33.766,33.766-33.766c18.619,0,33.766,15.148,33.766,33.766C242.256,122.755,227.107,137.901,208.49,137.901z"/>
+                        </g>
+                    </svg>
+                    </div>
+            {% endif %}
+        </label>
+        
+        {{ field|add_class:"input input-bordered w-full" }}
+
+        {% if field.errors %}
+            <label class="label">
+                <span class="label-text-alt text-red-500">
+                    {% for error in field.errors %}
+                        {{ error }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </span>
+            </label>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    <button 
+      type="submit" 
+      class="btn btn-primary w-full"
+    >
+      Create an account
+    </button>
+</form>

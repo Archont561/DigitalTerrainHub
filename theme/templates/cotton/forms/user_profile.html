@@ -1,0 +1,30 @@
+{% load widget_tweaks %}
+
+<form 
+    id="user-profile-form"
+    hx-post="{% url 'profile:update' %}" 
+    hx-target="#user-profile-form" 
+    hx-swap="outerHTML"
+    class="space-y-6"
+>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div class="form-control">
+        <label for="{{ form.bio.id_for_label }}" class="label">
+            <span class="label-text">Bio</span>
+        </label>
+        {{ form.bio|add_class:"textarea textarea-bordered w-full h-24" }}
+    </div>
+
+    <div class="form-control">
+        <label for="{{ form.avatar.id_for_label }}" class="label">
+            <span class="label-text">Profile Image</span>
+        </label>
+        {{ form.avatar|add_class:"file-input file-input-bordered w-full" }}
+    </div>
+
+    <button type="submit" name="form" class="btn btn-primary w-full">
+        Save Profile Information
+    </button>
+</form>

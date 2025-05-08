@@ -1,0 +1,50 @@
+{% load django_vite %}
+
+{% block page %}
+<div class="drawer bg-base-100 text-base-content">
+    <input id="my-drawer" type="checkbox" class="drawer-toggle" />
+    <div class="drawer-content isolate">
+        {% if user.is_authenticated %}
+            {% include "partials/components/navbars/navbar_logged.html" %}
+        {% else %}
+            {% include "partials/components/navbars/navbar.html" %}
+        {% endif %}
+
+        {% if home %}
+            <section 
+                id="hero-section"
+                class="hero min-h-screen bg-fixed" 
+                style="background-image: url('{% vite_asset_url 'src/assets/hero.jpg' %}');"
+                data-image-attribution="https://unsplash.com/photos/turned-on-drone-rSFxBGpnluw?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
+            >
+                <div class="hero-overlay"></div>
+                <div class="hero-content text-neutral-content text-center">
+                    <div class="glass p-10 rounded-3xl backdrop-blur-[4px]">
+                        <h1 class="mb-5 text-5xl font-bold">DIGITAL TERRAIN HUB</h1>
+                        <p class="mb-5 text-lg italic ">Making fotogrametry simpler.</p>
+                        <a 
+                            role="button"
+                            class="btn btn-primary" 
+                            href="{% url 'user:register' %}"
+                        >
+                            Register
+                        </a>
+                    </div>
+                </div>
+            </section>
+        {% endif %}
+            
+        <main class="min-h-screen">
+            {% block content %}{% endblock content %}
+        </main>
+        
+        {% include "partials/includes/footer.html" %}
+    </div>
+
+    <div class="drawer-side">
+        <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+        <div id="sidebar-content" class="contnets"></div>
+    </div>
+
+</div>
+{% endblock page %}

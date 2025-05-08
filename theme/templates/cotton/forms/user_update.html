@@ -1,0 +1,25 @@
+{% load widget_tweaks %}
+
+<form 
+    id="user-update-form"
+    hx-post="{% url 'user:update' %}" 
+    hx-target="#user-update-form" 
+    hx-swap="outerHTML"
+    class="space-y-6"
+>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    {% for field in form %}
+      <div class="form-control">
+        <label for="{{ field.id_for_label }}" class="label">
+          <span class="label-text">{{ field.label }}</span>
+        </label>
+        {{ field|add_class:"input input-bordered w-full" }}
+      </div>
+    {% endfor %}
+
+    <button type="submit" name="form" class="btn btn-primary w-full">
+        Save User Information
+    </button>
+</form>
