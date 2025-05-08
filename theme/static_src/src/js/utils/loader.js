@@ -1,5 +1,5 @@
 export function toggleLoader(event, show) {
-    const loader = document.querySelector("#loader");
+    const loader = document.querySelector("#global-loader");
     if (!loader) return;  
     
     let action;
