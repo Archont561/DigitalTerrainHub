@@ -1,4 +1,4 @@
-export default () => ({
+export default {
     loading: true,
     formData: [],
     inputKeydownHandler(event, type) {
@@ -96,4 +96,4 @@ export default () => ({
         const result = await response.json();
         console.log(result);
     },
-})
+}
