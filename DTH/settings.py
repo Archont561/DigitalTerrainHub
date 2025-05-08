@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     # django extensions
     'django_vite',    
     'django_htmx',
+    'django_cotton',
     'widget_tweaks',
     'tailwind',
     'theme',

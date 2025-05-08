@@ -158,6 +158,7 @@ dependencies = [
     { name = "cookiecutter" },
     { name = "django" },
     { name = "django-browser-reload" },
+    { name = "django-cotton" },
     { name = "django-htmx" },
     { name = "django-tailwind" },
     { name = "django-vite" },
@@ -199,6 +200,7 @@ requires-dist = [
     { name = "cookiecutter", specifier = "==2.6.0" },
     { name = "django", specifier = "==5.2" },
     { name = "django-browser-reload", specifier = "==1.18.0" },
+    { name = "django-cotton", specifier = ">=2.1.1" },
     { name = "django-htmx", specifier = "==1.23.0" },
     { name = "django-tailwind", specifier = "==4.0.1" },
     { name = "django-vite", specifier = "==3.1.0" },
@@ -252,6 +254,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/3b/41/84eaa4f2b7f764e56e01c4ee49aa12bdea30ae50fd0d3ef7c2690b0c4ec2/django_browser_reload-1.18.0.tar.gz", hash = "sha256:c5f0b134723cbf2a0dc9ae1ee1d38e42db28fe23c74cdee613ba3ef286d04735", size = 14319, upload-time = "2025-02-06T22:14:40.799Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e4/9d/1322dc4bce4982d1eadd3a62802c996ae0303aad13d9ad88c1d35025f73d/django_browser_reload-1.18.0-py3-none-any.whl", hash = "sha256:ed4cc2fb83c3bf6c30b54107a1a6736c0b896e62e4eba666d81005b9f2ecf6f8", size = 12230, upload-time = "2025-02-06T22:14:36.87Z" },
+]
+
+[[package]]
+name = "django-cotton"
+version = "2.1.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/9f/73/d29ac6f8182fc355f4cca99dd54139426912b2d78a219451af25ea0abef1/django_cotton-2.1.1.tar.gz", hash = "sha256:5c83138ef4d33770d83d088056c40288090cd08c5e136d4d5a441a9c4b809489", size = 21634, upload-time = "2025-05-02T20:18:07.334Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/96/a2/08bbd11f6a6a497df58ec3c2e0004bea33a90d7d0ce0571dfb8c23de22fc/django_cotton-2.1.1-py3-none-any.whl", hash = "sha256:4666fdffeaadd7b8fa1b40d0afa905d0ec4cd216161d486c0a832628962053a6", size = 21307, upload-time = "2025-05-02T20:18:05.909Z" },
 ]
 
 [[package]]
