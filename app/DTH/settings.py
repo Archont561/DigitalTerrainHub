@@ -24,7 +24,7 @@ INSTALLED_APPS = [
     # django extensions
     'django_vite',    
     'django_htmx',
-    'django_cotton',
+    'django_cotton.apps.SimpleAppConfig',
     'widget_tweaks',
     'tailwind',
     'django_browser_reload',
@@ -54,13 +54,26 @@ ROOT_URLCONF = 'DTH.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'DIRS': [
+            BASE_DIR / "Frontend" / "templates"
+        ],
+        'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+            ],
+            "loaders": [(
+                "django.template.loaders.cached.Loader",
+                [
+                    "django_cotton.cotton_loader.Loader",
+                    "django.template.loaders.filesystem.Loader",
+                    "django.template.loaders.app_directories.Loader",
+                ],
+            )],
+            "builtins": [
+                "django_cotton.templatetags.cotton"
             ],
         },
     },
