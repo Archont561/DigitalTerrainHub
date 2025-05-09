@@ -1,4 +1,4 @@
 export default {
-    optionsForm: () => import('../components/optionsForm.js'),
-    profilePage: () => import('../components/profilePage.js'),
+    optionsForm: async () => (await import('../components/optionsForm.js')).default,
+    profilePage: async () => (await import('../components/profilePage.js')).default,
 };
