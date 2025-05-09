@@ -37,8 +37,9 @@ async function init() {
     const loadPromises = [];
 
     const elements = document.querySelectorAll([dataAttr, pluginAttr].map(el => `[${el}]`).join(","));
-    elements.forEach(el => {        
-        if (el.hasAttribute(pluginAttr)) {
+    elements.forEach(el => {
+        const pluginAttrValue = el.getAttribute(pluginAttr)?.trim();
+        if (pluginAttrValue) {
             const plugins = el.getAttribute(pluginAttr).split(',').map(p => p.trim());
             loadPromises.push(loadItems(
                 plugins,
