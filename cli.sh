@@ -2,6 +2,7 @@
 
 set -e
 MANAGE_PY="./app/manage.py"
+NPM_DIR="./app/Frontend/static_src"
 
 # Main command handler
 case "$1" in
@@ -18,6 +19,13 @@ case "$1" in
   manage)
     shift
     uv run $MANAGE_PY "$@"
+    ;;
+  npm)
+    shift
+    cwd=$(pwd)
+    cd $NPM_DIR
+    npm "$@"
+    cd "$cwd"
     ;;
   *)
     echo "❌ Unknown command: $1"
