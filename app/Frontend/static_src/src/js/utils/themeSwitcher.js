@@ -1,10 +1,6 @@
 const themes = {
-    light: [
-        "light",
-    ],
-    dark: [
-        "dark"
-    ],
+    light: "bumblebee",
+    dark: "night",
 }
 
 function applyTheme(themeName) {
@@ -13,10 +9,10 @@ function applyTheme(themeName) {
 
 async function init() {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    applyTheme(prefersDark ? themes.dark[0] : themes.light[0]);
+    applyTheme(prefersDark ? themes.dark : themes.light);
 
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-        applyTheme(e.matches ? themes.dark[0] : themes.light[0]);
+        applyTheme(e.matches ? themes.dark : themes.light);
     });
 }
 
