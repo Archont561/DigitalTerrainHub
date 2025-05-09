@@ -107,7 +107,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-TAILWIND_APP_NAME = 'theme'
+TAILWIND_APP_NAME = 'Frontend'
 TAILWIND_CSS_PATH = 'dist/styles.css'
 NPM_BIN_PATH = shutil.which("npm")
 
