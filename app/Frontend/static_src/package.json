@@ -32,6 +32,7 @@
     "@alpinejs/focus": "^3.14.9",
     "@alpinejs/mask": "^3.14.9",
     "alpinejs": "^3.14.9",
+    "daisyui": "^5.0.35",
     "tailwindcss-animated": "^2.0.0"
   }
 }

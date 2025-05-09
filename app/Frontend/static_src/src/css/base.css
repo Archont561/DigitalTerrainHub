@@ -11,7 +11,12 @@
   * the scope of this path.
   */
 @source "../../../../**/*.{html,py,js}";
+@plugin "daisyui" {
+  exclude: rootscrollgutter;
+  themes: bumblebee, night;
+}
 
 @theme {
   --breakpoint-xs: 30rem;
 }
+
