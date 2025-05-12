@@ -159,6 +159,7 @@ dependencies = [
     { name = "django" },
     { name = "django-browser-reload" },
     { name = "django-cotton" },
+    { name = "django-environ" },
     { name = "django-htmx" },
     { name = "django-tailwind" },
     { name = "django-tus" },
@@ -203,6 +204,7 @@ requires-dist = [
     { name = "django", specifier = "==5.2" },
     { name = "django-browser-reload", specifier = "==1.18.0" },
     { name = "django-cotton", specifier = ">=2.1.1" },
+    { name = "django-environ", specifier = ">=0.12.0" },
     { name = "django-htmx", specifier = "==1.23.0" },
     { name = "django-tailwind", specifier = "==4.0.1" },
     { name = "django-tus", specifier = ">=0.5.0" },
@@ -282,6 +284,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/9f/73/d29ac6f8182fc355f4cca99dd54139426912b2d78a219451af25ea0abef1/django_cotton-2.1.1.tar.gz", hash = "sha256:5c83138ef4d33770d83d088056c40288090cd08c5e136d4d5a441a9c4b809489", size = 21634, upload-time = "2025-05-02T20:18:07.334Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/96/a2/08bbd11f6a6a497df58ec3c2e0004bea33a90d7d0ce0571dfb8c23de22fc/django_cotton-2.1.1-py3-none-any.whl", hash = "sha256:4666fdffeaadd7b8fa1b40d0afa905d0ec4cd216161d486c0a832628962053a6", size = 21307, upload-time = "2025-05-02T20:18:05.909Z" },
+]
+
+[[package]]
+name = "django-environ"
+version = "0.12.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/d6/04/65d2521842c42f4716225f20d8443a50804920606aec018188bbee30a6b0/django_environ-0.12.0.tar.gz", hash = "sha256:227dc891453dd5bde769c3449cf4a74b6f2ee8f7ab2361c93a07068f4179041a", size = 56804, upload-time = "2025-01-13T17:03:37.74Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/83/b3/0a3bec4ecbfee960f39b1842c2f91e4754251e0a6ed443db9fe3f666ba8f/django_environ-0.12.0-py2.py3-none-any.whl", hash = "sha256:92fb346a158abda07ffe6eb23135ce92843af06ecf8753f43adf9d2366dcc0ca", size = 19957, upload-time = "2025-01-13T17:03:32.918Z" },
 ]
 
 [[package]]

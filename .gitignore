@@ -1,4 +1,11 @@
 .*
 !.gitignore
+!.env.example  
 node_modules
 *pycache*
+data
+static*/
+!static_src/*
+db.*
+dist/
+migrations/

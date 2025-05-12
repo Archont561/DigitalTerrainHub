@@ -1,17 +1,13 @@
-import os, shutil
-from dotenv import load_dotenv
-from pathlib import Path
+import shutil
+from Config.env import BASE_DIR, env
+from Core.helpers.generators import generate_template_namespace
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+env.read_env(BASE_DIR / ".env")
+
 DATA_DIR = BASE_DIR / "data"
-
-load_dotenv(dotenv_path=BASE_DIR / ".env")
-
 APP_NAME = "Digital Terrain Hub"
-DEBUG = bool(os.environ.get("DEBUG", False))
-SECRET_KEY = os.environ.get("SECRET_KEY", "DEV_SECRET_KEY")
-ALLOWED_HOSTS = [] + list(filter(None, os.environ.get("ALLOWED_HOSTS", "*").split(",")))
-NODEODM_URL = os.environ.get("NODEODM_URL", "http://localhost:3000")
+DEBUG = env.bool("DJANGO_DEBUG", default=True)
+SECRET_KEY = env("DJANGO_SECRET_KEY", default="DUMMY_SECRET_KEY")
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -52,7 +48,7 @@ MIDDLEWARE = [
     'django_browser_reload.middleware.BrowserReloadMiddleware',
 ]
 
-ROOT_URLCONF = 'DTH.urls'
+ROOT_URLCONF = 'Config.urls'
 
 TEMPLATES = [
     {
@@ -82,7 +78,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'DTH.wsgi.application'
+WSGI_APPLICATION = 'Config.wsgi.application'
 
 DATABASES = {
     'default': {
@@ -126,6 +122,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 TAILWIND_APP_NAME = 'Frontend'
 TAILWIND_CSS_PATH = 'dist/styles.css'
 NPM_BIN_PATH = shutil.which("npm")
+TEMPLATES_NAMESPACES = generate_templates_namespaces(BASE_DIR / "Frontend" / "templates")
 
 DJANGO_VITE = {
     "default": {
@@ -140,3 +137,6 @@ TUS_EXISTING_FILE = 'overwrite'
 WORKSPACES_DIR = DATA_DIR / "workspaces"
 DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024**2
 TUS_MAX_FILE_SIZE = DATA_UPLOAD_MAX_MEMORY_SIZE
+
+
+from Config.settings.NodeODM import *

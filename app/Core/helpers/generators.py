@@ -27,7 +27,7 @@ def generate_docker_container_style_name() -> str:
     return f"{adjective} {surname}"
 
 
-def generate_template_namespace(templates_dir: Path) -> namedtuple:
+def generate_templates_namespaces(templates_dir: Path) -> namedtuple:
     def inner(folder: Path):
         children = []
         values = []
