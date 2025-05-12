@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     'django_tus',
     # created apps,
     "Core",
-    "Users",
+    "User",
     "Frontend",
     "Payment",
     "PyODM",
@@ -115,8 +115,8 @@ USE_I18N = True
 
 USE_TZ = True
 
-LOGIN_URL = "/users/login/"
-LOGIN_REDIRECT_URL = "/users/profile/"
+LOGIN_URL = "/user/credentials/login/"
+LOGIN_REDIRECT_URL = "/user/profile/"
 
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
