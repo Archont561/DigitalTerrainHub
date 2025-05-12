@@ -4,8 +4,7 @@
 node_modules
 *pycache*
 data
-static*/
-!static_src/*
+static/
 db.*
 dist/
 migrations/
