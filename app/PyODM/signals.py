@@ -2,6 +2,7 @@ import shutil
 from django.db.models.signals import post_save, post_delete
 from django.conf import settings
 from django.dispatch import receiver
+from django_tus.signals import tus_upload_finished_signal
 from .models import Workspace
 from .views import WorkspaceUploadImagesView
 from pathlib import Path

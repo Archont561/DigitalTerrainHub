@@ -1,6 +1,8 @@
-import shutil
+import shutil, sys
 from Config.env import BASE_DIR, env
-from Core.helpers.generators import generate_template_namespace
+
+sys.path.append(BASE_DIR / "Core")
+from Core.helpers.generators import generate_templates_namespaces
 
 env.read_env(BASE_DIR / ".env")
 
