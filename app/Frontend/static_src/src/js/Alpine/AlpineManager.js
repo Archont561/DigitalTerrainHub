@@ -1,5 +1,5 @@
-import AlpinePluginLoaders from "./AlpinePluginLoaders";
-import AlpineComponentLoaders from "./AlpineComponentLoaders";
+import AlpinePluginLoaders from "./loaders/AlpinePluginLoaders";
+import AlpineComponentLoaders from "./loaders/AlpineComponentLoaders";
 
 const loadedAlpinePlugins = new Set();
 const loadedAlpineComponents = new Set();
