@@ -30,7 +30,7 @@ class CredentialsLoginView(LoginView):
 
 class CredentialsLogoutView(LoginRequiredMixin, LogoutView):
     template_name = generic_htmx_form_template
-    next_page = reverse_lazy("core:home")
+    next_page = reverse_lazy("core:home")   
 
 
 class CredentialsPasswordResetView(auth_views.PasswordResetView):
