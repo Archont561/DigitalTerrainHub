@@ -1,0 +1,1 @@
+from .spaceless import SpacelessMiddleware

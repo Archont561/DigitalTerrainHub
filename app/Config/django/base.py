@@ -46,6 +46,8 @@ MIDDLEWARE = [
     ####
     'django_htmx.middleware.HtmxMiddleware',
     'django_browser_reload.middleware.BrowserReloadMiddleware',
+    ####
+    "Core.middleware.SpacelessMiddleware",
 ]
 
 ROOT_URLCONF = 'Config.urls'
