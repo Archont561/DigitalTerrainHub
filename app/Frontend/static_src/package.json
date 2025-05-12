@@ -31,6 +31,7 @@
     "@alpinejs/anchor": "^3.14.9",
     "@alpinejs/focus": "^3.14.9",
     "@alpinejs/mask": "^3.14.9",
+    "@ryangjchandler/spruce": "^2.7.1",
     "@uppy/core": "^4.4.4",
     "@uppy/dashboard": "^4.3.3",
     "@uppy/tus": "^4.2.2",
