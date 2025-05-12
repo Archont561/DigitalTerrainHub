@@ -1,4 +1,4 @@
-import uuid
+import uuid, calendar
 from django.db import models
 from django.contrib.auth.models import User
 from pyodm.types import TaskStatus
@@ -23,6 +23,10 @@ class Workspace(models.Model):
         images_dir = self.get_dir()
         if not images_dir.exists(): return []
         return [str(file) for file in images_dir.iterdir() if file.is_file()]
+    
+    @property
+    def created_at_epoch(self):
+        return calendar.timegm(self.created_at.utctimetuple())
 
 
 class NodeODMTask(models.Model):
