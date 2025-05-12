@@ -10,18 +10,17 @@ from django.urls import reverse_lazy
 from django.http import HttpResponse, Http404, HttpResponseBadRequest
 from .models import UserProfile
 from .forms import UserRegisterForm, UserUpdateForm, UserProfileUpdateForm
-generic_htmx_form_template = settings.TEMPLATES_NAMESPACES.cotton.forms.htmx_generic
 
 
 class CredentialsRegisterView(CreateView):
     model = User
     form_class = UserRegisterForm
-    template_name = generic_htmx_form_template
+    template_name = settings.TEMPLATES_NAMESPACES.pages.credentials.register
     success_url = reverse_lazy('credentials:login')
 
 
 class CredentialsLoginView(LoginView):
-    template_name = generic_htmx_form_template
+    template_name = settings.TEMPLATES_NAMESPACES.pages.credentials.login
     next_page = reverse_lazy("account:home")
     extra_context = {
         "hx_post": "?"
@@ -29,41 +28,41 @@ class CredentialsLoginView(LoginView):
 
 
 class CredentialsLogoutView(LoginRequiredMixin, LogoutView):
-    template_name = generic_htmx_form_template
     next_page = reverse_lazy("core:home")   
 
 
 class CredentialsPasswordResetView(auth_views.PasswordResetView):
-    template_name = generic_htmx_form_template
+    template_name = settings.TEMPLATES_NAMESPACES.pages.credentials.password.reset
     email_template_name = settings.TEMPLATES_NAMESPACES.emails.password_reset_body
     subject_template_name = settings.TEMPLATES_NAMESPACES.emails.password_reset_subject
     success_url = reverse_lazy('credentials:password-reset-done')
 
 
 class CredentialsPasswordResetDoneView(auth_views.PasswordResetDoneView):
-    template_name = generic_htmx_form_template
+    template_name = settings.TEMPLATES_NAMESPACES.pages.credentials.password.reset_done
+
 
 
 class CredentialsPasswordResetConfirmView(auth_views.PasswordResetConfirmView):
-    template_name = generic_htmx_form_template
+    template_name = settings.TEMPLATES_NAMESPACES.pages.credentials.password.reset_confirm
     success_url = reverse_lazy('credentials:password-reset-complete')
 
 
 class CredentialsPasswordResetCompleteView(auth_views.PasswordResetCompleteView):
-    template_name = generic_htmx_form_template
+    template_name = settings.TEMPLATES_NAMESPACES.pages.credentials.password.reset_complete
 
 
 class CredentialsPasswordChangeView(auth_views.PasswordChangeView):
-    template_name = generic_htmx_form_template
+    template_name = settings.TEMPLATES_NAMESPACES.pages.credentials.password.change
     success_url = reverse_lazy('user-password:change-done')
 
 
 class CredentialsPasswordChangeDoneView(auth_views.PasswordChangeDoneView):
-    template_name = generic_htmx_form_template
+    template_name = settings.TEMPLATES_NAMESPACES.pages.credentials.password.change_done
 
 
 class CredentialsEmailVerificationView(TemplateView):
-    template_name = generic_htmx_form_template
+    template_name = settings.TEMPLATES_NAMESPACES.pages.credentials.email_verification
 
 
 class AccountProfileView(LoginRequiredMixin, DetailView):
@@ -76,15 +75,16 @@ class AccountProfileView(LoginRequiredMixin, DetailView):
 
 
 class AccountUpdateView(LoginRequiredMixin, UpdateView):
-    template_name = generic_htmx_form_template
     forms_mapping = {
         "profile": {
             "class": UserProfileUpdateForm,
             "getter": lambda request: request.user.profile,
+            "template": settings.TEMPLATES_NAMESPACES.cotton.forms.user_profile,
         },
         "user": {
             "class": UserUpdateForm,
             "getter": lambda request: request.user,
+            "template": settings.TEMPLATES_NAMESPACES.cotton.forms.user_update,
         },
     }    
 
@@ -93,7 +93,7 @@ class AccountUpdateView(LoginRequiredMixin, UpdateView):
         for _, form_mapping in self.forms_mapping.items():
             form = form_mapping["class"](instance=form_mapping["getter"](request))
             rendered_forms.append(
-                loader.render_to_string(self.template_name, { "form": form })
+                loader.render_to_string(form_mapping["template"], { "form": form })
             )
         return HttpResponse("".join(rendered_forms))
 
@@ -124,7 +124,7 @@ class AccountUpdateView(LoginRequiredMixin, UpdateView):
 
 class AccountDeleteView(LoginRequiredMixin, DeleteView):
     model = User
-    template_name = generic_htmx_form_template
+    template_name = settings.TEMPLATES_NAMESPACES.cotton.forms.delete_workspace
     success_url = reverse_lazy('core:home')
 
     def get_object(self):
