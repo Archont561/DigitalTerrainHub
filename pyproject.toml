@@ -23,6 +23,7 @@ dependencies = [
     "django-vite==3.1.0",
     "django-widget-tweaks==1.5.0",
     "dotenv==0.9.9",
+    "heroicons[django]>=2.11.0",
     "idna==3.10",
     "jinja2==3.1.6",
     "markdown-it-py==3.0.0",
