@@ -1,0 +1,44 @@
+{% load heroicons %}
+
+<c-layouts.base>
+    <c-slot name="page">
+        <div 
+            class="drawer md:drawer-open h-[100dvh] w-[100dvw]"
+            x-data="profilePage"
+            x-plugins="persist"
+            @not-md.window="sidebarOpen = false"
+        >
+            <input id="{{ drawer_toggle_id }}" type="checkbox" class="drawer-toggle" x-model="sidebarOpen"/>
+            <main class="drawer-content grid grid-rows-[auto_1fr] h-full overflow-hidden">
+                {{ header }}
+                {{ tabs }}
+            </main>
+            <nav class="drawer-side">
+                <label for="{{ drawer_toggle_id }}" aria-label="close sidebar" class="drawer-overlay max-xs:hidden" :class="{ 'hidden': !sidebarOpen }"></label>
+                <div class="w-[100dvw] xs:w-64 bg-base-200 text-base-content min-h-full grid grid-rows-[auto_auto_1fr] place-items-center border-r-0 xs:border-r-2">
+                    <div class="grid grid-cols-[auto_auto_auto] xs:flex xs:justify-center w-full place-items-center">
+                        <div class="size-16"><c-svgs.drone></c-svgs.drone></div>
+                        <span class="text-center">{{ app_name }}</span>
+                        <label for="{{ drawer_toggle_id }}" class="btn btn-ghost btn-circle xs:hidden" :class="{ 'hidden': !sidebarOpen }">{% heroicon_outline  "x-mark" %}</label>
+                    </div>
+                    <menu class="menu menu-md gap-3 w-full">
+                        <li class="menu-title text-2xl">Opcje</li>
+                        <template x-for="tab in tabs">
+                            <li><a 
+                                x-data
+                                x-init="$refs.svgHolder.appendChild(document.getElementById(tab)?.querySelector('.svgHolder')?.content?.cloneNode(true))"
+                                @click="showTab(tab)" 
+                                class="flex justify-start items-center gap-4"
+                                :class="isCurrentTab(tab) && 'menu-active'"
+                                :href="`#${tab}`"
+                            >
+                                <span x-ref="svgHolder" class="w-5"></span>
+                                <span x-text="tab"></span>
+                            </a></li>
+                        </template>
+                    </menu>
+                </div>
+            </nav>
+          </div>
+    </c-slot>
+</c-layouts.base>

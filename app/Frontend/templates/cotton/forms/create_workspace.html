@@ -1,0 +1,11 @@
+<form 
+    hx-post="{% url 'workspace:create' %}"
+    hx-target="this"
+    hx-swap="outerHTML"
+>
+    {% if htmx %}
+        <c-partials.notification :message="message">
+        </c-partials.notification>
+    {% endif %}
+    <button type="submit" class="btn btn-primary">Create new workspace<button>
+</form>

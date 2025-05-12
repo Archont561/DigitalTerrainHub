@@ -1,0 +1,9 @@
+<form 
+    {% if workspace %}hx-post="{% url 'workspace:delete' workspace.uuid %}"{% endif %}
+    hx-target="this"
+    hx-swap="innerHTML"
+>
+    <button type="submit" class="btn btn-square btn-ghost">
+        {{ slot }}
+    </button>
+</form>

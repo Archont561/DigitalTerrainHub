@@ -1,0 +1,69 @@
+{% load humanize %}
+{% load heroicons %}
+
+<ul 
+    x-data="workspaceList"
+    class="relative list rounded-box shadow-md"
+    :class="!workspaces && 'min-h-[10rem]'"
+    @workspace:created.window="addWorkspace($event)"
+    @workspace:deleted="removeWorkspace($event)"
+>
+    <template x-if="!workspaces.length">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-2">
+            <h2 class="text-lg">No workspces created yet!</h2>
+            <button 
+            `   @click="openWorkspaceCreationDialog()" 
+                class="btn btn-primary"
+            >Create new</button>
+        </div>
+    </template>
+    <script x-ref="createdWorkspacesJSON" type="application/json">
+        {{ workspaces|safe }}
+    </script>
+    <template x-for="workspace in workspaces" :key="workspace.pk">
+        <li 
+            :id="`ws-${workspace.pk}`"
+            class="list-row place-items-center"
+        >
+            <div class="size-14"><c-svgs.photos class="size-full"></c-svgs.photos></div>
+            <div class="text-sm flex flex-col w-full list-col-grow">
+                <h5 class="text-xs uppercase font-semibold opacity-60" x-text="workspace['fields']['name']"></h5>
+                <p>Created: <span x-text="new Date(workspace['fields']['created_at']).toLocaleString()"></span></p>
+            </div>
+            <button @click="openImagesEditDialog(workspace)" class="btn btn-square btn-ghost" title="Edit">
+                {% heroicon_outline 'pencil-square' class="size-full" %}
+            </button>
+            <button @click="openUploadImagesDialog(workspace)" class="btn btn-square btn-ghost" title="Upload images">
+                {% heroicon_outline 'arrow-up-tray' class="size-full" %}
+            </button>
+            <button @click="openTaskDialog(workspace)" class="btn btn-square btn-ghost" title="Run task">
+                {% heroicon_outline 'wrench' class="size-full" %}
+            </button>
+            <button
+                x-init="window.htmx.process($el)"
+                :hx-post="`/pyodm/workspace/${workspace.pk}/delete/`"
+                :hx-target="`#ws-${workspace.pk}`"
+                hx-swap="none"
+                class="btn btn-square btn-ghost"
+                hx-on:htmx:responseError="console.log(event)"
+            >{% heroicon_outline 'trash' class="size-full"%}</button>
+        </li>
+    </template>
+    <dialog x-ref="uploadImagesDialog"
+        class="modal isolate flex sm:grid"
+        @click.self="!$el.close() && (currentWorkspace = null);"
+    >
+        <div class="modal-box sm:max-w-2xl  bg-transparent p-1 border-none shadow-none">
+            <div
+                @click="$el.closest('dialog').close() && (currentWorkspace = null);" 
+                class="size-10 absolute top-5 right-5 z-100 btn btn-ghost btn-circle hover:scale-105"
+            >{% heroicon_outline 'x-mark' class="size-full" %}</div>
+            <div x-data="uppyWidget" 
+                class="size-full"
+                data-csrftoken="{{ csrf_token }}"
+                data-endpoint="{% url 'workspace:upload' %}"
+                :data-workspace-uuid="currentWorkspace?.pk"
+            ></div>
+        </div>
+    </dialog>
+</ul>

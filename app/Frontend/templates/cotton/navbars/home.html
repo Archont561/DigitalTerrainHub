@@ -1,0 +1,36 @@
+<div 
+	x-cloak
+	x-data="{ reveal: false }"
+	class="navbar bg-base-100 shadow-sm fixed top-0 z-100 transform transition-transform linear duration-300"
+	:class="reveal || '-translate-y-full'"
+	@scroll.window="reveal = window.scrollY >= window.innerHeight"
+>
+	<div class="navbar-start">
+			<label for="my-drawer" role="button" tabindex="0" class="btn btn-ghost btn-circle">
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+					stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+				</svg>
+			</label>
+			<template x-teleport="#sidebar-content">
+				<ul x-show="true" class="menu bg-base-200 text-base-content min-h-screen w-80 p-4">
+					{% if not home %}<li><a href="{% url 'home' %}">Homepage</a></li>{% endif %}
+					{% if not contact %}<li><a href="{% url 'contact' %}">Contact</a></li>{% endif %}
+					{% if not profile %}<li><a href="{% url 'about' %}">About</a></li>{% endif %}
+				</ul>
+			</template>
+	</div>
+	<div class="navbar-center">
+		<a href="{% if not home %}{% url 'home' %}{% else %}#{% endif %}" class="btn btn-ghost text-xl">
+			LOGO
+		</a>
+	</div>
+	<div class="navbar-end">
+		<a class="btn btn-ghost" href="{% url 'user:login' %}">
+			Login
+		</a>
+		<a class="btn btn-primary" href="{% url 'user:register' %}">
+			Register
+		</a>
+	</div>
+</div>

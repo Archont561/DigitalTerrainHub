@@ -1,0 +1,17 @@
+<div 
+    x-cloak
+    x-data
+    {% if name %}
+        x-show="isCurrentTab($el.id)"
+        x-init="registerTab($el.id)"
+        id="{{ name|title }}"
+    {% endif %}
+    class="overflow-y-scroll"
+>
+    {% if name %}
+        <template class="svgHolder">
+            <div class="size-full">{{ svg }}</div>
+        </template> 
+    {% endif %}
+    {{ slot }}
+</div>

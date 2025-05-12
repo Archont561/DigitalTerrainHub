@@ -1,0 +1,51 @@
+{% load heroicons %}
+
+<div class="navbar bg-base-300 border-b-2" >
+    <div class="navbar-start">
+        <label for="{{ toggler_id }}" role="button" class="btn btn-ghost btn-circle md:hidden">
+            {% heroicon_outline  "bars-4" %}
+        </label>
+    </div>
+    <div class="navbar-end gap-3">
+        <c-components.dropdown placement="dropdown-end">
+            <c-slot name="header">
+                <div class="btn btn-ghost btn-circle size-10">
+                    <div class="indicator">
+                        {% heroicon_outline  "bell" %}
+                        <span class="badge badge-xs badge-primary indicator-item"></span>
+                    </div>
+                </div>    
+            </c-slot>
+            <c-slot name="content">
+                <ul class="menu bg-base-100 rounded-box w-52 p-2 shadow-sm">
+                    <li><a>Placeholder</a></li>
+                </ul>
+            </c-slot>
+        </c-components.dropdown>
+        <c-components.dropdown placement="dropdown-end">
+            <c-slot name="header">
+                <div class="avatar size-10 {% if not user.profile.avatar %}avatar-placeholder{% endif %}">
+                    {% if user.profile.avatar %}
+                        <div class="ring-primary ring-offset-base-100 rounded-full hover:ring-2 ring-offset-2">
+                            <img src="{{user.profile.avatar.url}}" />
+                        </div>
+                    {% else %}
+                        <div class="bg-neutral text-neutral-content rounded-full ring-primary ring-offset-base-100 hover:ring-2 ring-offset-2">
+                            <span>A</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </c-slot>
+            <c-slot name="content">
+                <ul class="menu bg-base-100 rounded-box w-30 p-2 shadow-sm">
+                    <li>
+                        <form method="POST" action="{% url 'user:logout' %}">
+                            {% csrf_token %}
+                            <button type="submit">Logout</button>
+                        </form>
+                    </li>
+                </ul>
+            </c-slot>
+        </c-components.dropdown>
+    </div>
+</div>
