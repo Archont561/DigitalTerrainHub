@@ -13,7 +13,7 @@
 @source "../../../../**/*.{html,py,js}";
 @plugin "daisyui" {
   exclude: rootscrollgutter;
-  themes: bumblebee, night;
+  themes: bumblebee --default, night --prefersDark;
 }
 
 @theme {
