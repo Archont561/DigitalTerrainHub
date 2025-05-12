@@ -91,7 +91,7 @@ class AccountUpdateView(LoginRequiredMixin, UpdateView):
     def get(self, request, *args, **kwargs):
         rendered_forms = []
         for _, form_mapping in self.forms_mapping.items():
-            form = form_mapping["class"](instance=form_mapping["getter"])
+            form = form_mapping["class"](instance=form_mapping["getter"](request))
             rendered_forms.append(
                 loader.render_to_string(self.template_name, { "form": form })
             )
