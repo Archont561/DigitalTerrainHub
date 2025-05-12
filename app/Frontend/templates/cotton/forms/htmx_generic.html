@@ -1,0 +1,12 @@
+<c-layouts.base>
+    <c-slot name="page">
+        <form 
+            {% if hx_post %} hx-post="{{ hx_post }}" {% endif %}
+            {% if hx_target %} hx-target="#{{ hx_target }} "{% endif %}
+            {% if hx_swap %} hx-swap="{{ hx_swap }}" {% endif %}
+        >
+            {{ form.as_p }}
+            <button type="submit">Submit</button>
+        </form>
+    </c-slot>
+</c-layouts.base>
