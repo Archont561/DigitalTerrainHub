@@ -19,6 +19,7 @@ dependencies = [
     "django-cotton>=2.1.1",
     "django-htmx==1.23.0",
     "django-tailwind==4.0.1",
+    "django-tus>=0.5.0",
     "django-vite==3.1.0",
     "django-widget-tweaks==1.5.0",
     "dotenv==0.9.9",

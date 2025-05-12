@@ -161,6 +161,7 @@ dependencies = [
     { name = "django-cotton" },
     { name = "django-htmx" },
     { name = "django-tailwind" },
+    { name = "django-tus" },
     { name = "django-vite" },
     { name = "django-widget-tweaks" },
     { name = "dotenv" },

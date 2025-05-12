@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'tailwind',
     'django_browser_reload',
     'heroicons',
+    'django_tus',
     # created apps,
     "Users",
     "Frontend",
