@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'heroicons',
     'django_tus',
     # created apps,
+    "Core",
     "Users",
     "Frontend",
     "Payment",
