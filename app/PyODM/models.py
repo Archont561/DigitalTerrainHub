@@ -4,11 +4,13 @@ from django.contrib.auth.models import User
 from pyodm.types import TaskStatus
 from django.conf import settings
 from pathlib import Path
+from Core.helpers.generators import generate_docker_container_style_name
+
 
 class Workspace(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="workspaces")
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, default=generate_docker_container_style_name)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
