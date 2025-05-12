@@ -165,6 +165,7 @@ dependencies = [
     { name = "django-vite" },
     { name = "django-widget-tweaks" },
     { name = "dotenv" },
+    { name = "heroicons", extra = ["django"] },
     { name = "idna" },
     { name = "jinja2" },
     { name = "markdown-it-py" },

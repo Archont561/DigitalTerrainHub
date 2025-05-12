@@ -9,6 +9,8 @@ from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse_lazy
 from django.db import IntegrityError
+from django_tus.views import TusUpload
+from django_tus.signals import tus_upload_finished_signal
 from pyodm import Node
 from pyodm.types import TaskStatus
 from .models import Workspace, NodeODMTask
@@ -151,12 +153,23 @@ class WorkspaceCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('workspace:list')
 
 
-class WorkspaceListView(LoginRequiredMixin, ListView):
-    model = Workspace
-    template_name = 'partials/components/cards/workspace.html'
-
+class WorkspaceActionMixin(LoginRequiredMixin, View):
+    def dispatch(self, request, *args, **kwargs):
+        self.workspace_uuid = kwargs.get("ws_uuid", getattr(self, "workspace_uuid", None))
+        try: 
+            self.workspace = Workspace.objects.get(uuid=self.workspace_uuid)
+        except Workspace.DoesNotExist: 
+            if request.htmx: return HttpResponseNotFound("Workspace not found")
+            else: raise Http404()
+        
+        if self.workspace.user != self.request.user: return HttpResponseForbidden()
+        return super().dispatch(request, *args, **kwargs)
+    
     def get_queryset(self):
         return Workspace.objects.filter(user=self.request.user)
+
+    def get_object(self):
+        return self.workspace
 
     def render_to_response(self, context, **response_kwargs):
         workspaces = self.get_queryset()
@@ -166,17 +179,20 @@ class WorkspaceListView(LoginRequiredMixin, ListView):
         ]
         return HttpResponse("".join(rendered))
 
-
-class WorkspaceActionMixin(LoginRequiredMixin, View):
-    def dispatch(self, request, *args, **kwargs):
-        self.workspace = get_object_or_404(Workspace, uuid=kwargs.get("uuid"))
-        if self.workspace.user != request.user:
-            raise PermissionDenied
-        
-        return super().dispatch(request, *args, **kwargs)
+class WorkspaceUploadImagesView(WorkspaceActionMixin, TusUpload):
+    workspace_uuid_header = "X-Workspace-UUID"
     
-    def get_object(self):
-        return self.workspace
+    def dispatch(self, request, *args, **kwargs):
+        self.workspace_uuid = request.headers.get(self.workspace_uuid_header, None)
+        if not self.workspace_uuid: return HttpResponseBadRequest(f"Missing {self.workspace_uuid_header}")
+        return super().dispatch(request, *args, **kwargs)
+
+    def send_signal(self, tus_file):
+        tus_upload_finished_signal.send(
+            sender=self.__class__,
+            upload_file_path=settings.TUS_DESTINATION_DIR / tus_file.filename,
+            destination_folder=self.get_object().get_dir())
+
 
 
 class WorkspaceDetailView(WorkspaceActionMixin, DetailView):
@@ -196,29 +212,4 @@ class WorkspaceDetailView(WorkspaceActionMixin, DetailView):
 class WorkspaceDeleteView(WorkspaceActionMixin, DeleteView):
     model = Workspace
     template_name = 'workspace/confirm_delete_workspace.html'
-
-
-class WorkspaceUploadImagesView(WorkspaceActionMixin):
-    def post(self, request, *args, **kwargs):        
-        files = request.FILES.getlist('images')
-        workspace = self.get_object()
-        for file in files:
-            workspace.save_image(file)
-
-        return JsonResponse({"message": "Images uploaded successfully."}, status=200)
-
-
-class WorkspaceShareView(WorkspaceActionMixin):
-    def post(self, request, *args, **kwargs):
-        workspace = self.get_object()
-
-        shared_with_user = request.POST.get('shared_with')
-        user_to_share_with = User.objects.filter(username=shared_with_user).first()
-
-        if not user_to_share_with:
-            return JsonResponse({"error": "User to share with not found."}, status=400)
-        
-        workspace.user = user_to_share_with
-        workspace.save()
-        return JsonResponse({"message": f"Workspace shared with {shared_with_user}."}, status=200)
 

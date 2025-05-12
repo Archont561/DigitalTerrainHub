@@ -16,11 +16,10 @@ task_patterns = [
 
 workspace_patterns = [
     path("create/", views.WorkspaceCreateView.as_view(), name="create"),
-    path("list/", views.WorkspaceListView.as_view(), name="list"),
-    path("<uuid:uuid>", views.WorkspaceDetailView.as_view(), name="detail"),
-    path("<uuid:uuid>/delete/", views.WorkspaceDeleteView.as_view(), name="delete"),
-    path("<uuid:uuid>/upload/", views.WorkspaceUploadImagesView.as_view(), name="upload-images"),
-    path("<uuid:uuid>/share/", views.WorkspaceShareView.as_view(), name="share-output"),
+    path('upload/', views.WorkspaceUploadImagesView.as_view(), name='upload'),
+    path('upload/<uuid:resource_id>', views.WorkspaceUploadImagesView.as_view(), name='upload_chunks'),
+    path("<uuid:ws_uuid>", views.WorkspaceDetailView.as_view(), name="detail"),
+    path("<uuid:ws_uuid>/delete/", views.WorkspaceDeleteView.as_view(), name="delete"),
 ]
 
 urlpatterns = [

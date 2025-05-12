@@ -20,3 +20,9 @@ def delete_workspace_folder(sender, instance, **kwargs):
     if workspace_path.exists() and workspace_path.is_dir():
         shutil.rmtree(workspace_path)
 
+
+@receiver(tus_upload_finished_signal, sender=WorkspaceUploadImagesView)
+def handle_tus_upload_finished(sender, upload_file_path: Path, destination_folder: Path, **kwargs):
+    if upload_file_path.exists() and destination_folder.exists():
+        upload_file_path.rename(destination_folder / upload_file_path.name)
+
