@@ -1,48 +1,49 @@
-{% extends 'bases/base.html' %}
 {% load django_vite %}
 
-{% block content %}
-<div class="container p-6 mx-auto text-base-content">
-    <div class="card">
-        <div class="card-body flex items-center space-x-4">
-            <img
-                src="{% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}{% vite_asset_url 'src/assets/anonymus.svg' %}{% endif %}"
-                alt="Profile Image"
-                class="w-24 h-24 rounded-full object-cover"
-                style="outline: 2px solid black"
-            >
-            <h1 class="card-title text-2xl font-semibold">{{ user.username }}</h1>
-            <p class="mt-1 text-sm">
-                {{ user.profile.bio }}
-            </p>
-        </div>
-    </div>
-    
-    <div x-data="{ activeTab: 1 }" class="contents">
-        <div role="tablist" class="tabs tabs-box grid grid-flow-row xs:grid-flow-col">
-            {% for tab in tabs %}
-                <button
-                    type="button"
-                    @click="activeTab = {{ forloop.counter }}"
-                    class="tab"
-                    :class="{
-                        'tab-active': activeTab === {{ forloop.counter }},
-                    }"
-                    aria-label="Tab {{ tab.name|title }}"
-                >
-                    {{ tab.name|title }}
-                </button>
-            {% endfor %}
-        </div>
-        {% for tab in tabs %}
-            <div
-                x-show="activeTab === {{ forloop.counter }}"
-                class="p-6"
-                x-cloak
-            >
-                {% include tab.template %}
+<c-layouts.base title="Profile">
+    <c-slot name="page">
+        <div class="container p-6 mx-auto text-base-content">
+            <div class="card">
+                <div class="card-body flex items-center space-x-4">
+                    <img
+                        src="{% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}{% vite_asset_url 'src/assets/anonymus.svg' %}{% endif %}"
+                        alt="Profile Image"
+                        class="w-24 h-24 rounded-full object-cover"
+                        style="outline: 2px solid black"
+                    >
+                    <h1 class="card-title text-2xl font-semibold">{{ user.username }}</h1>
+                    <p class="mt-1 text-sm">
+                        {{ user.profile.bio }}
+                    </p>
+                </div>
             </div>
-        {% endfor %}
-    </div>
-</div>
-{% endblock %}
+            
+            <div x-data="{ activeTab: 1 }" class="contents">
+                <div role="tablist" class="tabs tabs-box grid grid-flow-row xs:grid-flow-col">
+                    {% for tab in tabs %}
+                        <button
+                            type="button"
+                            @click="activeTab = {{ forloop.counter }}"
+                            class="tab"
+                            :class="{
+                                'tab-active': activeTab === {{ forloop.counter }},
+                            }"
+                            aria-label="Tab {{ tab.name|title }}"
+                        >
+                            {{ tab.name|title }}
+                        </button>
+                    {% endfor %}
+                </div>
+                {% for tab in tabs %}
+                    <div
+                        x-show="activeTab === {{ forloop.counter }}"
+                        class="p-6"
+                        x-cloak
+                    >
+                        {% include tab.template %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </c-slot>
+<c-layouts.base>

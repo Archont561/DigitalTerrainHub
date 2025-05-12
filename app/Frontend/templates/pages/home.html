@@ -1,5 +1,6 @@
-{% extends 'bases/base.html' %}
-
-{% block content %}
-    {% lorem 5 p random %}
-{% endblock %}
+<c-layouts.base title="Home">
+    <c-slot name="page">
+        {% lorem 5 p random %}
+        <a href="{% url 'credentials:login' %}" >Profile</a>
+    </c-slot>
+</c-layouts.base>

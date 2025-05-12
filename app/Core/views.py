@@ -3,31 +3,22 @@ from django.views.generic import TemplateView
 
 
 class HomeView(TemplateView):
-    template_name = "pages/classic/home.html"
+    template_name = settings.TEMPLATES_NAMESPACES.pages.home
     extra_context = {
         "home": True, 
         "app_name": settings.APP_NAME,
     }
 
 
-class AboutView(TemplateView):
-    template_name = "pages/classic/about.html"
+class ProductsView(TemplateView):
+    template_name = settings.TEMPLATES_NAMESPACES.pages.products_viewer
     extra_context = {
-        "about": True, 
-        "app_name": settings.APP_NAME,
-    }
-
-
-class ContactView(TemplateView):
-    template_name = "pages/classic/contact.html"    
-    extra_context = {
-        "contact": True, 
         "app_name": settings.APP_NAME,
     }
 
 
 class Custom404View(TemplateView):
-    template_name = "pages/classic/404.html"
+    template_name = settings.TEMPLATES_NAMESPACES.pages.HTTP_404
     extra_context = {
         "app_name": settings.APP_NAME,
     }
