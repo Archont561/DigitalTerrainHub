@@ -1,6 +1,6 @@
 import "./assetsImports"
 import Alpine from "alpinejs";
-import AlpineManager from "./utils/AlpineManager";
+import AlpineManager from "./Alpine/AlpineManager";
 import themeSwitcher from "./utils/themeSwitcher";
 import { toggleLoader } from "./utils/loader";
 
