@@ -1,34 +1,31 @@
-<ul 
-    x-data="{ wsCount: 0 }"
-    class="relative list rounded-box shadow-md"
-    :class="!wsCount && 'min-h-[10rem]'"
->
-    <template x-if="!wsCount">
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-2">
-            <h2 class="text-lg">No workspces created yet!</h2>
-            <button
-                x-init="window.htmx.process($el)"
-                hx-trigger="click"
-                hx-post="{% url 'workspace:create' %}"
-                hx-target="" 
-                class="btn btn-primary"
-            >Create new</button>
-        </div>
-    </template>
-    
-    {% for workspace in workspces %}
-        <c-components.workspace :workspace="workspace"/>
-    {% endfor %}
+<section id="workspace-management-board" class="size-full overflow-y-scroll">
+    <div class="mx-auto py-10 min-w-md max-w-xl">
+        <h2 class="text-2xl mb-3">Workspace management board</h2>
 
-    <dialog id="upload-images-dialog"
-        class="modal isolate flex sm:grid"
-        @click.self="!$el.close() && (currentWorkspace = null);"
-    >
-        <div x-data="uppyWidget" 
-            class="size-full"
-            data-csrftoken="{{ csrf_token }}"
-            data-endpoint="{% url 'workspace:upload' %}"
-            :data-workspace-uuid="currentWorkspace?.pk"
-        ></div>
-    </dialog>
-</ul>
+        <div class="bg-base-100 rounded-box p-1">
+            <nav class="flex justify-end p-2 bg-base-200 rounded-box">
+                <button
+                    hx-target="#workspace-management-board .list"
+                    hx-trigger="click"
+                    hx-post="{% url 'workspace:create' %}"
+                    hx-swap="afterbegin"
+                    class="btn btn-primary"
+                >Create new</button>
+            </nav>
+            <ul 
+                x-data="{ wsCount: 0 }"
+                class="relative list min-h-[20rem] gap-2"
+            >
+                <template x-if="!wsCount" >
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-2">
+                        <h2 class="text-lg">No workspaces created yet!</h2>
+                    </div>
+                </template>
+
+                {% for workspace in workspaces %}
+                    <c-components.workspace :workspace="workspace"/>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</section>

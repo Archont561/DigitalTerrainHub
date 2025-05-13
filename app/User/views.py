@@ -70,6 +70,14 @@ class AccountProfileView(LoginRequiredMixin, DetailView):
     def get_object(self):
         return self.request.user
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            "workspaces": self.get_object().workspaces.all()
+        })
+        return context
+
+
 
 class AccountUpdateView(LoginRequiredMixin, UpdateView):
     forms_mapping = {
@@ -121,7 +129,6 @@ class AccountUpdateView(LoginRequiredMixin, UpdateView):
 
 class AccountDeleteView(LoginRequiredMixin, DeleteView):
     model = User
-    template_name = settings.TEMPLATES_NAMESPACES.cotton.forms.delete_workspace
     success_url = reverse_lazy('core:home')
 
     def get_object(self):

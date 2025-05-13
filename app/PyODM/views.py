@@ -6,7 +6,7 @@ from django.core.exceptions import PermissionDenied
 from django.template.loader import render_to_string
 from django.shortcuts import render, redirect
 from django.conf import settings
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest, HttpResponseNotFound
 from django.urls import reverse_lazy
 from django.db import IntegrityError
 from django_tus.views import TusUpload
@@ -141,16 +141,14 @@ class TaskStatusView(TaskActionMixin):
         return JsonResponse({"status": self.task.status.name})
 
 
-class WorkspaceCreateView(LoginRequiredMixin, CreateView):
-    model = Workspace
-    template_name = 'pages/workspaces/create.html'
-    fields = ['name']
-
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        return super().form_valid(form)
-
-    success_url = reverse_lazy('workspace:list')
+class WorkspaceCreateView(LoginRequiredMixin, View):
+    template_name = settings.TEMPLATES_NAMESPACES.cotton.components.workspace
+    context_object_name = "workspace"
+    http_method_names = ["post"]
+    
+    def post(self, request, *args, **kwargs):
+        workspace = Workspace.objects.create(user=request.user)
+        return render(request, self.template_name, { self.context_object_name: workspace })
 
 
 class WorkspaceActionMixin(LoginRequiredMixin, View):
@@ -164,9 +162,6 @@ class WorkspaceActionMixin(LoginRequiredMixin, View):
         
         if self.workspace.user != self.request.user: return HttpResponseForbidden()
         return super().dispatch(request, *args, **kwargs)
-    
-    def get_queryset(self):
-        return Workspace.objects.filter(user=self.request.user)
 
     def get_object(self):
         return self.workspace
@@ -178,6 +173,7 @@ class WorkspaceActionMixin(LoginRequiredMixin, View):
             for workspace in workspaces
         ]
         return HttpResponse("".join(rendered))
+
 
 class WorkspaceUploadImagesView(WorkspaceActionMixin, TusUpload):
     workspace_uuid_header = "X-Workspace-UUID"
@@ -194,7 +190,6 @@ class WorkspaceUploadImagesView(WorkspaceActionMixin, TusUpload):
             destination_folder=self.get_object().get_dir())
 
 
-
 class WorkspaceDetailView(WorkspaceActionMixin, DetailView):
     model = Workspace
     template_name = 'pages/workspace/index.html'
@@ -209,7 +204,8 @@ class WorkspaceDetailView(WorkspaceActionMixin, DetailView):
         return super().get(request, *args, **kwargs)
 
 
-class WorkspaceDeleteView(WorkspaceActionMixin, DeleteView):
-    model = Workspace
-    template_name = 'workspace/confirm_delete_workspace.html'
+class WorkspaceDeleteView(WorkspaceActionMixin):
+    def post(self, request, *args, **kwargs):
+        self.get_object().delete()
+        return HttpResponse(status=200)
 

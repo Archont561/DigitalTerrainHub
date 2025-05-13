@@ -1,9 +1,22 @@
-{% load django_vite %}
-
 <c-layouts.base title="Profile">
     <c-slot name="page">
-        <div class="w-screen h-screen flex justify-center items-center">
+        <div class="w-screen h-screen bg-base-300">
             <c-components.workspaces-list />
         </div>
+        <dialog 
+            x-init
+            id="upload-images-dialog"
+            class="modal"
+        >
+            <div x-data="uppyWidget"
+                class="h-full w-full modal-box p-0 -z-1 xs:h-3/4 md:w-3/5 md:max-w-full"
+                data-csrftoken="{{ csrf_token }}"
+                data-endpoint="{% url 'workspace:upload' %}"></div>
+            <form 
+                method="dialog" 
+                class="modal-backdrop -z-10"
+                @submit="$store.currentWorkspace = null"
+            ><input type="submit"></form>
+        </dialog>
     </c-slot>
 </c-layouts.base>
