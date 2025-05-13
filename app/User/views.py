@@ -22,9 +22,6 @@ class CredentialsRegisterView(CreateView):
 class CredentialsLoginView(LoginView):
     template_name = settings.TEMPLATES_NAMESPACES.pages.credentials.login
     next_page = reverse_lazy("account:home")
-    extra_context = {
-        "hx_post": "?"
-    }
 
 
 class CredentialsLogoutView(LoginRequiredMixin, LogoutView):
