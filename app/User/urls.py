@@ -27,7 +27,7 @@ credentials_patterns = generate_path_patterns([
     ('register/', CredentialsRegisterView, 'register'),
     ('login/', CredentialsLoginView, 'login'),
     ('logout/', CredentialsLogoutView, 'logout'),
-    ('email-verification/', CredentialsEmailVerificationView, 'email-verification'),
+    ('email-verification/', CredentialsEmailVerificationView, 'email_verification'),
     ('password-reset/', CredentialsPasswordResetView, 'password-reset'),
     ('password-reset-confirm/<uidb64>/<token>/', CredentialsPasswordResetConfirmView, 'password-reset-confirm'),
     ('password-reset-done/', CredentialsPasswordResetDoneView, 'password-reset-done'),
