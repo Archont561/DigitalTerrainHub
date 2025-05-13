@@ -57,7 +57,7 @@ async function init() {
                     [dataAttrValue],
                     loadedAlpineComponents,
                     AlpineComponentLoaders,
-                    (name, component) => window.Alpine.data(name, () => component),
+                    (name, component) => window.Alpine.data(name, component),
                     'component'
                 ));
             }
