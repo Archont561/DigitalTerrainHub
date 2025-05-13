@@ -4,6 +4,10 @@ import AlpineComponentLoaders from "./loaders/AlpineComponentLoaders";
 const loadedAlpinePlugins = new Set();
 const loadedAlpineComponents = new Set();
 
+function toCamelCase (str) { 
+    return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+}
+
 async function loadItems(names, loadedSet, loaders, registerFn, itemType) {
     const results = await Promise.allSettled(
         names.map(async (name) => {
@@ -65,6 +69,16 @@ async function init() {
     });
     
     await Promise.allSettled(loadPromises);
+
+    window.Alpine.store("HTML", 
+        Array.from(document.querySelectorAll("body [id]"))
+        .filter(el => el.id.trim() !== '')
+        .reduce((enumObj, el) => {
+            enumObj[toCamelCase(el.id)] = el;
+            return enumObj;
+        }, {})
+    );
+
     window.Alpine.start();
 }
 
