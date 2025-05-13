@@ -1,5 +1,18 @@
 <c-layouts.base title="Home">
     <c-slot name="page">
-        
+        <div class="grid grid-flow-rows h-screen w-screen grid-cols-3 gap-4 bg-base-100">
+            <a class="btn btn-ghost size-full border-4 border-neutral-300" href="{% url 'account:home' %}">Profile</a>
+            <a class="btn btn-ghost size-full border-4 border-neutral-300" href="{% url 'account:update' %}">Profile Update</a>
+            <a class="btn btn-ghost size-full border-4 border-neutral-300" href="{% url 'account:delete' %}">Profile Delete</a>
+            <a class="btn btn-ghost size-full border-4 border-neutral-300" href="{% url 'credentials:login' %}">Login</a>
+            <a class="btn btn-ghost size-full border-4 border-neutral-300" href="{% url 'credentials:register' %}">Register</a>
+            <a class="btn btn-ghost size-full border-4 border-neutral-300" href="{% url 'credentials:logout' %}">Logout</a>
+            <a class="btn btn-ghost size-full border-4 border-neutral-300" href="{% url 'credentials:email-verification' %}">Email Verification</a>
+            <a class="btn btn-ghost size-full border-4 border-neutral-300" href="{% url 'credentials:password-reset' %}">Password Reset</a>
+            <a class="btn btn-ghost size-full border-4 border-neutral-300" href="{% url 'credentials:password-reset-done' %}">Password Reset Done</a>
+            <a class="btn btn-ghost size-full border-4 border-neutral-300" href="{% url 'credentials:password-reset-complete' %}">Password Reset Complete</a>
+            <a class="btn btn-ghost size-full border-4 border-neutral-300" href="{% url 'credentials:password-change' %}">Password Change</a>
+            <a class="btn btn-ghost size-full border-4 border-neutral-300" href="{% url 'credentials:password-change-done' %}">Password Change Done</a>
+        </div>
     </c-slot>
 </c-layouts.base>
