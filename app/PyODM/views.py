@@ -200,7 +200,7 @@ class WorkspaceDetailView(WorkspaceActionMixin, DetailView):
 
 
 class WorkspaceUpdateView(WorkspaceActionMixin):
-    http_method_names = ["post"]
+    http_method_names = ["post", "patch"]
 
     def patch(self, request, *args, **kwargs):
         workspace = self.get_object()

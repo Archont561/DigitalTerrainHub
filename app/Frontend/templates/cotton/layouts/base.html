@@ -12,12 +12,14 @@
 
     {% tailwind_css %}
     {% htmx_script %}
+    <script src="https://unpkg.com/htmx-ext-form-json" defer></script>
     {% vite_hmr_client %}
     {% vite_asset 'src/js/main.js' %}
+    
     {{ extra_head }}
 
 </head>
-<body hx-headers='{"x-csrftoken": "{{ csrf_token }}"}' hx-ext="inner">
+<body hx-headers='{"x-csrftoken": "{{ csrf_token }}"}' hx-ext="inner, form-json">
     {{ page }}
 </body>
 </html>

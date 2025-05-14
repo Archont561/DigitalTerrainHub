@@ -20,10 +20,10 @@
         <form
             hx-patch="{% url 'workspace:update' ws_uuid=workspace.uuid %}" 
             hx-swap="none" class="contents" 
-            hx-on:htmx:after-request="this.querySelector('input').blur()">
+            hx-on:htmx:after-request="((i, detail) => {i.blur(); if (detail.succesful) {i.value = detail.xhr.responseText}})(this.querySelector('input'), event.detail)"
+            hx-trigger="submit">
                 <input name="name" value="{{ workspace.name }}"
-                    class="text-xs uppercase font-semibold opacity-60 truncate"
-                    hx-trigger="keyup[key=='Enter']" >
+                    class="text-xs uppercase font-semibold opacity-60 truncate">
         </form>
         <p>Created: <span x-text="relativeTime">{{ workspace.created_at|naturaltime }}</span></p>
     </div>
