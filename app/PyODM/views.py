@@ -167,14 +167,6 @@ class WorkspaceActionMixin(LoginRequiredMixin, View):
     def get_object(self):
         return self.workspace
 
-    def render_to_response(self, context, **response_kwargs):
-        workspaces = self.get_queryset()
-        rendered = [
-            render_to_string(self.template_name, {'workspace': workspace}, request=self.request)
-            for workspace in workspaces
-        ]
-        return HttpResponse("".join(rendered))
-
 
 class WorkspaceUploadImagesView(WorkspaceActionMixin, TusUpload):
     workspace_uuid_header = "X-Workspace-UUID"
