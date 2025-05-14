@@ -13,18 +13,12 @@ export default {
     },
     onEvent: function (name, evt) {
         if (name !== "htmx:trigger") return;
-        evt.preventDefault();
 
         const el = evt.detail.elt;
         const [sourceSelector] = this.getSelectors();
         const sourceAttr = sourceSelector.replace(/\[|\]/g, '');
         const sourceQuery = el.getAttribute(sourceAttr);
-        if (!sourceQuery) {
-            this.api.triggerErrorEvent(el, "htmx:sourceQueryError", {
-                error: `No source query specified in ${sourceQuery} attribute`
-            });
-            return;
-        }
+        if (!sourceQuery) return;
 
         const source = window.htmx.find(sourceQuery) || window.htmx.findAll(sourceQuery)?.[0];
         if (!source) {
@@ -44,5 +38,7 @@ export default {
         window.htmx.swap(target, source.outerHTML, {
             swapStyle: el.getAttribute("hx-swap"),
         });
+        
+        evt.preventDefault();
     }
 }
