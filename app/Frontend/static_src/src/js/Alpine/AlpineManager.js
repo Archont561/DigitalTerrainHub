@@ -35,6 +35,40 @@ async function loadItems(names, loadedSet, loaders, registerFn, itemType) {
     });
 }
 
+
+function loadAlpineGlobalState() {
+    window.Alpine.store("HTML", 
+        Array.from(document.querySelectorAll("body [id]"))
+        .filter(el => el.id.trim() !== '')
+        .reduce((enumObj, el) => {
+            enumObj[toCamelCase(el.id)] = el;
+            return enumObj;
+        }, {})
+    );
+
+    window.Alpine.store("globalInterval", {
+        interval: 1000,
+        flag: true,
+        stop() {
+            clearInterval(this.intervalID);
+        },
+        init() {
+            this.update();
+            this.intervalID = setInterval(() => this.update(), this.interval);
+        },
+        update() {
+            this.flag = !this.flag;
+        },
+        setIntervalValue(interval) {
+            this.interval = interval;
+        },
+        resume() {
+            this.intervalID = setInterval(() => this.update(), this.interval);
+        }
+    });
+}
+
+
 async function init() {
     const dataAttr = "x-data";
     const pluginAttr = "x-plugins";
@@ -70,15 +104,7 @@ async function init() {
     
     await Promise.allSettled(loadPromises);
 
-    window.Alpine.store("HTML", 
-        Array.from(document.querySelectorAll("body [id]"))
-        .filter(el => el.id.trim() !== '')
-        .reduce((enumObj, el) => {
-            enumObj[toCamelCase(el.id)] = el;
-            return enumObj;
-        }, {})
-    );
-
+    loadAlpineGlobalState();
     window.Alpine.start();
 }
 

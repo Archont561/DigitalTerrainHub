@@ -1,15 +1,16 @@
 {% load heroicons %}
 <li 
-    x-data="{ created_at: {{ workspace.created_at_epoch }} }"
+    x-data="{ created_at: {{ workspace.created_at_epoch }}, relativeTime: null }"
     x-init="wsCount++"
     class="list-row place-items-center"
     data-uuid="{{ workspace.uuid }}"
+    x-effect="(window.Alpine.store('globalInterval').flag).toString() && (relativeTime = window.luxon.DateTime.fromSeconds(created_at).toRelative())"
     @click="$event.target.tagName === 'BUTTON' && ($store.currentWorkspaceUUID = $el.dataset.uuid)"
 >
     <div class="size-14"><c-svgs.photos class="size-full"></c-svgs.photos></div>
-    <div class="text-sm flex flex-col w-full list-col-grow">
-        <h5 class="text-xs uppercase font-semibold opacity-60">{{ workspace.name }}</h5>
-        <p>Created: <span x-text="window.luxon.DateTime.fromSeconds(created_at).toRelative()"></span></p>
+    <div class="text-sm flex flex-col list-col-grow items-start w-full">
+        <input class="text-xs uppercase font-semibold opacity-60" value="{{ workspace.name }}">
+        <p>Created: <span x-text="relativeTime"></span></p>
     </div>
     <button
         @click="$store.HTML.workspaceEditDialog.showModal()" 
@@ -31,7 +32,7 @@
         hx-post="{% url 'workspace:delete' ws_uuid=workspace.uuid %}"
         hx-target="closest li"
         hx-swap="delete"
-        hx-on:htmx:before-cleanup-element="window.Alpine.evaluate(this.closest('.list'), 'wsCount--')"
+        @htmx:before-cleanup-element.self="wsCount--"
         title="Delete"
     >{% heroicon_outline 'trash' class="size-full" %}</button>
 </li>
