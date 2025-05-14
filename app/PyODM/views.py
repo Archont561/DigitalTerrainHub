@@ -143,7 +143,7 @@ class TaskStatusView(TaskActionMixin):
 
 
 class WorkspaceCreateView(LoginRequiredMixin, View):
-    template_name = settings.TEMPLATES_NAMESPACES.cotton.components.workspace
+    template_name = settings.TEMPLATES_NAMESPACES.cotton.components.workspace.card
     context_object_name = "workspace"
     http_method_names = ["post"]
     
@@ -184,20 +184,24 @@ class WorkspaceUploadImagesView(WorkspaceActionMixin, TusUpload):
 
 
 class WorkspaceDetailView(WorkspaceActionMixin, DetailView):
-    model = Workspace
-    template_name = 'pages/workspace/index.html'
-    context_object_name = 'workspace'
-    extra_context = {}
+    template_name = settings.TEMPLATES_NAMESPACES.cotton.components.workspace.card
+    context_object_name = "workspace"
+    http_method_names = ["get"]
     
     def get(self, request, *args, **kwargs):
-        options = NodeODMOptions.to_dict(group=True)
-        if options: 
-            self.extra_context["optionsFetched"] = True
-        self.extra_context["options"] = options
-        return super().get(request, *args, **kwargs)
+        if not request.GET:
+            return super().get(self, request, *args, **kwargs)
+        
+        match request.GET.get("count", None):
+            case "images":
+                return HttpResponse(self.get_object().image_count)
+            case _:
+                return HttpResponseBadRequest("Wrong query!")
 
 
 class WorkspaceUpdateView(WorkspaceActionMixin):
+    http_method_names = ["post"]
+
     def post(self, request, *args, **kwargs):
         form = WorkspaceForm(request.POST, instance=self.get_object())
         if not form.is_valid():
@@ -207,6 +211,8 @@ class WorkspaceUpdateView(WorkspaceActionMixin):
 
 
 class WorkspaceDeleteView(WorkspaceActionMixin):
+    http_method_names = ["post"]
+
     def post(self, request, *args, **kwargs):
         self.get_object().delete()
         return HttpResponse(status=200)

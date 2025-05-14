@@ -28,6 +28,10 @@ class Workspace(models.Model):
     def created_at_epoch(self):
         return calendar.timegm(self.created_at.utctimetuple())
 
+    @property
+    def image_count(self):
+        return len(self.get_images_paths())
+
 
 class NodeODMTask(models.Model):
     uuid = models.UUIDField(editable=True, unique=True, primary_key=True)

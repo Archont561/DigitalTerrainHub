@@ -1,14 +1,21 @@
 {% load heroicons %}
 {% load humanize %}
 <li 
-    x-data="{ created_at: {{ workspace.created_at_epoch }}, relativeTime: null }"
+    x-data="{ createdEpoch: {{ workspace.created_at_epoch }}, relativeTime: null }"
     x-init="wsCount++"
     class="list-row place-items-center"
     data-uuid="{{ workspace.uuid }}"
-    x-effect="(window.Alpine.store('globalInterval').flag).toString() && (relativeTime = window.luxon.DateTime.fromSeconds(created_at).toRelative())"
+    x-effect="(window.Alpine.store('globalInterval').flag).toString() && (relativeTime = window.luxon.DateTime.fromSeconds(createdEpoch).toRelative())"
     @click="$event.target.tagName === 'BUTTON' && ($store.currentWorkspaceUUID = $el.dataset.uuid)"
 >
-    <div class="size-14"><c-svgs.photos class="size-full"></c-svgs.photos></div>
+    <div class="grid place-items-center grid-cols-[auto_auto] gap-1">
+        <c-svgs.photos class="size-16"></c-svgs.photos>
+        <div class="image-count text-3xl font-bold text-nowrap p-2"
+            hx-get="{% url 'workspace:detail' ws_uuid=workspace.uuid %}"
+            hx-trigger="upload:done"
+            hx-vals='{"count": "images"}'
+        >{{ workspace.image_count }}</div>
+    </div>
     <div class="text-sm flex flex-col list-col-grow items-start w-full">
         <form
             hx-post="{% url 'workspace:update' ws_uuid=workspace.uuid %}" 
