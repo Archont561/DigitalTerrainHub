@@ -1,4 +1,5 @@
 {% load heroicons %}
+{% load humanize %}
 <li 
     x-data="{ created_at: {{ workspace.created_at_epoch }}, relativeTime: null }"
     x-init="wsCount++"
@@ -9,8 +10,15 @@
 >
     <div class="size-14"><c-svgs.photos class="size-full"></c-svgs.photos></div>
     <div class="text-sm flex flex-col list-col-grow items-start w-full">
-        <input class="text-xs uppercase font-semibold opacity-60" value="{{ workspace.name }}">
-        <p>Created: <span x-text="relativeTime"></span></p>
+        <form
+            hx-post="{% url 'workspace:update' ws_uuid=workspace.uuid %}" 
+            hx-swap="none" class="contents" 
+            hx-on:htmx:after-request="this.querySelector('input').blur()">
+                <input name="name" value="{{ workspace.name }}"
+                    class="text-xs uppercase font-semibold opacity-60 truncate"
+                    hx-trigger="keyup[key=='Enter']" >
+        </form>
+        <p>Created: <span x-text="relativeTime">{{ workspace.created_at|naturaltime }}</span></p>
     </div>
     <button
         @click="$store.HTML.workspaceEditDialog.showModal()" 

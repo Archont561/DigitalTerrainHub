@@ -19,6 +19,7 @@ workspace_patterns = [
     path('upload/', views.WorkspaceUploadImagesView.as_view(), name='upload'),
     path('upload/<uuid:resource_id>', views.WorkspaceUploadImagesView.as_view(), name='upload_chunks'),
     path("<uuid:ws_uuid>", views.WorkspaceDetailView.as_view(), name="detail"),
+    path("<uuid:ws_uuid>/update/", views.WorkspaceUpdateView.as_view(), name="update"),
     path("<uuid:ws_uuid>/delete/", views.WorkspaceDeleteView.as_view(), name="delete"),
 ]
 

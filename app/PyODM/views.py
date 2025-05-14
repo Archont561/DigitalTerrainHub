@@ -15,6 +15,7 @@ from pyodm import Node
 from pyodm.types import TaskStatus
 from .models import Workspace, NodeODMTask
 from .enums import NodeODMOptions
+from .forms import WorkspaceForm
 
 
 def get_task_statuses(request):
@@ -204,8 +205,16 @@ class WorkspaceDetailView(WorkspaceActionMixin, DetailView):
         return super().get(request, *args, **kwargs)
 
 
+class WorkspaceUpdateView(WorkspaceActionMixin):
+    def post(self, request, *args, **kwargs):
+        form = WorkspaceForm(request.POST, instance=self.get_object())
+        if not form.is_valid():
+            return HttpResponseBadRequest()
+        form.save()
+        return HttpResponse(status=200)
+
+
 class WorkspaceDeleteView(WorkspaceActionMixin):
     def post(self, request, *args, **kwargs):
         self.get_object().delete()
         return HttpResponse(status=200)
-
