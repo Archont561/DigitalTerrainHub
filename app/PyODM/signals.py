@@ -1,4 +1,4 @@
-import shutil
+import shutil, magic
 from django.db.models.signals import post_save, post_delete
 from django.conf import settings
 from django.dispatch import receiver
@@ -24,5 +24,11 @@ def delete_workspace_folder(sender, instance, **kwargs):
 @receiver(tus_upload_finished_signal, sender=WorkspaceUploadImagesView)
 def handle_tus_upload_finished(sender, upload_file_path: Path, destination_folder: Path, **kwargs):
     if upload_file_path.exists() and destination_folder.exists():
-        upload_file_path.rename(destination_folder / upload_file_path.name)
+        mime = magic.Magic(mime=True)
+        file_mime_type = mime.from_file(upload_file_path)
+        
+        if file_mime_type not in settings.WORKSPACE_ALLOWED_FILE_MIME_TYPES:
+            upload_file_path.unlink()
+        else:
+            upload_file_path.rename(destination_folder / upload_file_path.name)
 

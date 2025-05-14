@@ -146,6 +146,11 @@ TUS_DESTINATION_DIR  = TUS_UPLOAD_DIR
 TUS_FILE_NAME_FORMAT = 'random-suffix'
 TUS_EXISTING_FILE = 'overwrite'
 WORKSPACES_DIR = DATA_DIR / "workspaces"
+WORKSPACE_ALLOWED_FILE_MIME_TYPES = [
+    "image/jpeg", "image/png", "image/bmp", 
+    "image/webp", "image/tiff", "image/heif",
+    "image/heic",
+]
 DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024**2
 TUS_MAX_FILE_SIZE = DATA_UPLOAD_MAX_MEMORY_SIZE
 
