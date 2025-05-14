@@ -1,0 +1,12 @@
+<c-vars id onClose class x-init />
+
+<dialog 
+    {% if id %} id="{{ id }}" {% endif %}
+    x-init
+    class="modal isolate"
+>
+    <div class="modal-box{% if class %} {{ class }}{% endif %}" {{ attrs }}>{{ slot }}</div>
+    <form method="dialog" class="modal-backdrop -z-10"
+        {% if onClose %} @submit="{{ onClose }}" {% endif %}
+    ><input type="submit"></form>
+</dialog>

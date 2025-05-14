@@ -2,3 +2,8 @@
 @import "./utils.css";
 
 [x-cloak] { display: none !important; }
+
+button svg,
+a svg {
+  pointer-events: none;
+}
