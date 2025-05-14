@@ -9,7 +9,7 @@
     <div class="size-14"><c-svgs.photos class="size-full"></c-svgs.photos></div>
     <div class="text-sm flex flex-col w-full list-col-grow">
         <h5 class="text-xs uppercase font-semibold opacity-60">{{ workspace.name }}</h5>
-        <p>Created: <span x-text="DateTime.fromSeconds(created_at).toRelative()"></span></p>
+        <p>Created: <span x-text="window.luxon.DateTime.fromSeconds(created_at).toRelative()"></span></p>
     </div>
     <button
         @click="$store.HTML.workspaceEditDialog.showModal()" 
