@@ -18,7 +18,7 @@
     </div>
     <div class="text-sm flex flex-col list-col-grow items-start w-full">
         <form
-            hx-post="{% url 'workspace:update' ws_uuid=workspace.uuid %}" 
+            hx-patch="{% url 'workspace:update' ws_uuid=workspace.uuid %}" 
             hx-swap="none" class="contents" 
             hx-on:htmx:after-request="this.querySelector('input').blur()">
                 <input name="name" value="{{ workspace.name }}"

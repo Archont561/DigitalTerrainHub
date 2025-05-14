@@ -1,6 +1,6 @@
 import json, re
 from django.shortcuts import get_object_or_404
-from django.views.generic import View, DetailView, CreateView, DeleteView, ListView, TemplateView
+from django.views.generic import View, DetailView, CreateView, DeleteView, ListView, TemplateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.template.loader import render_to_string
@@ -202,12 +202,19 @@ class WorkspaceDetailView(WorkspaceActionMixin, DetailView):
 class WorkspaceUpdateView(WorkspaceActionMixin):
     http_method_names = ["post"]
 
-    def post(self, request, *args, **kwargs):
-        form = WorkspaceForm(request.POST, instance=self.get_object())
+    def patch(self, request, *args, **kwargs):
+        workspace = self.get_object()
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return HttpResponseBadRequest("Invalid JSON.")
+
+        form = WorkspaceForm(data, instance=workspace)
         if not form.is_valid():
-            return HttpResponseBadRequest()
+            return HttpResponseBadRequest("Invalid form data.")
         form.save()
-        return HttpResponse(status=200)
+        return HttpResponse("Workspace name updated!", status=200)
+
 
 
 class WorkspaceDeleteView(WorkspaceActionMixin):
