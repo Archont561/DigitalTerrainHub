@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'django_vite',    
     'django_htmx',
     'django_cotton.apps.SimpleAppConfig',
+    "template_partials.apps.SimpleAppConfig",
     'widget_tweaks',
     'tailwind',
     'django_browser_reload',
@@ -74,16 +75,24 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
-            "loaders": [(
-                "django.template.loaders.cached.Loader",
-                [
-                    "django_cotton.cotton_loader.Loader",
-                    "django.template.loaders.filesystem.Loader",
-                    "django.template.loaders.app_directories.Loader",
-                ],
-            )],
+            "loaders": [
+                (
+                    "template_partials.loader.Loader",
+                    [
+                        (
+                            "django.template.loaders.cached.Loader",
+                            [
+                                "django_cotton.cotton_loader.Loader",
+                                "django.template.loaders.filesystem.Loader",
+                                "django.template.loaders.app_directories.Loader",
+                            ],
+                        )
+                    ],
+                )
+            ],
             "builtins": [
-                "django_cotton.templatetags.cotton"
+                "django_cotton.templatetags.cotton",
+                "template_partials.templatetags.partials",
             ],
         },
     },

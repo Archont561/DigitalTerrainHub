@@ -162,6 +162,7 @@ dependencies = [
     { name = "django-environ" },
     { name = "django-htmx" },
     { name = "django-tailwind" },
+    { name = "django-template-partials" },
     { name = "django-tus" },
     { name = "django-vite" },
     { name = "django-widget-tweaks" },
@@ -208,6 +209,7 @@ requires-dist = [
     { name = "django-environ", specifier = ">=0.12.0" },
     { name = "django-htmx", specifier = "==1.23.0" },
     { name = "django-tailwind", specifier = "==4.0.1" },
+    { name = "django-template-partials", specifier = ">=24.4" },
     { name = "django-tus", specifier = ">=0.5.0" },
     { name = "django-vite", specifier = "==3.1.0" },
     { name = "django-widget-tweaks", specifier = "==1.5.0" },
@@ -320,6 +322,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/e5/14/33694e3e5ac431991b7ea2eefe8d2460a7e555f2d6e6a4b4780e718c54d9/django_tailwind-4.0.1.tar.gz", hash = "sha256:e1f411246208056e8903f304f80a548eac2e5a3c4b6c4adb14eff21ac2dfdd6d", size = 9911, upload-time = "2025-04-02T20:04:04.068Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/cd/8f/7a651007ab9bf552221ae8adc9305c7d21113a9814eb38153b5fdb4ef5eb/django_tailwind-4.0.1-py3-none-any.whl", hash = "sha256:33e5dd5aadd5aa6facf4bddab9144a40cb501e486d4970b93e2853dbdbef4f67", size = 16714, upload-time = "2025-04-02T20:04:03.038Z" },
+]
+
+[[package]]
+name = "django-template-partials"
+version = "24.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/1c/ff/2a7ddae12ca8e5fea1a41af05924c04f1bb4aec7157b04a88b829dd93d4a/django_template_partials-24.4.tar.gz", hash = "sha256:25b67301470fc274ecc419e5e5fd4686a5020b1c038fd241a70eb087809034b6", size = 14538, upload-time = "2024-08-16T10:51:30.204Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/31/72/d8eea70683b25230e0d2647b5cf6f2db4a7e7d35cb6170506d9618196374/django_template_partials-24.4-py2.py3-none-any.whl", hash = "sha256:ee59d3839385d7f648907c3fa8d5923fcd66cd8090f141fe2a1c338b917984e2", size = 8439, upload-time = "2024-08-16T10:51:28.437Z" },
 ]
 
 [[package]]
