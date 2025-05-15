@@ -17,13 +17,15 @@
         >{{ workspace.image_count }}</div>
     </div>
     <div class="text-sm flex flex-col list-col-grow items-start w-full">
-        <form
+        <form hx-ext="form-json"
             hx-patch="{% url 'workspace:update' ws_uuid=workspace.uuid %}" 
             hx-swap="none" class="contents" 
-            hx-on:htmx:after-request="((i, detail) => {i.blur(); if (detail.succesful) {i.value = detail.xhr.responseText}})(this.querySelector('input'), event.detail)"
+            hx-on:htmx:after-request="(i => i.blur())(this.querySelector('input'))"
             hx-trigger="submit">
+            {% partialdef workspace-image-count inline %}
                 <input name="name" value="{{ workspace.name }}"
                     class="text-xs uppercase font-semibold opacity-60 truncate">
+            {% endpartialdef workspace-image-count %}
         </form>
         <p>Created: <span x-text="relativeTime">{{ workspace.created_at|naturaltime }}</span></p>
     </div>

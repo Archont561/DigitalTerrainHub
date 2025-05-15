@@ -201,6 +201,7 @@ class WorkspaceDetailView(WorkspaceActionMixin, DetailView):
 
 class WorkspaceUpdateView(WorkspaceActionMixin):
     http_method_names = ["post", "patch"]
+    template_name = settings.TEMPLATES_NAMESPACES.cotton.components.workspace.card
 
     def patch(self, request, *args, **kwargs):
         workspace = self.get_object()
@@ -213,7 +214,9 @@ class WorkspaceUpdateView(WorkspaceActionMixin):
         if not form.is_valid():
             return HttpResponseBadRequest("Invalid form data.")
         form.save()
-        return HttpResponse("Workspace name updated!", status=200)
+        return render(request, f"{self.template_name}#workspace-image-count", {
+            "workspace": self.get_object(),
+        })
 
 
 
