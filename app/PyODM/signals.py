@@ -25,7 +25,7 @@ def delete_workspace_folder(sender, instance, **kwargs):
 def handle_tus_upload_finished(sender, upload_file_path: Path, destination_folder: Path, **kwargs):
     if upload_file_path.exists() and destination_folder.exists():
         mime = magic.Magic(mime=True)
-        file_mime_type = mime.from_file(upload_file_path)
+        file_mime_type = mime.from_file(str(upload_file_path))
         
         if file_mime_type not in settings.WORKSPACE_ALLOWED_FILE_MIME_TYPES:
             upload_file_path.unlink()
