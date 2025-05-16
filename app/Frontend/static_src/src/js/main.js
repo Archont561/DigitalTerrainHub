@@ -15,4 +15,12 @@ import { DateTime } from "luxon";
         window.htmx.defineExtension("inner", HTMXInnerExtensionOptions);     
         AlpineManager.init();
     });
+
+    const setThemeBasedOnPreference = preference => {
+        document.documentElement.setAttribute('data-theme', preference ? 'night' : 'bumblebee');
+    }
+    
+    const themeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    themeMediaQuery.addEventListener('change', e => setThemeBasedOnPreference(e.matches));
+    setThemeBasedOnPreference(themeMediaQuery.matches)
 })();
