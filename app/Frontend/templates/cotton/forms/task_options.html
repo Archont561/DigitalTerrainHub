@@ -1,12 +1,9 @@
 {% load django_vite %}
 
-<form 
-    id="task-options-form"
+<form
     x-data="optionsForm"
     x-plugins="anchor"
     class="space-y-10"
-    method="POST"
-    action="{% url 'task:create' %}"
     @submit.prevent="sumbitForm"
 >
     {% csrf_token %}
