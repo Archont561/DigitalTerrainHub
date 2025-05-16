@@ -1,6 +1,6 @@
-<c-vars id class  />
+<c-vars id class horizontal vertical />
 
-<details class="dropdown" {{ attrs }}>
-    <summary class="contents">{{ trigger }}</summary>
+<details class="dropdown {{ horizontal }} {{ vertical }}" {{ attrs }}>
+    <summary class="{{ class }}">{{ trigger }}</summary>
     <div class="dropdown-content">{{ slot }}</div>
 </details>
