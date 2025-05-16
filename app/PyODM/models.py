@@ -45,3 +45,8 @@ class NodeODMTask(models.Model):
 
     def get_status(self) -> TaskStatus:
             return TaskStatus(self.status)
+
+class OptionsPreset(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="presets", null=True)
+    name = models.CharField(max_length=100, default=generate_docker_container_style_name)
+    options = models.JSONField()

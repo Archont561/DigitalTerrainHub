@@ -1,9 +1,9 @@
 import shutil, magic
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save, post_delete, post_migrate
 from django.conf import settings
 from django.dispatch import receiver
 from django_tus.signals import tus_upload_finished_signal
-from .models import Workspace
+from .models import Workspace, OptionsPreset
 from .views import WorkspaceUploadImagesView
 from pathlib import Path
 
@@ -32,3 +32,13 @@ def handle_tus_upload_finished(sender, upload_file_path: Path, destination_folde
         else:
             upload_file_path.rename(destination_folder / upload_file_path.name)
 
+
+@receiver(post_migrate)
+def create_global_presets(sender, **kwargs):
+    global_presets = {
+        "dummy": {
+            "option_dummy_1": "dummy_1"
+        } 
+    }
+    for name, options in global_presets.items():
+        OptionsPreset.objects.create(user=None, name=name, options=options)
