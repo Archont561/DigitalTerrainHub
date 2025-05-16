@@ -10,6 +10,7 @@ from django.urls import reverse_lazy
 from django.http import HttpResponse, Http404, HttpResponseBadRequest
 from .models import UserProfile
 from .forms import UserRegisterForm, UserUpdateForm, UserProfileUpdateForm
+from PyODM.models import OptionsPreset
 
 
 class CredentialsRegisterView(CreateView):
@@ -73,7 +74,11 @@ class AccountProfileView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({
-            "workspaces": self.get_object().workspaces.all()
+            "workspaces": self.get_object().workspaces.all(),
+            "presets_names": {
+                "global": settings.GLOBAL_OPTION_PRESETS.keys(),
+                "user": OptionsPreset.objects.filter(user=self.get_object()).values_list('name', flat=True),
+            }
         })
         return context
 
