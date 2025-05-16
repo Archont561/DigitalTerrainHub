@@ -37,15 +37,6 @@ async function loadItems(names, loadedSet, loaders, registerFn, itemType) {
 
 
 function loadAlpineGlobalState() {
-    window.Alpine.store("HTML", 
-        Array.from(document.querySelectorAll("body [id]"))
-        .filter(el => el.id.trim() !== '')
-        .reduce((enumObj, el) => {
-            enumObj[toCamelCase(el.id)] = el;
-            return enumObj;
-        }, {})
-    );
-
     window.Alpine.store("globalInterval", {
         interval: 1000,
         flag: true,

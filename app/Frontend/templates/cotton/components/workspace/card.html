@@ -30,17 +30,17 @@
         <p>Created: <span x-text="relativeTime">{{ workspace.created_at|naturaltime }}</span></p>
     </div>
     <button
-        @click="$store.HTML.workspaceEditDialog.showModal()" 
+        @click="window.htmx.find('#workspace-edit-dialog').showModal()" 
         class="btn btn-square btn-ghost" 
         title="Edit"
     >{% heroicon_outline 'pencil-square' class="size-full" %}</button>
     <button
-        @click="$store.HTML.uploadImagesDialog.showModal()" 
+        @click="window.htmx.find('#upload-images-dialog').showModal()" 
         class="btn btn-square btn-ghost" 
         title="Upload images"
     >{% heroicon_outline 'arrow-up-tray' class="size-full" %}</button>
     <button 
-        @click="$store.HTML.runTaskDialog.showModal()" 
+        @click="window.htmx.find('#run-task-dialog').showModal()" 
         class="btn btn-square btn-ghost" 
         title="Run task"
     >{% heroicon_outline 'wrench' class="size-full" %}</button>
