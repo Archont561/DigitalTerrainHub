@@ -1,17 +1,23 @@
 <c-daisy.popover
-    class="w-100 h-100 flex justify-center items-center"
+    x-init="locked=false"
+    @click.away="!locked && ($el.open = false)"
 >
+    <c-slot name="trigger">{{ slot }}</c-slot>
     <form 
-        hx-post="/pyodm/workspace/{{ workspace.uuid }}}/create-task"
+        hx-post="{% url 'workspace:create-task' ws_uuid=workspace.uuid %}"
         hx-trigger="submit"
         hx-swap="none"
         hx-ext="form-json"
-        class="flex flex-col"
+        class="bg-neutral p-3 min-w-xs rounded-box flex flex-col"
     >
-        <h4 class="text-2xl">Task Options</h4>
-            <input type="text" name="name" value="">
-            <div class="join">
-                <select name="options-preset" class="select join-tem">
+        <div class="join">
+            <label class="label join-item label-text">Name</label>
+            <input type="text" name="name" class="input input-bordered join-item" placeholder="Enter name..."/>
+        </div>
+        <div class="join">
+            <label class="label join-item">Options</label>
+            <div class="join join-item">
+                <select name="options-preset" class="select join-item">
                     <option disabled selected>Pick options preset</option>
                     <optgroup label="Global Presets">
                         {% for name in presets_names.global %}
@@ -27,8 +33,14 @@
                     </optgroup>
                     <option value="custom">Custom</option>
                 </select>
-                <button class="join-item btn btn-secondary">Edit</button>
+                <button type="button" 
+                    class="join-item btn btn-secondary"
+                    @click="window.htmx.find('#options-dialog').showModal(); locked=true"
+                >Edit</button>
             </div>
+        </div>
+        <div class="flex justify-end">
             <input type="submit" value="Create task" class="btn btn-primary">
+        </div>
     </form>
 </c-daisy.popover>
