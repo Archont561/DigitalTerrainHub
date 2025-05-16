@@ -4,8 +4,6 @@ from . import views
 task_patterns = [
     path("statuses/", views.get_task_statuses, name="statuses"),
     path("options/", views.get_task_options, name="options"),
-    path("new/", views.NewTaskCreationView.as_view(), name="new-task"),
-    path("create/", views.CreateTaskView.as_view(), name="create"),
     path("<uuid:uuid>/info/", views.TaskInfoView.as_view(), name="info"),
     path("<uuid:uuid>/cancel/", views.TaskCancelView.as_view(), name="cancel"),
     path("<uuid:uuid>/restart/", views.TaskRestartView.as_view(), name="restart"),
@@ -21,6 +19,7 @@ workspace_patterns = [
     path("<uuid:ws_uuid>", views.WorkspaceDetailView.as_view(), name="detail"),
     path("<uuid:ws_uuid>/update/", views.WorkspaceUpdateView.as_view(), name="update"),
     path("<uuid:ws_uuid>/delete/", views.WorkspaceDeleteView.as_view(), name="delete"),
+    path("<uuid:ws_uuid>/create-task/", views.CreateTaskView.as_view(), name="create-task"),
 ]
 
 urlpatterns = [

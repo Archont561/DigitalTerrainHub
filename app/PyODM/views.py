@@ -13,7 +13,7 @@ from django_tus.views import TusUpload
 from django_tus.signals import tus_upload_finished_signal
 from pyodm import Node
 from pyodm.types import TaskStatus
-from .models import Workspace, NodeODMTask
+from .models import Workspace, NodeODMTask, OptionsPreset
 from .enums import NodeODMOptions
 from .forms import WorkspaceForm
 
@@ -32,56 +32,6 @@ def get_task_options(request):
         "message": "Failed to fetch task options"
     }
     return JsonResponse(error_response, status=500)
-
-
-class NewTaskCreationView(LoginRequiredMixin, TemplateView):
-    template_name = ""
-
-
-class CreateTaskView(LoginRequiredMixin, View):
-    def post(self, request, *args, **kwargs):
-        try:
-            data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON"}, status=400)
-
-        task_name = data.get("task-name")
-        options = data.get("options", {})
-        
-        if not task_name:
-            return JsonResponse({"error": "task-name required"}, status=400)
-
-        user = request.user
-        node = Node.from_url(settings.NODEODM_URL)
-
-        # Attempt to create the task
-        while True:
-            task = node.create_task(
-                files=user.workspace.get_images_paths(),
-                name=task_name,
-                options=options,
-            )
-            task_info = task.info()
-            task.cancel()
-            try:
-                odm_task = NodeODMTask.objects.create(
-                    uuid=task_info.uuid,
-                    status=task_info.status.value,
-                    name=task_name,
-                    workspace=user.workspace,
-                )
-            except IntegrityError:
-                task.remove()  # Task already exists, clean up
-            else:
-                # Task creation succeeded, restart task and save to DB
-                task.restart()
-                odm_task.save()
-                break
-
-        return JsonResponse({
-            "uuid": str(task_info.uuid),
-            "status": task_info.status.value,
-        }, status=200)
 
 
 class TaskActionMixin(LoginRequiredMixin, View):
@@ -219,10 +169,61 @@ class WorkspaceUpdateView(WorkspaceActionMixin):
         })
 
 
-
 class WorkspaceDeleteView(WorkspaceActionMixin):
     http_method_names = ["post"]
 
     def post(self, request, *args, **kwargs):
         self.get_object().delete()
         return HttpResponse(status=200)
+
+
+class CreateTaskView(WorkspaceActionMixin, View):
+    http_method_names = ["post"]
+    
+    def post(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+        task_name = data.get("name", None)
+        options_preset = data.get("options-preset", None)
+        if options_preset == "custom":
+            options = data.get("options", None)
+            if not options:
+                JsonResponse({"error": "No options given!"}, status=400)
+        elif not options_preset:
+            return JsonResponse({"error": "No preset specfied and no options send!"}, status=400)
+        else:
+            try: 
+                options = OptionsPreset.objects.get(name=options_preset)
+            except OptionsPreset.DoesNotExist: 
+                return JsonResponse({"error": "No such preset!"}, status=400)
+
+        node = Node.from_url(settings.NODEODM_URL)
+
+        # Attempt to create the task
+        while True:
+            task = node.create_task(
+                files=self.get_object().get_images_paths(),
+                name=task_name,
+                options=options,
+            )
+            task_info = task.info()
+            task.cancel()
+            try:
+                odm_task = NodeODMTask.objects.create(
+                    uuid=task_info.uuid,
+                    status=task_info.status.value,
+                    name=task_name,
+                    workspace=self.get_object(),
+                )
+            except IntegrityError:
+                task.remove()  # Task already exists, clean up
+            else:
+                # Task creation succeeded, restart task and save to DB
+                task.restart()
+                odm_task.save()
+                break
+
+        return JsonResponse({ "uuid": task_info.uuid }, status=200)
