@@ -11,6 +11,7 @@ from django.http import HttpResponse, Http404, HttpResponseBadRequest
 from .models import UserProfile
 from .forms import UserRegisterForm, UserUpdateForm, UserProfileUpdateForm
 from PyODM.models import OptionsPreset
+from PyODM.enums import NodeODMOptions
 
 
 class CredentialsRegisterView(CreateView):
@@ -74,6 +75,7 @@ class AccountProfileView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({
+            "options": NodeODMOptions.to_dict(group=True),
             "workspaces": self.get_object().workspaces.all(),
             "presets_names": {
                 "global": settings.GLOBAL_OPTION_PRESETS.keys(),
