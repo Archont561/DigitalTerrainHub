@@ -3,7 +3,7 @@
 {% load static tailwind_tags %}
 
 <!DOCTYPE html>
-<html lang="en" data-theme="night">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,7 +14,7 @@
     {% htmx_script %}
     <script src="https://unpkg.com/htmx-ext-form-json" defer></script>
     {% vite_hmr_client %}
-    {% vite_asset 'src/js/main.js' %}
+    {% vite_asset 'src/ts/main.ts' %}
     
     {{ extra_head }}
 
