@@ -1,10 +1,10 @@
+import Alpine from "alpinejs";
 import AlpinePluginLoaders from "./loaders/AlpinePluginLoaders";
 import AlpineComponentLoaders from "./loaders/AlpineComponentLoaders";
-import { type Alpine } from "alpinejs";
 
 declare global {
     interface Window {
-        Alpine: Alpine;
+        Alpine: typeof Alpine;
     }
 }
 
@@ -89,6 +89,8 @@ function loadAlpineGlobalState(): void {
 }
 
 async function init(): Promise<void> {
+    window.Alpine = Alpine;
+
     const dataAttr = "x-data";
     const pluginAttr = "x-plugins";
     const loadPromises: Promise<void>[] = [];

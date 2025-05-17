@@ -1,22 +1,28 @@
 import "./assetsImports"
-import Alpine from "alpinejs";
 import AlpineManager from "./Alpine/AlpineManager";
 import HTMXInnerExtensionOptions from "./htmx/innerExtension";
 import { DateTime } from "luxon";
 
-(() => {
-    window.luxon = { 
-        DateTime
+declare global {
+    interface Window {
+        htmx: any;
+        luxon: {
+            DateTime: typeof DateTime;
+        };
     }
+}
 
-    window.Alpine = Alpine;
+(() => {
+    // @ts-ignore
+    window.luxon = { DateTime };
+    // @ts-ignore
     window.htmx = htmx;
     window.addEventListener("DOMContentLoaded", () => {
         window.htmx.defineExtension("inner", HTMXInnerExtensionOptions);     
         AlpineManager.init();
     });
 
-    const setThemeBasedOnPreference = preference => {
+    const setThemeBasedOnPreference = (preference: Boolean) => {
         document.documentElement.setAttribute('data-theme', preference ? 'night' : 'bumblebee');
     }
     
