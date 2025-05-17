@@ -19,7 +19,7 @@ workspace_patterns = [
     path("<uuid:ws_uuid>", views.WorkspaceDetailView.as_view(), name="detail"),
     path("<uuid:ws_uuid>/update/", views.WorkspaceUpdateView.as_view(), name="update"),
     path("<uuid:ws_uuid>/delete/", views.WorkspaceDeleteView.as_view(), name="delete"),
-    path("<uuid:ws_uuid>/create-task/", views.CreateTaskView.as_view(), name="create-task"),
+    path("<uuid:ws_uuid>/create-task/", views.WorkspaceCreateTaskView.as_view(), name="create-task"),
 ]
 
 urlpatterns = [

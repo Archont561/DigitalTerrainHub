@@ -177,7 +177,7 @@ class WorkspaceDeleteView(WorkspaceActionMixin):
         return HttpResponse(status=200)
 
 
-class CreateTaskView(WorkspaceActionMixin, View):
+class WorkspaceCreateTaskView(WorkspaceActionMixin, View):
     http_method_names = ["post"]
     
     def post(self, request, *args, **kwargs):
@@ -230,3 +230,4 @@ class CreateTaskView(WorkspaceActionMixin, View):
                 break
 
         return JsonResponse({ "uuid": task_info.uuid }, status=200)
+
