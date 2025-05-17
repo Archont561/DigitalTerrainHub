@@ -4,14 +4,16 @@ import Tus from "@uppy/tus";
 import '@uppy/core/dist/style.min.css';
 import '@uppy/dashboard/dist/style.min.css';
 
+interface UppyWidgetElement extends HTMLElement {
+  uppy: Uppy;
+  dataset: {
+    endpoint: string;
+    csrftoken: string;
+  };
+}
+
 interface UppyWidgetComponent {
-    $el: HTMLElement & {
-      uppy?: Uppy;
-      dataset: {
-        endpoint: string;
-        csrftoken: string;
-      };
-    };
+    $el: UppyWidgetElement;
     init(): void;
     close(): void;
     setDashboard(): void;

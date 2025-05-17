@@ -1,11 +1,9 @@
-import Alpine from "alpinejs";
+import Alpine, { type Alpine as AlpineType } from "alpinejs";
 import AlpinePluginLoaders from "./loaders/AlpinePluginLoaders";
 import AlpineComponentLoaders from "./loaders/AlpineComponentLoaders";
 
 declare global {
-    interface Window {
-        Alpine: typeof Alpine;
-    }
+    var Alpine: AlpineType;
 }
 
 // Types for loader functions

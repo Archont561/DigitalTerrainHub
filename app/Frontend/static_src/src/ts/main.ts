@@ -4,18 +4,12 @@ import HTMXInnerExtensionOptions from "./htmx/innerExtension";
 import { DateTime } from "luxon";
 
 declare global {
-    interface Window {
-        htmx: any;
-        luxon: {
-            DateTime: typeof DateTime;
-        };
-    }
+    var htmx: any;
 }
 
 (() => {
     // @ts-ignore
     window.luxon = { DateTime };
-    // @ts-ignore
     window.htmx = htmx;
     window.addEventListener("DOMContentLoaded", () => {
         window.htmx.defineExtension("inner", HTMXInnerExtensionOptions);     
