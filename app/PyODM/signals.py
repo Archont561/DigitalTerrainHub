@@ -34,6 +34,7 @@ def handle_tus_upload_finished(sender, upload_file_path: Path, destination_folde
 
 
 @receiver(post_migrate)
-def create_global_presets(sender, **kwargs):
+def create_global_presets(sender, **kwargs):    
     for name, options in settings.GLOBAL_OPTION_PRESETS.items():
-        OptionsPreset.objects.create(user=None, name=name, options=options)
+        OptionsPreset.objects.get_or_create( user=None, name=name, defaults={"options": options})
+
