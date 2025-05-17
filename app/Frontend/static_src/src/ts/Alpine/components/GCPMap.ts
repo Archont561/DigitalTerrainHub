@@ -9,15 +9,16 @@ interface GCPMapComponent {
     init(): void;
 }
 
-const gcpMap = (() => {
+const gcpMap = () => {
     window.L = L;
 
     return {
         init() {
             const map = L.map(this.$el);
             this.$el.map = map;
+            
         }
     } as GCPMapComponent;
-})();
+};
 
 export default gcpMap;
