@@ -1,7 +1,14 @@
 <c-daisy.dialogs.backdrop
-    onClose="locked=false"
+
     id="options-dialog"
+    x-data="{ handleSubmit(event) {
+        event.preventDefault();
+        $store.optionsData = JSON.stringify(event.detail.requestConfig.parameters);
+        $el.close();
+    } }"
     class="h-full w-full p-0 xs:h-3/4 md:w-3/5 md:max-w-full overflow-y-scroll"
+    hx-on:htmx:before-request="window.Alpine.closestDataStack(this)?.[0].handleSubmit(event)"
+    x-effect="console.log($store.optionsData)"
 >
     <c-forms.task-options />
 </c-daisy.dialogs.backdrop>
