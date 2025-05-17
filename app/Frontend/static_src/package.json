@@ -20,6 +20,7 @@
     "@types/alpinejs": "^3.13.11",
     "@types/geojson": "^7946.0.16",
     "@types/leaflet": "^1.9.17",
+    "@types/luxon": "^3.6.2",
     "concurrently": "^9.1.2",
     "cross-env": "^7.0.3",
     "postcss": "^8.5.3",
