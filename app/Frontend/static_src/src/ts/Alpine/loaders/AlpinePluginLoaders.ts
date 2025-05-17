@@ -1,7 +1,11 @@
-export default {
-    anchor: async () => (await import('@alpinejs/anchor')).default,
-    mask: async () => (await import('@alpinejs/mask')).default,
-    focus: async () => (await import('@alpinejs/focus')).default,
+type AlpinePluginLoader = () => Promise<any>;
+
+const AlpinePluginLoaders: Record<string, AlpinePluginLoader> = {
+    // anchor: async () => (await import('@alpinejs/anchor')).default,
+    // mask: async () => (await import('@alpinejs/mask')).default,
+    // focus: async () => (await import('@alpinejs/focus')).default,
+
+    // Uncomment plugins as needed
     // intersect: async () => (await import('@alpinejs/intersect')).default,
     // resize: async () => (await import('@alpinejs/resize')).default,
     // persist: async () => (await import('@alpinejs/persist')).default,
@@ -9,3 +13,5 @@ export default {
     // morph: async () => (await import('@alpinejs/morph')).default,
     // sort: async () => (await import('@alpinejs/sort')).default,
 };
+
+export default AlpinePluginLoaders;

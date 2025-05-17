@@ -4,7 +4,7 @@ import path from "path";
 export default defineConfig(() => {
     const src = path.resolve("src");
     const staticDir = path.resolve("../static");
-    const jsDir = path.join(src, "js");
+    const jsDir = path.join(src, "ts");
 
     return {
         base: "/static/",
@@ -20,7 +20,7 @@ export default defineConfig(() => {
             assetsDir: "dist",
             rollupOptions: {
                 input: {
-                    main: path.join(jsDir, "main.js"),
+                    main: path.join(jsDir, "main.ts"),
                 }
             }
         }

@@ -1,11 +1,11 @@
-export default {
+export default () => ({
     open: null,
-    tabs: [],
+    tabs: [] as string[],
     currentTab: null,
-    isCurrent(tab) {
+    isCurrent(tab: string) {
         return this.currentTab === tab
     },
-    register(name) {
+    register(name: string) {
         this.tabs.push(name)
     }
-}
+})

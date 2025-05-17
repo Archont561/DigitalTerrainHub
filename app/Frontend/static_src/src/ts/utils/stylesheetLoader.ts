@@ -1,10 +1,10 @@
-function isStylesheetLoaded(href) {
-    return Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
-      .some(link => link.href === href);
+function isStylesheetLoaded(href: string) {
+    const links: HTMLLinkElement[] = Array.from(document.querySelectorAll('link[rel="stylesheet"]'));
+    return links.some(link => link.href === href);
   }
 
 
-function loadStylesheet(href) {
+function loadStylesheet(href: string) {
     if (isStylesheetLoaded(href)) return;
     const link = document.createElement('link');
     link.rel = 'stylesheet';

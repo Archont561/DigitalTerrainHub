@@ -1,7 +1,7 @@
-export async function watchBreakpoints(breakpoints) {
-    Object.entries(breakpoints).forEach(([breakpoint, breakpointWidth], index, entries) => {
+export async function watchBreakpoints(breakpoints: Record<string, string>) {
+    Object.entries(breakpoints).forEach(([breakpoint, breakpointWidth]) => {
         const mediaQuery = window.matchMedia(`(width >= ${breakpointWidth})`);
-        const dispatchEvent = (queryMatches) => {
+        const dispatchEvent = (queryMatches: boolean) => {
             const eventName = queryMatches ? breakpoint : `not-${breakpoint}`;
             window.dispatchEvent(new CustomEvent(eventName));
         };

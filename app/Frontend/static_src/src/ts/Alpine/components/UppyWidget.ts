@@ -1,0 +1,92 @@
+import Uppy from "@uppy/core";
+import Dashboard from "@uppy/dashboard";
+import Tus from "@uppy/tus";
+import '@uppy/core/dist/style.min.css';
+import '@uppy/dashboard/dist/style.min.css';
+
+interface UppyWidgetComponent {
+    $el: HTMLElement & {
+      uppy?: Uppy;
+      dataset: {
+        endpoint: string;
+        csrftoken: string;
+      };
+    };
+    init(): void;
+    close(): void;
+    setDashboard(): void;
+    setCustomStyle(): void;
+    setTusProtocol(): void;
+  }
+
+const UppyWidget = () => {
+  let modal: HTMLDialogElement | null = null;
+  let backdrop: HTMLFormElement | null = null;
+  let uppy: Uppy = new Uppy();
+
+  return {
+    init() {
+      this.$el.uppy = uppy;
+
+      this.setDashboard();
+      this.setTusProtocol();
+
+      modal = this.$el.closest("dialog") as HTMLDialogElement | null;
+      backdrop = modal?.querySelector("form") as HTMLFormElement | null;
+
+      uppy.on('complete', () => {
+        if (backdrop) backdrop.classList.add("pointer-events-none");
+      });
+    },
+
+    close() {
+      if (modal) modal.close();
+      if (backdrop) backdrop.classList.remove("pointer-events-none");
+    },
+
+    setDashboard() {
+      this.$el.uppy?.use(Dashboard, {
+        inline: true,
+        target: this.$el,
+        proudlyDisplayPoweredByUppy: true,
+        theme: "auto",
+        width: "100%",
+        height: "100%",
+        doneButtonHandler: () => {
+          this.$el.uppy?.cancelAll();
+          this.close();
+
+          const uuid = (window.Alpine.store("currentWorkspaceUUID") as string);
+          const wsElement = document.querySelector(`[data-uuid='${uuid}']`) as HTMLElement | null;
+          wsElement?.querySelector(".image-count")?.dispatchEvent(new CustomEvent("upload:done"));
+        },
+      });
+      this.setCustomStyle();
+    },
+
+    setCustomStyle() {
+      if (!document.getElementById("uppyWidgetModifications")) {
+        const style = document.createElement('style');
+        style.type = 'text/css';
+        style.id = "uppyWidgetModifications";
+        style.innerHTML = `.uppy-Root, .uppy-Dashboard { height: 100%; width: 100%; }`;
+        document.head.appendChild(style);
+      }
+    },
+
+    setTusProtocol() {
+      this.$el.uppy?.use(Tus, {
+        endpoint: this.$el.dataset.endpoint,
+        headers: {
+          "X-CSRFToken": this.$el.dataset.csrftoken,
+        },
+        chunkSize: 50 * 1024 ** 2,
+        onBeforeRequest(req) {
+          req.setHeader("X-Workspace-UUID", window.Alpine.store("currentWorkspaceUUID") as string);
+        },
+      });
+    },
+  } as UppyWidgetComponent;
+};
+
+export default UppyWidget;
