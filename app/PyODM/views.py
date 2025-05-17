@@ -11,7 +11,7 @@ from django.urls import reverse_lazy
 from django.db import IntegrityError
 from django_tus.views import TusUpload
 from django_tus.signals import tus_upload_finished_signal
-from pyodm import Node
+from pyodm import Node, exceptions
 from pyodm.types import TaskStatus
 from .models import Workspace, NodeODMTask, OptionsPreset
 from .enums import NodeODMOptions
@@ -185,7 +185,7 @@ class CreateTaskView(WorkspaceActionMixin, View):
             data = json.loads(request.body)
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON"}, status=400)
-
+            
         task_name = data.get("name", None)
         options_preset = data.get("options-preset", None)
         if options_preset == "custom":
@@ -204,11 +204,14 @@ class CreateTaskView(WorkspaceActionMixin, View):
 
         # Attempt to create the task
         while True:
-            task = node.create_task(
-                files=self.get_object().get_images_paths(),
-                name=task_name,
-                options=options,
-            )
+            try:
+                task = node.create_task(
+                    files=self.get_object().get_images_paths(),
+                    name=task_name,
+                    options=options,
+                )
+            except exceptions.NodeResponseError as e:
+                return HttpResponseBadRequest(e)
             task_info = task.info()
             task.cancel()
             try:
