@@ -11,7 +11,7 @@
     <div class="flex flex-row h-full w-full overflow-hidden">
         <!-- Image Container -->
         <div class="flex-1 min-w-0 bg-base-100 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100" style="max-width: 50%;">
-            <div x-init
+            <div x-init x-cloak
                 x-effect="$store.currentWorkspaceUUID && $nextTick(() => window.htmx.process($el))"
                 :hx-get="`/pyodm/workspace/${$store.currentWorkspaceUUID}/?images`"
                 hx-swap="innerHTML"
@@ -19,29 +19,18 @@
                 class="grid grid-flow-row grid-cols-3 place-items-center gap-4 p-4"
             ></div>
         </div>
-        <!-- Resizable Divider -->
-        <div class="w-2 bg-gray-200 hover:bg-gray-300 cursor-col-resize relative transition-colors duration-200"
-                x-data="{ resizing: false }" 
-                @mousedown="resizing = true"
-                @mousemove.window="if (resizing) {
-                    let container = $el.parentElement;
-                    let rect = container.getBoundingClientRect();
-                    let x = event.clientX - rect.left;
-                    let totalWidth = rect.width;
-                    let leftSection = container.querySelector('.flex-1.min-w-0.bg-base-100');
-                    let newWidth = (x / totalWidth) * 100;
-                    if (newWidth >= 20 && newWidth <= 80) {
-                        leftSection.style.maxWidth = `${newWidth}%`;
-                    }
-                }"
-                @mouseup.window="resizing = false"
-                @mouseleave.window="resizing = false">
+        <div class="w-2 bg-gray-200 hover:bg-gray-300 relative">
             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-10 bg-gray-600 rounded"></div>
         </div>
         <div class="grow" x-data="GCPMap">
-            <div x-show="Object.keys(gcps).length" class="gcp-leaflet-map isolate size-full"></div>
-            <div x-show="!Object.keys(gcps).length" class="size-full flex">
-                <c-forms.file-input id="gcp-dropzone" />
+            <div x-show="bindedGCPs?.binding" class="gcp-leaflet-map isolate size-full"></div>
+            <div x-show="!bindedGCPs?.binding" class="size-full flex" @file-upload.prevent="readFile($event.detail.file)">
+                <c-components.file-dropzone 
+                    id="gcp-dropzone"
+                    mimes=".txt,.csv"
+                    label="Upload your file (TXT, CSV)"
+                ><c-slot name="svg"><c-svgs.upload /></c-slot>
+                </c-components.file-dropzone>
             </div>
         </div>
     </div>
