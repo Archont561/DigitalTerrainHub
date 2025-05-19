@@ -19,10 +19,10 @@ class Workspace(models.Model):
     def get_dir(self) -> Path:
         return settings.WORKSPACES_DIR / str(self.uuid) 
     
-    def get_images_paths(self) -> list[str]:
-        images_dir = self.get_dir()
-        if not images_dir.exists(): return []
-        return [str(file) for file in images_dir.iterdir() if file.is_file()]
+    def get_images_paths(self, thumbnails=False) -> list[Path]:
+        base_dir = self.get_dir()
+        images_dir = base_dir / settings.THUMBNAIL_DIR_NAME if thumbnails else base_dir
+        return [file for file in images_dir.iterdir() if file.is_file()]
     
     @property
     def created_at_epoch(self):
