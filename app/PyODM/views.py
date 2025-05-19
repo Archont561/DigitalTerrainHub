@@ -1,12 +1,14 @@
 import json, re
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_control
 from django.views.generic import View, DetailView, CreateView, DeleteView, ListView, TemplateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.template.loader import render_to_string
 from django.shortcuts import render, redirect
 from django.conf import settings
-from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest, HttpResponseNotFound
+from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest, HttpResponseNotFound, FileResponse, Http404
 from django.urls import reverse_lazy
 from django.db import IntegrityError
 from django_tus.views import TusUpload
@@ -231,3 +233,20 @@ class WorkspaceCreateTaskView(WorkspaceActionMixin, View):
 
         return JsonResponse({ "uuid": task_info.uuid }, status=200)
 
+
+@method_decorator(cache_control(public=True, max_age=3600), name="get")
+class WorkspaceServeImages(WorkspaceActionMixin, View):
+    http_method_names = ["get"]
+
+    def get(self, request, *args, **kwargs):
+        is_thumbnail = "thumbnails" in request.path
+        filename = kwargs.get("filename", "")
+        base_dir = self.get_object().get_dir()
+        file_path = (base_dir / settings.THUMBNAIL_DIR_NAME / filename) if is_thumbnail else (base_dir / filename)
+
+        if not file_path.exists() or not file_path.is_file():
+            raise Http404("Image not found")
+        
+        mime_type, _ = mimetypes.guess_type(str(file_path))
+        
+        return FileResponse(file_path.open("rb"), content_type=mime_type)
