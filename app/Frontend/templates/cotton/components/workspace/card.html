@@ -1,12 +1,13 @@
 {% load heroicons %}
 {% load humanize %}
+
 <li 
     x-data="{ createdEpoch: {{ workspace.created_at_epoch }}, relativeTime: null }"
     x-init="wsCount++"
     class="list-row place-items-center"
     data-uuid="{{ workspace.uuid }}"
     x-effect="(window.Alpine.store('globalInterval').flag).toString() && (relativeTime = window.luxon.DateTime.fromSeconds(createdEpoch).toRelative())"
-    @click="$event.target.tagName === 'BUTTON' && ($store.currentWorkspaceUUID = $el.dataset.uuid)"
+    @click="$store.currentWorkspaceUUID = $el.dataset.uuid"
 >
     <div class="grid place-items-center grid-cols-[auto_auto] gap-1">
         <c-svgs.photos class="size-16"></c-svgs.photos>
