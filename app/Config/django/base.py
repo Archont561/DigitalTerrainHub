@@ -150,11 +150,14 @@ DJANGO_VITE = {
     }
 }
 
-TUS_UPLOAD_DIR = DATA_DIR / 'uploads'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+TUS_UPLOAD_DIR = MEDIA_ROOT / 'uploads'
 TUS_DESTINATION_DIR  = TUS_UPLOAD_DIR
 TUS_FILE_NAME_FORMAT = 'random-suffix'
 TUS_EXISTING_FILE = 'overwrite'
-WORKSPACES_DIR = DATA_DIR / "workspaces"
+WORKSPACES_DIR = MEDIA_ROOT / "workspaces"
+THUMBNAIL_DIR_NAME = "thumbnail"
 WORKSPACE_ALLOWED_FILE_MIME_TYPES = [
     "image/jpeg", "image/png", "image/bmp", 
     "image/webp", "image/tiff", "image/heif",
