@@ -1,0 +1,35 @@
+<label 
+    x-data="{
+        currentFile: null,
+        validateFile(file) {
+            const accept = this.$refs.fileInput.getAttribute('accept').split(',').map(type => type.trim().toLowerCase());
+            if (accept.includes(file.type)) return true;
+            const fileExt = file.name.split('.').pop().toLowerCase();
+            return accept.some(ext => ext.endsWith(fileExt));
+        },
+        handleDrop(event) {
+            const file = event.dataTransfer.files?.[0];
+            if (file && this.validateFile(file)) this.currentFile = file;
+        },
+    }"
+    id="{{ id }}" 
+    for="{{ id }}-file-input" 
+    class="flex flex-col items-center justify-center size-full border-2 border-dashed border-base-300 rounded-lg cursor-pointer bg-base-200 hover:bg-base-300 dark:bg-base-800 dark:hover:bg-base-700"
+    @drop.prevent="handleDrop"
+    @dragover.prevent
+    x-effect="currentFile && $dispatch('file-upload', { file: currentFile })"
+>
+    {{ svg }}
+    <p class="mb-2 text-sm text-base-content">
+        <span class="font-semibold">Click to upload</span> or drag and drop
+    </p>
+    <p class="text-xs text-base-content">{{ label }}</p>
+    <input 
+        id="{{ id }}-file-input" 
+        type="file" 
+        class="hidden" 
+        accept="{{ mimes }}" 
+        x-ref="fileInput"
+        @change="currentFile = $event.target.files?.[0]"
+    />
+</label>
