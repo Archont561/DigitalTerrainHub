@@ -53,3 +53,21 @@
         title="Delete"
     >{% heroicon_outline 'trash' class="size-full" %}</button>
 </li>
+
+
+{% partialdef workspace-thumbnails %}
+    {% for thumbnail in thumbnails %}
+        <div class="card size-full bg-base-100 shadow-md hover:scale-102 transition-transform duration-300">
+            <figure class="overflow-hidden rounded-t-lg">
+                <img src="{% url 'workspace:serve-thumbnail' ws_uuid=workspace.uuid filename=thumbnail %}" 
+                    alt="Thumbnail {{ thumbnail }}" 
+                    class="size-full object-cover transition-transform duration-300 hover:scale-110">
+            </figure>
+            <div class="card-body p-2 text-center">
+                <p class="text-sm font-medium text-base-content truncate">{{ thumbnail }}</p>
+            </div>
+        </div>
+    {% empty %}
+        <div class="text-center text-base-content">NO IMAGES</div>
+    {% endfor %}
+{% endpartialdef workspace-thumbnails %}

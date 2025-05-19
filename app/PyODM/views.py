@@ -1,4 +1,4 @@
-import json, re
+import json, re, mimetypes
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
@@ -140,15 +140,31 @@ class WorkspaceDetailView(WorkspaceActionMixin, DetailView):
     context_object_name = "workspace"
     http_method_names = ["get"]
     
-    def get(self, request, *args, **kwargs):
-        if not request.GET:
-            return super().get(self, request, *args, **kwargs)
+    def get(self, request, *args, **kwargs):        
+        workspace = self.get_object()
+        context = { "workspace": workspace }
+
+        is_count = "count" in request.GET
+        if is_count:
+            match request.GET.get("count", None):
+                case "images":
+                    return HttpResponse(workspace.image_count)
+                case _:
+                    return HttpResponseBadRequest("Wrong query!")
+
+        are_thumbnails = "thumbnails" in request.GET
+        are_images = "images" in request.GET
+
+        if are_thumbnails and are_images:
+            return HttpResponseBadRequest("Please specify either 'thumbnails' or 'images', not both.")
         
-        match request.GET.get("count", None):
-            case "images":
-                return HttpResponse(self.get_object().image_count)
-            case _:
-                return HttpResponseBadRequest("Wrong query!")
+        if are_thumbnails or are_images:
+            file_names = [file_path.name for file_path in workspace.get_images_paths(thumbnails=are_thumbnails)]
+            context.update({ "thumbnails": file_names })
+            return render(request, f"{self.template_name}#workspace-thumbnails", context)
+
+        return render(request, self.template_name, context)
+
 
 
 class WorkspaceUpdateView(WorkspaceActionMixin):
