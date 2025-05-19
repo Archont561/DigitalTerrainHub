@@ -11,7 +11,8 @@ from pathlib import Path
 @receiver(post_save, sender=Workspace)
 def create_workspace_folder(sender, instance, created, **kwargs):
     if created:
-        instance.get_dir().mkdir(parents=True, exist_ok=True)
+        thumbnails_dir = instance.get_dir() / settings.THUMBNAIL_DIR_NAME
+        thumbnails_dir.mkdir(parents=True, exist_ok=True)
 
 
 @receiver(post_delete, sender=Workspace)
