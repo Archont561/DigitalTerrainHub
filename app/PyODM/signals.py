@@ -6,6 +6,7 @@ from django_tus.signals import tus_upload_finished_signal
 from .models import Workspace, OptionsPreset
 from .views import WorkspaceUploadImagesView
 from pathlib import Path
+from PIL import Image
 
 
 @receiver(post_save, sender=Workspace)
@@ -30,8 +31,15 @@ def handle_tus_upload_finished(sender, upload_file_path: Path, destination_folde
         
         if file_mime_type not in settings.WORKSPACE_ALLOWED_FILE_MIME_TYPES:
             upload_file_path.unlink()
+            return
         else:
-            upload_file_path.rename(destination_folder / upload_file_path.name)
+            final_path = destination_folder / upload_file_path.name
+            upload_file_path.rename(final_path)
+
+        if file_mime_type.startswith("image"):
+            with Image.open(final_path) as img:
+                img.thumbnail((256, 256))
+                img.save(destination_folder / settings.THUMBNAIL_DIR_NAME / final_path.name)
 
 
 @receiver(post_migrate)
