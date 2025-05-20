@@ -8,7 +8,7 @@ from django.core.exceptions import PermissionDenied
 from django.template.loader import render_to_string
 from django.shortcuts import render, redirect
 from django.conf import settings
-from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest, HttpResponseNotFound, FileResponse, Http404
+from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest, HttpResponseNotFound, FileResponse, Http404, HttpResponseForbidden
 from django.urls import reverse_lazy
 from django.db import IntegrityError
 from django_tus.views import TusUpload
