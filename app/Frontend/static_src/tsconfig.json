@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2020",                          // Set the JavaScript version (ES6 is commonly used)
+    "lib": ["ESNext", "DOM"],
     "module": "ESNext",                       // Set module system, use ESNext for modern module resolution
     "moduleResolution": "node",               // Resolve modules like Node.js
     "rootDir": "./src",                       // The root directory of TypeScript files
