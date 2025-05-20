@@ -28,7 +28,7 @@ interface GCPMapComponent {
     map: L.Map | null;
     storage: GCPMapData;
     bindedGCPs: BindedGCPs | null;
-    markerGroupLayer: L.LayerGroup;
+    markerFeatureLayer: L.FeatureGroup;
     init(): void;
     loadGCPs(workspaceUUID: string): void;
     bindGCP(image: string, GCPMarker: HTMLElement): void;
@@ -49,7 +49,7 @@ const GCPMap = () => {
     return {
         map: null,
         storage: window.Alpine.store("GCPMapData"),
-        markerGroupLayer: new L.LayerGroup(),
+        markerFeatureLayer: new L.FeatureGroup(),
         bindedGCPs: null,
         init() {
             const mapView = window.htmx.find(this.$el, ".gcp-leaflet-map");
@@ -59,7 +59,7 @@ const GCPMap = () => {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                 maxZoom: 19
             }).addTo(map);
-            this.markerGroupLayer.addTo(map);
+            this.markerFeatureLayer.addTo(map);
 
             this.map = map;
         },
@@ -118,16 +118,16 @@ const GCPMap = () => {
             if (!this.bindedGCPs) return;
             
             const map = this.map as L.Map;
-            const bounds = L.latLngBounds([]);
             this.bindedGCPs.binding.forEach(binding => {
                 const [lat, long] = binding.gcp.latLong
-                const marker = L.marker([lat, long], {
-                    icon: leafIcon
-                }).addTo(this.markerGroupLayer);
-                marker.bindTooltip(`H: ${binding.gcp.height}`);
-                bounds.extend([lat, long]);
+                const marker = L.marker({
+                    lat: lat,
+                    lng: long,
+                    alt: binding.gcp.height
+                }, { icon: leafIcon }).addTo(this.markerFeatureLayer);
+                marker.bindTooltip(`WORKS!`);
             });
-            map.fitBounds(bounds);
+            map.fitBounds(this.markerFeatureLayer.getBounds());
         },
     } as GCPMapComponent;
 };
