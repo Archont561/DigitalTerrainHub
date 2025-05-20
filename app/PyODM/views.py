@@ -161,7 +161,8 @@ class WorkspaceDetailView(WorkspaceActionMixin, DetailView):
         if are_thumbnails or are_images:
             file_names = [file_path.name for file_path in workspace.get_images_paths(thumbnails=are_thumbnails)]
             context.update({ "thumbnails": file_names })
-            return render(request, f"{self.template_name}#workspace-thumbnails", context)
+            partial = f"{settings.TEMPLATES_NAMESPACES.cotton.components.workspace.miscellaneous.edit}#workspace-thumbnails"
+            return render(request, partial, context)
 
         return render(request, self.template_name, context)
 

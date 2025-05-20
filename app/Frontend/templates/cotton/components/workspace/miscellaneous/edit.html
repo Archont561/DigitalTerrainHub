@@ -18,7 +18,27 @@
                 hx-swap="innerHTML"
                 hx-trigger="intersect"
                 class="grid grid-flow-row grid-cols-3 place-items-center gap-4 p-4"
-            ></div>
+            >
+                {% partialdef workspace-thumbnails inline %}
+                    {% for thumbnail in thumbnails %}
+                        <div class="card size-full bg-base-100 shadow-md hover:scale-102 transition-transform duration-300">
+                            <figure class="overflow-hidden rounded-t-lg">
+                                <img src="{% url 'workspace:serve-thumbnail' ws_uuid=workspace.uuid filename=thumbnail %}" 
+                                    alt="Thumbnail {{ thumbnail }}" 
+                                    class="size-full object-cover transition-transform duration-300 hover:scale-110">
+                            </figure>
+                            <div class="card-body p-2 text-center">
+                                <p class="text-sm font-medium text-base-content truncate">{{ thumbnail }}</p>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="text-center text-base-content">NO IMAGES</div>
+                    {% endfor %}
+                {% endpartialdef workspace-thumbnails %}
+            </div>
+            <div class="absolute inset-0 opacity-0">
+
+            </div>
         </div>
         <div class="w-2 bg-gray-200 hover:bg-gray-300 relative">
             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-10 bg-gray-600 rounded"></div>
