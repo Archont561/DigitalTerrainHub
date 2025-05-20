@@ -3,6 +3,7 @@
 <c-daisy.dialogs.button
     id="workspace-edit-dialog"
     class="w-full h-full max-w-[calc(100%-10rem)] max-h-[calc(100%-10rem)] p-0 flex flex-col"
+    hx-on:htmx:before-request="window.Alpine.closestDataStack(window.htmx.find(this, `[x-data='GCPMap']`))?.[0]?.loadGCPs(window.Alpine.store('currentWorkspaceUUID') || '')"
 >
     <c-slot name="trigger"><div class="size-10 z-100">{% heroicon_outline 'x-mark' class="size-full" %}</div></c-slot>
     <div class="bg-secondary">
