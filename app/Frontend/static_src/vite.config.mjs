@@ -10,7 +10,8 @@ export default defineConfig(() => {
         base: "/static/",
         resolve: {
             alias: {
-                "@": path.resolve("./static")
+                "@": src,
+                "@types": path.join(jsDir, "types"),
             }
         },
         build: {
