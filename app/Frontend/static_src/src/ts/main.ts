@@ -3,10 +3,6 @@ import AlpineManager from "./Alpine/AlpineManager";
 import HTMXInnerExtensionOptions from "./htmx/innerExtension";
 import { DateTime } from "luxon";
 
-declare global {
-    var htmx: any;
-}
-
 (() => {
     // @ts-ignore
     window.luxon = { DateTime };

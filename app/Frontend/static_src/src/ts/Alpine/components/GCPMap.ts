@@ -1,41 +1,7 @@
 import L from "leaflet";
 import proj4 from "proj4";
 import 'leaflet/dist/leaflet.css';
-
-
-interface BindedGCP {
-    id: string;
-    image: {
-        name: string;
-        x: number;
-        y: number;
-    };
-    gcp: {
-        latLong: number[];
-        height: number;
-    },
-}
-
-interface BindedGCPs {
-    proj: string;
-    binding: BindedGCP[];
-}
-
-type GCPMapData = Map<string, BindedGCPs>;
-
-interface GCPMapComponent {
-    $el: HTMLElement;
-    map: L.Map | null;
-    storage: GCPMapData;
-    bindedGCPs: BindedGCPs | null;
-    markerFeatureLayer: L.FeatureGroup;
-    init(): void;
-    loadGCPs(workspaceUUID: string): void;
-    bindGCP(image: string, GCPMarker: HTMLElement): void;
-    readFile(file: File): void; 
-    parseGCPFile(content: string): BindedGCPs;
-}
-
+import { BindedGCP, BindedGCPs, GCPMapComponent } from "../../@types/alpineComponents/GCPMap";
 
 const GCPMap = () => {  
     window.L = L;
@@ -52,7 +18,7 @@ const GCPMap = () => {
         markerFeatureLayer: new L.FeatureGroup(),
         bindedGCPs: null,
         init() {
-            const mapView = window.htmx.find(this.$el, ".gcp-leaflet-map");
+            const mapView = window.htmx.find(this.$el, ".gcp-leaflet-map") as HTMLElement;
             const map = L.map(mapView).setView([0, 0], 2);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -110,7 +76,6 @@ const GCPMap = () => {
 
                 binding.push(gcpPoint);
             });
-            console.log(binding);
             return { proj: gcpProj, binding };
         },
         loadGCPs(workspaceUUID) {
@@ -120,11 +85,7 @@ const GCPMap = () => {
             const map = this.map as L.Map;
             this.bindedGCPs.binding.forEach(binding => {
                 const [lat, long] = binding.gcp.latLong
-                const marker = L.marker({
-                    lat: lat,
-                    lng: long,
-                    alt: binding.gcp.height
-                }, { icon: leafIcon }).addTo(this.markerFeatureLayer);
+                const marker = L.marker([lat, long], { icon: leafIcon }).addTo(this.markerFeatureLayer);
                 marker.bindTooltip(`WORKS!`);
             });
             map.fitBounds(this.markerFeatureLayer.getBounds());

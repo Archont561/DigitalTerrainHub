@@ -3,23 +3,7 @@ import Dashboard from "@uppy/dashboard";
 import Tus from "@uppy/tus";
 import '@uppy/core/dist/style.min.css';
 import '@uppy/dashboard/dist/style.min.css';
-
-interface UppyWidgetElement extends HTMLElement {
-  uppy: Uppy;
-  dataset: {
-    endpoint: string;
-    csrftoken: string;
-  };
-}
-
-interface UppyWidgetComponent {
-    $el: UppyWidgetElement;
-    init(): void;
-    close(): void;
-    setDashboard(): void;
-    setCustomStyle(): void;
-    setTusProtocol(): void;
-  }
+import { UppyWidgetComponent } from "../../@types/alpineComponents/UppyWidgets";
 
 const UppyWidget = () => {
   let modal: HTMLDialogElement | null = null;

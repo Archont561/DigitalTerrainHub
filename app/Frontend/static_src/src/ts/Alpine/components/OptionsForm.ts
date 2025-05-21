@@ -1,15 +1,5 @@
-interface FieldData {
-    fileUploaded?: boolean;
-    isJSONValid?: boolean;
-}
+import { FieldData, FormComponent } from "../../@types/alpineComponents/OptionsForm";
 
-interface FormComponent {
-    $el?: HTMLElement;
-    formData: Record<string, any>;
-    handleFileUpload(event: Event, data: FieldData, fieldName: string): void;
-    handleJSON(event: Event, data: FieldData, fieldName: string): void;
-    handleFocus(event: KeyboardEvent): void;
-}
 
 const OptionsForm = () => {
     return {
@@ -74,7 +64,7 @@ const OptionsForm = () => {
                 textarea.selectionStart = textarea.selectionEnd = start + 4;
             }
         },
-    };
+    } as FormComponent;
 };
 
-export default OptionsForm
+export default OptionsForm;

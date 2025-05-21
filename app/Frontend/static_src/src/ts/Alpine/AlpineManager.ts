@@ -1,16 +1,7 @@
-import Alpine, { type Alpine as AlpineType } from "alpinejs";
+import Alpine from "alpinejs";
 import AlpinePluginLoaders from "./loaders/AlpinePluginLoaders";
 import AlpineComponentLoaders from "./loaders/AlpineComponentLoaders";
-
-declare global {
-    var Alpine: AlpineType;
-}
-
-// Types for loader functions
-type PluginLoader = () => Promise<any>;
-type ComponentLoader = () => Promise<(...args: any[]) => any>;
-type LoaderMap = Record<string, PluginLoader | ComponentLoader>;
-type RegisterFunction = (name: string, loaded: any) => void;
+import { alpine } from "../@types";
 
 const loadedAlpinePlugins = new Set<string>();
 const loadedAlpineComponents = new Set<string>();
@@ -18,8 +9,8 @@ const loadedAlpineComponents = new Set<string>();
 async function loadItems(
     names: string[],
     loadedSet: Set<string>,
-    loaders: LoaderMap,
-    registerFn: RegisterFunction,
+    loaders: alpine.LoaderMap,
+    registerFn: alpine.RegisterFunction,
     itemType: "plugin" | "component"
 ): Promise<void> {
     const results = await Promise.allSettled(
@@ -48,17 +39,6 @@ async function loadItems(
     });
 }
 
-interface GlobalIntervalStore {
-    interval: number;
-    flag: boolean;
-    intervalID: ReturnType<typeof setInterval> | null;
-
-    stop(): void;
-    init(): void;
-    update(): void;
-    setIntervalValue(interval: number): void;
-    resume(): void;
-}
 
 function loadAlpineGlobalState(): void {
     window.Alpine.store("globalInterval", {
@@ -83,7 +63,7 @@ function loadAlpineGlobalState(): void {
         resume() {
             this.intervalID = setInterval(() => this.update(), this.interval);
         }
-    } as GlobalIntervalStore);
+    } as alpine.GlobalIntervalStore);
 }
 
 async function init(): Promise<void> {

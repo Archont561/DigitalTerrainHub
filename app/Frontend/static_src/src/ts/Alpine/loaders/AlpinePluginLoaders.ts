@@ -1,7 +1,7 @@
 //@ts-nocheck
-type AlpinePluginLoader = () => Promise<any>;
+import { alpine } from "../../@types";
 
-const AlpinePluginLoaders: Record<string, AlpinePluginLoader> = {
+const AlpinePluginLoaders: Record<string, alpine.PluginLoader> = {
     // anchor: async () => (await import('@alpinejs/anchor')).default,
     // mask: async () => (await import('@alpinejs/mask')).default,
     // focus: async () => (await import('@alpinejs/focus')).default,
