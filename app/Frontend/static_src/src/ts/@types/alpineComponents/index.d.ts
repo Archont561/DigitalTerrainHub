@@ -1,11 +1,9 @@
-import * as GCPMap from "./GCPMap";
-import * as ImageMap from "./ImageMap";
+import * as GCPEditor from "./GCPEditor";
 import * as OptionsForm from "./OptionsForm";
 import * as UppyWidgets from "./UppyWidgets";
 
 export {
-  GCPMap,
-  ImageMap,
+  GCPEditor,
   OptionsForm,
   UppyWidgets,
 };
