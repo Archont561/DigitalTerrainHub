@@ -5,15 +5,13 @@
             <a class="btn btn-ghost size-full border-4 border-neutral-300" href="{% url 'credentials:login' %}">Login</a>
             <a class="btn btn-ghost size-full border-4 border-neutral-300" href="{% url 'credentials:register' %}">Register</a>
             {% if user.is_authenticated %}
-                <a class="btn btn-ghost size-full border-4 border-neutral-300" href="{% url 'credentials:email_verification' %}">Email Verification</a>
-                <a class="btn btn-ghost size-full border-4 border-neutral-300" href="{% url 'account:update' %}">Profile Update</a>
-                <a class="btn btn-ghost size-full border-4 border-neutral-300" href="{% url 'account:delete' %}">Profile Delete</a>
-                <a class="btn btn-ghost size-full border-4 border-neutral-300" href="{% url 'credentials:logout' %}">Logout</a>
-                <a class="btn btn-ghost size-full border-4 border-neutral-300" href="{% url 'credentials:password-reset' %}">Password Reset</a>
-                <a class="btn btn-ghost size-full border-4 border-neutral-300" href="{% url 'credentials:password-reset-done' %}">Password Reset Done</a>
-                <a class="btn btn-ghost size-full border-4 border-neutral-300" href="{% url 'credentials:password-reset-complete' %}">Password Reset Complete</a>
-                <a class="btn btn-ghost size-full border-4 border-neutral-300" href="{% url 'credentials:password-change' %}">Password Change</a>
+                <form class="btn btn-ghost size-full border-4 border-neutral-300" 
+                    method="POST"
+                    action="{% url 'credentials:logout' %}">  
+                    <input type="submit" value="Logout">
+                </form>
             {% endif %}
         </div>
+        
     </c-slot>
 </c-layouts.base>
