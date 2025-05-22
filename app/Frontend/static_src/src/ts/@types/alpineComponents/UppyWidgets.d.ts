@@ -1,4 +1,5 @@
 import type { Uppy } from "@uppy/core";
+import { AlpineComponent } from "alpinejs";
 
 interface UppyWidgetElement extends HTMLElement {
     uppy: Uppy;
@@ -8,7 +9,7 @@ interface UppyWidgetElement extends HTMLElement {
     };
   }
 
-interface UppyWidgetComponent {
+interface UppyWidget {
     $el: UppyWidgetElement;
     init(): void;
     close(): void;
@@ -18,6 +19,9 @@ interface UppyWidgetComponent {
 }
 
 
+type UppyWidgetComponent = AlpineComponent<UppyWidget>;
+
 export {
-    UppyWidgetComponent
+  UppyWidgetElement,
+  UppyWidgetComponent,
 }

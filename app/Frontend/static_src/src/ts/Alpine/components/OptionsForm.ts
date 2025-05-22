@@ -1,11 +1,11 @@
-import { FieldData, FormComponent } from "../../@types/alpineComponents/OptionsForm";
+import { FormComponent } from "../../@types/alpineComponents/OptionsForm";
 
 
 const OptionsForm = () => {
     return {
         loading: true,
         formData: {} as Record<string, any>,
-        handleFileUpload(event: Event, data: FieldData, fieldName: string) {
+        handleFileUpload(event, data, fieldName) {
             const input = event.target as HTMLInputElement;
             const file = input.files?.[0];
             if (!file || file.type !== 'application/json') {
@@ -26,7 +26,7 @@ const OptionsForm = () => {
             };
             reader.readAsText(file);
         },
-        handleJSON(event: Event, data: FieldData, fieldName: string) {
+        handleJSON(event, data, fieldName) {
             const input = event.target as HTMLTextAreaElement;
             try {
                 const json = JSON.parse(input.value);
@@ -36,7 +36,7 @@ const OptionsForm = () => {
                 data.isJSONValid = false;
             }
         },
-        handleFocus(event: KeyboardEvent) {
+        handleFocus(event) {
             const textarea = event.target as HTMLTextAreaElement;
             const key = event.key;
             const startedTyping = textarea.dataset.startedTyping === "true";
