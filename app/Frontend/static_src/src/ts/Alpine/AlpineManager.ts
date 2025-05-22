@@ -1,4 +1,4 @@
-import Alpine from "alpinejs";
+import Alpine, { type AlpineComponent } from "alpinejs";
 import AlpinePluginLoaders from "./loaders/AlpinePluginLoaders";
 import AlpineComponentLoaders from "./loaders/AlpineComponentLoaders";
 import { alpine } from "../@types";
@@ -68,6 +68,8 @@ function loadAlpineGlobalState(): void {
 
 async function init(): Promise<void> {
     window.Alpine = Alpine;
+    //@ts-ignore
+    window.AlpineManager = this;
 
     const dataAttr = "x-data";
     const pluginAttr = "x-plugins";
@@ -110,6 +112,15 @@ async function init(): Promise<void> {
     window.Alpine.start();
 }
 
+function findComponent(name: string): AlpineComponent<any> | null {
+    const element = document.querySelector(`[x-data='${name}']`);
+    if (!element) return null;
+
+    const component = window.Alpine.closestDataStack(element as HTMLElement)?.[0];
+    return component;
+}
+
 export default {
-    init
+    init,
+    findComponent,
 };
