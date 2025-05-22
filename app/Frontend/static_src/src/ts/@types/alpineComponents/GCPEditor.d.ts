@@ -3,48 +3,52 @@ import { AlpineComponent } from 'alpinejs';
 
 interface BindedGCP {
     id: string;
-    image: {
+    image?: {
         name: string;
-        x: number;
-        y: number;
+        marker: L.Marker;
     };
-    gcp: {
-        latLong: number[];
-        height: number;
+    gcp?: {
+        marker: L.Marker;
+        height?: number;
     },
 }
 
-interface BindedGCPs {
-    proj: string;
-    binding: BindedGCP[];
+interface GCPBinding {
+    layer: L.FeatureGroup;
+    bindedGCPs: BindedGCP[];
+}
+
+interface ImageBinding {
+    imageLayer: L.ImageOverlay;
+    imageBounds: L.LatLngBounds;
+    activeMarker: L.Marker | null;
+    markersLayer: L.FeatureGroup;
 }
 
 interface GCPEditor {
     imageMap?: L.Map;
     gcpMap?: L.Map;
-    bindedGCPs: BindedGCPs | null;
-    overlay: L.ImageOverlay | null;
-    currentMarker: L.Marker | null;
-    imageBounds: L.LatLngBounds | null;
-    markerFeatureLayer: L.FeatureGroup;
-    storage: Map<string, BindedGCPs>;
-    isMarkerInBinding: boolean;
+    storage: Map<string, BindedGCP[]>;
+    showMap: boolean;
     
-    loadGCPs(workspaceUUID: string): void;
-    bindGCP(image: string, GCPMarker: HTMLElement): void;
+    changeGCPs(workspaceUUID: string | null): void;
+    bindGCP(GCPMarker: L.Marker): void;
     readFile(file: File): void; 
-    parseGCPFile(content: string): BindedGCPs;
+    parseGCPFile(content: string): BindedGCP[];
+    bindedGCPsToTXT(workspaceUUID: string | null): string;
     changeImage(imageUrl: string | null): void;
     createMarker(event: Event): void;
-    onMarkerDrag(event: L.LeafletEvent): void;
-    onMarkerClick(event: L.LeafletMouseEvent): void;
-    onMapMouseMove(event: L.LeafletMouseEvent): void;
+    onImageMarkerDrag(event: L.LeafletEvent): void;
+    onImageMarkerClick(event: L.LeafletMouseEvent): void;
+    onGCPMarkerClick(event: L.LeafletMouseEvent): void;
+    onImageMapMouseMove(event: L.LeafletMouseEvent): void;
 }
 
 type GCPEditorComponent = AlpineComponent<GCPEditor>;
 
 export {
     BindedGCP,
-    BindedGCPs,
+    ImageBinding,
+    GCPBinding,
     GCPEditorComponent,
 }
