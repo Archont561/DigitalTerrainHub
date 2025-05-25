@@ -1,4 +1,4 @@
-namespace HTMX {
+export namespace HTMX {
     interface ExtensionAPI {
         addTriggerHandler(
             elt: Element,
@@ -190,12 +190,4 @@ namespace HTMX {
         trigger(elt: Element | string, name: string, detail?: any): void;
         values(elt: Element, requestType?: string): Record<string, any>;
     }
-}
-
-export declare global {
-    var htmx: HTMX.Instance;
-}
-
-export {
-    HTMX
 }
