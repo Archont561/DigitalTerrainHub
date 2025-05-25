@@ -1,15 +1,19 @@
-import "./assetsImports"
-import AlpineManager from "./Alpine/AlpineManager";
-import HTMXInnerExtensionOptions from "./htmx/innerExtension";
+import "./assets.import"
+import AlpineManager from "./Alpine";
+import HTMXManager from "./htmx";
+import WebComponentsManager from "./WebComponets";
+import UtilsManager from "./utils";
 import { DateTime } from "luxon";
 
 (() => {
-    // @ts-ignore
-    window.luxon = { DateTime };
-    window.htmx = htmx;
-    window.addEventListener("DOMContentLoaded", () => {
-        window.htmx.defineExtension("inner", HTMXInnerExtensionOptions);     
-        AlpineManager.init();
+    
+    window.addEventListener("DOMContentLoaded", async () => {
+        // @ts-ignore
+        window.luxon = { DateTime };
+        UtilsManager.init();
+        HTMXManager.init();   
+        await WebComponentsManager.init();
+        await AlpineManager.init();
     });
 
     const setThemeBasedOnPreference = (preference: Boolean) => {
@@ -18,5 +22,6 @@ import { DateTime } from "luxon";
     
     const themeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     themeMediaQuery.addEventListener('change', e => setThemeBasedOnPreference(e.matches));
-    setThemeBasedOnPreference(themeMediaQuery.matches)
+    setThemeBasedOnPreference(themeMediaQuery.matches);
+    
 })();
