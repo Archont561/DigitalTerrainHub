@@ -1,54 +1,34 @@
-import type L from "leaflet";
-import { AlpineComponent } from 'alpinejs';
+import type { Map as OlMap, Feature, Overlay } from 'ol';
+import type { Vector as VectorLayer, Image as ImageLayer } from 'ol/layer';
+import type { Vector as VectorSource, ImageStatic } from 'ol/source';
+import type { Point } from 'ol/geom';
+import type { Extent } from "ol/extent";
+import type { Coordinate } from 'ol/coordinate';
+import type { AlpineComponent } from 'alpinejs';
 
-interface BindedGCP {
-    id: string;
-    image?: {
-        name: string;
-        marker: L.Marker;
-    };
-    gcp?: {
-        marker: L.Marker;
-        height?: number;
-    },
+export type UUID = string;
+export type Binding = Map<UUID, BindedGCP>;
+export type Store = Map<UUID, Binding>;
+export type OlPoint = Feature<Point>;
+
+export interface BindedGCP {
+    gcp?: OlPoint;
+    image?: OlPoint;
 }
 
-interface GCPBinding {
-    layer: L.FeatureGroup;
-    bindedGCPs: BindedGCP[];
+export interface GCPEditor {
+    workspaceBinding: null | Binding;
+    currentGCPFeature: null | OlPoint;
+    currentImageMarkerFeature: null | OlPoint;
+
+    changeImage(imageUrl: string): void;
+    registerImageMarker(marker: OlPoint, imageUrl: string): void;
+    registerGCPMarker(marker: OlPoint): void;
+    bindCurrentSelection(): void ;
+    loadGCPsFromFile(file: File): void;
+    getOrCreateBinding(workspaceUUID: UUID): Binding;
+    getOrSetUUID(feature: OlPoint): UUID;
+    onReveal(): void;
 }
 
-interface ImageBinding {
-    imageLayer: L.ImageOverlay;
-    imageBounds: L.LatLngBounds;
-    activeMarker: L.Marker | null;
-    markersLayer: L.FeatureGroup;
-}
-
-interface GCPEditor {
-    imageMap?: L.Map;
-    gcpMap?: L.Map;
-    storage: Map<string, BindedGCP[]>;
-    showMap: boolean;
-    
-    changeGCPs(workspaceUUID: string | null): void;
-    bindGCP(GCPMarker: L.Marker): void;
-    readFile(file: File): void; 
-    parseGCPFile(content: string): BindedGCP[];
-    bindedGCPsToTXT(workspaceUUID: string | null): string;
-    changeImage(imageUrl: string | null): void;
-    createMarker(event: Event): void;
-    onImageMarkerDrag(event: L.LeafletEvent): void;
-    onImageMarkerClick(event: L.LeafletMouseEvent): void;
-    onGCPMarkerClick(event: L.LeafletMouseEvent): void;
-    onImageMapMouseMove(event: L.LeafletMouseEvent): void;
-}
-
-type GCPEditorComponent = AlpineComponent<GCPEditor>;
-
-export {
-    BindedGCP,
-    ImageBinding,
-    GCPBinding,
-    GCPEditorComponent,
-}
+export type GCPEditorComponent = AlpineComponent<GCPEditor>;

@@ -1,258 +1,236 @@
-import L from "leaflet";
-import 'leaflet/dist/leaflet.css';
-import proj4 from "proj4";
-import { html } from "../../utils";
-import { 
-    BindedGCP,
+import {
     GCPEditorComponent,
-    GCPBinding,
-    ImageBinding,
+    Store,
+    OlPoint,
+    UUID,
+    Binding,
+    BindedGCP,
 } from "../../@types/alpineComponents/GCPEditor";
+import type { default as HTMLOlVectorLayer } from "../../WebComponets/HTMLOlVectorLayer";
+import { type Interaction, Select, Translate } from "ol/interaction";
+import { singleClick, shiftKeyOnly } from "ol/events/condition";
+import { SelectEvent } from "ol/interaction/Select";
+import { Circle, Fill, Stroke, Style, Text } from "ol/style";
+import { Point } from "ol/geom";
+import { Feature } from "ol";
+import VectorLayer from "ol/layer/Vector";
+import { Coordinate } from "ol/coordinate";
+
 
 export default () => {
-    window.Alpine.store("GCPMapData", new Map<string, BindedGCP[]>());
-    
-    const WGS84Proj = "EPSG:4326";
-    const leafIcon = L.icon({
-        iconUrl: "https://docs.maptiler.com/sdk-js/examples/custom-points-icon-png/underground.png",
-        iconSize: [24, 26],
-    });
-    const coordDisplay = html`
-        <div class="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white p-1 px-2 text-xs rounded z-10">
-            Coordinates Display
-        </div>
-    `;
-    
-    let isMarkerInBinding = false;
-    let currentImageBinding: ImageBinding | null = null;
-    let currentGCPBinding: GCPBinding | null = null;
-    
-    const component = {
-        showMap: false,
-        storage: window.Alpine.store("GCPMapData") as Map<string, BindedGCP[]>,
+    window.Alpine.store("GCPMapData", new Map());
+    const store = window.Alpine.store("GCPMapData") as Store;
+
+    return {
+        workspaceBinding: null,
+        currentGCPFeature: null,
+        currentImageMarkerFeature: null,
 
         init() {
-            const imageMap = L.map(this.$refs.imageMapContainer, {
-                crs: L.CRS.Simple,
-                minZoom: -3,
-                maxZoom: 1,
-                maxBoundsViscosity: 1,
+            const imageMarkersLayerContainer = this.$refs.imageMarkersLayerContainer as HTMLOlVectorLayer;
+            const GCPsLayerContainer = this.$refs.GCPsLayerContainer as HTMLOlVectorLayer;
+            const GCPLayer = GCPsLayerContainer.getLayer() as VectorLayer;
+            const imgMarkersLayer = imageMarkersLayerContainer.getLayer() as VectorLayer;
+            const defaultStyle = new Style({
+                image: new Circle({
+                    radius: 3,
+                    fill: new Fill({ color: 'black' }),
+                    stroke: new Stroke({ color: 'yellow', width: 2 }),
+                }),
             });
-            this.$refs.imageMapContainer.appendChild(coordDisplay);
-            imageMap.on("mousemove", this.onImageMapMouseMove);
-            this.imageMap = imageMap;
 
-            const gcpMap = L.map(this.$refs.gcpMapContainer).setView([0, 0], 2);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                maxZoom: 19
-            }).addTo(gcpMap);
-            this.gcpMap = gcpMap;
-        },
-        readFile(file) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                const currentWorkspaceUUID = window.Alpine.store("currentWorkspaceUUID") as string;
-                this.storage.set(currentWorkspaceUUID, this.parseGCPFile(reader.result as string));
-                this.changeGCPs(currentWorkspaceUUID);
-                currentImageBinding && this.changeImage(currentImageBinding.imageLayer.getElement()?.src as string);
-            };
-            reader.readAsText(file);
-        },
-        parseGCPFile(content) {
-            const lines = content.split('\n').map(line => line.trim());
-            if (!lines) return;
-            
-            const bindedGCPs = [] as BindedGCP[];
-            const gcpProj = lines[0];
+            GCPLayer.setStyle(defaultStyle);
+            imgMarkersLayer.setStyle(defaultStyle);
 
-            lines.slice(1).forEach((line, index) => {
-                const parts = line.split(/\s+/);
-                if (parts.length < 3) return;
-                
-                const gcpPoint = {} as BindedGCP;
-                gcpPoint.id = `gcp${index}`;
-                
-                const [x, y, height] = parts.slice(0, 3).map(part => Number(part));
-                // x - longitude, y - latitude
-                const marker = new L.Marker(proj4(gcpProj, WGS84Proj, [x, y]).reverse() as L.LatLngExpression);
-                marker.on("click", this.onGCPMarkerClick);
-                gcpPoint.gcp = { marker, height };
-                
-                if (parts.length > 3) {
-                    if (isNaN(Number(parts[3])))  gcpPoint.id = parts[3];
-                    else if (parts.length >= 6) {
-                        const [imX, imY, imName] = parts.slice(3, 6);
-                        gcpPoint.image = {
-                            marker: new L.Marker([Number(imY), Number(imX)]),
-                            name: imName,
-                        };
-        
-                        if (parts.length > 6)  gcpPoint.id = parts[6];
-                    } else console.warn('Invalid GCP file format!');
+            const selectedStyle = new Style({
+                image: new Circle({
+                    radius: 8,
+                    fill: new Fill({ color: 'red' }),
+                    stroke: new Stroke({ color: 'black', width: 2 }),
+                }),
+            });
+
+            const selecteShiftdStyle = new Style({
+                image: new Circle({
+                    radius: 8,
+                    fill: new Fill({ color: 'brown' }),
+                    stroke: new Stroke({ color: 'white', width: 4 }),
+                }),
+            });
+
+            const gcpShiftSelect = new Select({
+                condition: event => singleClick(event) && shiftKeyOnly(event),
+                multi: false,
+                layers: [GCPLayer],
+                style: selecteShiftdStyle,
+            });
+
+            const imgSelect = new Select({
+                condition: singleClick,
+                multi: false,
+                layers: [imgMarkersLayer],
+                style: selectedStyle,
+            });
+
+            const imgTranslate = new Translate({
+                features: imgSelect.getFeatures(),
+            });
+
+            imgSelect.on("select", event => {
+                const { selected, deselected } = event as SelectEvent;
+                const feature = selected?.at(0);
+                if (feature) this.currentImageMarkerFeature = feature as OlPoint;
+                else this.currentImageMarkerFeature = null;
+            });
+            gcpShiftSelect.on("select", event => {
+                const { selected, deselected } = event as SelectEvent;
+                const feature = selected?.at(0);
+                if (!feature) return;
+                this.currentGCPFeature = feature as OlPoint;
+
+                if (this.currentImageMarkerFeature) {
+                    const markerFeature = this.currentImageMarkerFeature as OlPoint;
+                    feature.setStyle(defaultStyle);
+                    markerFeature.setStyle(defaultStyle);
+                    gcpShiftSelect.getFeatures().remove(feature);
+                    imgSelect.getFeatures().remove(markerFeature);
+                    this.bindCurrentSelection();
                 }
-
-                bindedGCPs.push(gcpPoint);
             });
-            return bindedGCPs;
+            GCPsLayerContainer.setInteraction("shiftSelect", gcpShiftSelect);
+            imageMarkersLayerContainer.setInteraction("select", imgSelect);
+            imageMarkersLayerContainer.setInteraction("translate", imgTranslate);
         },
-        changeGCPs(workspaceUUID) {
-            if (!workspaceUUID) {
-                currentGCPBinding?.layer.remove();
-                currentGCPBinding = null;
-                this.showMap = false;
-                return;
-            }
 
-            window.htmx.ajax('GET', 
-                `/pyodm/workspace/${workspaceUUID}/?images`, 
-                this.$refs.thumbnailContainer
+        onReveal() {
+            const workspaceUUID = window.Alpine.store("currentWorkspaceUUID");
+            if (!workspaceUUID) return;
+
+            window.htmx.ajax('GET',
+                `/pyodm/workspace/${workspaceUUID}/?thumbnails`,
+                this.$refs.thumbnailContainer,
             );
 
-            const bindedGCPs = this.storage.get(workspaceUUID) as BindedGCP[];
-            if (!bindedGCPs) {
-                this.showMap = false;
-                return;
-            }
+            this.workspaceBinding = this.getOrCreateBinding(workspaceUUID as string);
 
-            const gcpMap = this.gcpMap as L.Map;
-            const layer = new L.FeatureGroup().addTo(gcpMap);
-            bindedGCPs.forEach(bindedGCP => {
-                bindedGCP.gcp && bindedGCP.gcp.marker
-                .setIcon(leafIcon)
-                .bindTooltip('WORKS!')
-                .addTo(layer);
+            const GCPsLayerContainer = this.$refs.GCPsLayerContainer as HTMLOlVectorLayer;
+            const GCPsMarkersSource = GCPsLayerContainer.getSource();
+            GCPsMarkersSource.clear();
+
+            this.workspaceBinding.forEach((bindedGCP, uuid) => {
+                bindedGCP.gcp && GCPsMarkersSource.addFeature(bindedGCP.gcp);
             });
-            gcpMap.fitBounds(layer.getBounds());
-            currentGCPBinding = { layer, bindedGCPs };
-            this.showMap = true;
         },
-        bindGCP(GCPMarker) {
-            if (!currentGCPBinding || !currentImageBinding || !currentImageBinding.activeMarker) return;
 
-            const gcpLabel = GCPMarker.getTooltip()?.getContent()?.toString();
-            const imageName = new URL(currentImageBinding.imageLayer.getElement()?.src as string).pathname.split("/").pop();
-            const marker = currentImageBinding.activeMarker as L.Marker;
-            const bindedGCP = {
-                id: gcpLabel as string,
-                image: {
-                    name: imageName as string,
-                    marker,
-                },
-                gcp: { marker: GCPMarker }
-            } as BindedGCP;
-            currentGCPBinding.bindedGCPs.push(bindedGCP);
-            currentImageBinding.activeMarker = null;
-            marker.closeTooltip();
-            marker.options = {
-                draggable: false,
-            }
-        },
         changeImage(imageUrl) {
-            if (!imageUrl) {
-                currentImageBinding?.imageLayer.remove();
-                currentImageBinding?.markersLayer.remove();
-                currentImageBinding = null;
-                return;
-            }  
-            const image = new Image();
-            const imageMap = this.imageMap as L.Map;
-            image.onload = () => {         
-                const imageBounds = new L.LatLngBounds([[0, 0], [image.height, image.width]]);             
-                const imageLayer = L.imageOverlay(imageUrl, imageBounds).addTo(imageMap);
-                imageMap.fitBounds(imageBounds).setMaxBounds(imageBounds);
+            if (!this.workspaceBinding) return;
+            const imageMarkersLayerContainer = this.$refs.imageMarkersLayerContainer as HTMLOlVectorLayer;
+            this.$refs.imageLayerContainer.setAttribute('src', imageUrl);
+            if (!imageUrl) return;
+            const currentImgName = new URL(imageUrl).pathname.split('/').filter(part => part)?.at(-1)
+            const imgMarkersSource = imageMarkersLayerContainer.getSource();
+            [...this.workspaceBinding.values()].filter(
+                bindedGCP => bindedGCP.image?.get("imgName") === currentImgName
+            ).forEach(
+                bindedGCP => imgMarkersSource.addFeature(bindedGCP.image as OlPoint)
+            );
+        },
 
-                const markersLayer = new L.FeatureGroup();
-                currentGCPBinding?.bindedGCPs.forEach(bindedGCP => {
-                    if (!bindedGCP.image) return;
-                    bindedGCP.image?.marker.addTo(markersLayer);
+        registerImageMarker(marker) {
+            const workspaceUUID = window.Alpine.store("currentWorkspaceUUID") as string | undefined;
+            //@ts-ignore
+            const imageUrl = this.$data.currentImage as (string | null);
+            if (!workspaceUUID || !imageUrl) return;
+
+            const imgName = new URL(imageUrl).pathname.split('/').filter(part => part)?.at(-1);
+            const uuid = this.getOrSetUUID(marker);
+            const binding = this.getOrCreateBinding(workspaceUUID);
+            imgName && marker.set("imgName", imgName);
+            binding.set(uuid, { image: marker });
+        },
+
+        registerGCPMarker(marker) {
+            const workspaceUUID = window.Alpine.store("currentWorkspaceUUID") as string | undefined;
+            if (!workspaceUUID) return;
+            const uuid = this.getOrSetUUID(marker);
+            const binding = this.getOrCreateBinding(workspaceUUID);
+            binding.set(uuid, { gcp: marker });
+        },
+
+        getOrSetUUID(feature) {
+            let uuid = feature.getId();
+            if (!uuid) {
+                uuid = crypto.randomUUID();
+                feature.setId(uuid);
+            }
+            return uuid;
+        },
+
+        getOrCreateBinding(workspaceUUID) {
+            let binding = store.get(workspaceUUID);
+            if (!binding) {
+                binding = new Map();
+                store.set(workspaceUUID, binding);
+            }
+            return binding
+        },
+
+        bindCurrentSelection() {
+            if (!this.workspaceBinding || !this.currentGCPFeature || !this.currentImageMarkerFeature) return;
+            const uuid = this.getOrSetUUID(this.currentImageMarkerFeature as OlPoint);
+            this.workspaceBinding.set(uuid as UUID, {
+                gcp: this.currentGCPFeature as OlPoint,
+                image: this.currentImageMarkerFeature as OlPoint,
+            })
+            this.workspaceBinding?.delete(String(this.currentGCPFeature.getId()));
+            this.currentGCPFeature.setId(uuid);
+            this.currentGCPFeature = null;
+            this.currentImageMarkerFeature = null;
+        },
+
+        async loadGCPsFromFile(file) {
+            if (!this.workspaceBinding) return;
+            const GCPLayerContainer = this.$refs.GCPsLayerContainer as HTMLOlVectorLayer;
+            await GCPLayerContainer.loadGroundControlPointsFile(file);
+            GCPLayerContainer.getSource().forEachFeature(feature => {
+                this.registerGCPMarker(feature as OlPoint);
+            });
+        },
+
+        getBindedFeatures() {
+            const bindedFeatures: any[] = [];
+
+            store.forEach((binding: Binding, workspaceUUID: UUID) => {
+                binding.forEach((bindedGCP: BindedGCP, bindingUUID: UUID) => {
+                    if (bindedGCP.gcp && bindedGCP.image) {
+                        const gcpCoords = bindedGCP.gcp.getGeometry()?.getCoordinates();
+                        const imgCoords = bindedGCP.image.getGeometry()?.getCoordinates();
+                        const imgName = bindedGCP.image.get('imgName');
+
+                        if (gcpCoords && imgCoords) {
+                            bindedFeatures.push({
+                                workspaceUUID,
+                                bindingUUID,
+                                gcp: {
+                                    x: gcpCoords[0],
+                                    y: gcpCoords[1],
+                                    z: gcpCoords?.[2],
+                                },
+                                image: {
+                                    x: imgCoords[0],
+                                    y: imgCoords[1],
+                                    imgName,
+                                }
+                            });
+                        }
+                    }
                 });
-                markersLayer.addTo(imageMap);
-                currentImageBinding = {
-                    imageBounds,
-                    imageLayer,
-                    markersLayer,
-                    activeMarker: null,
-                };
-            };
-            image.src = imageUrl;
+            });
+            return bindedFeatures;
         },
-        createMarker() {
-            if (!this.imageMap || !currentImageBinding) return;
-            if (!currentGCPBinding) {
-                alert("Import GCPs! ");
-                return;
-            }
-            if (currentImageBinding.activeMarker) {
-                alert("Already created!");
-                return;
-            };
 
-            const gcpLabel = `gcp${currentGCPBinding.bindedGCPs.filter(el => el.image).length}`;
-            const iconSize = [30, 30];
-            const marker = L.marker(this.imageMap.getCenter(), {
-                icon: L.icon({
-                    iconUrl: "http://localhost:5173/static/src/assets/pin.png",
-                    iconSize: iconSize as L.PointExpression,
-                }),
-                draggable: true,
-            }).bindTooltip(gcpLabel, {
-                permanent: true,
-                direction: "top",
-                offset: [0, -iconSize[0]/2 + 1],
-            }).addTo(currentImageBinding.markersLayer);
-
-            marker.on('drag', this.onImageMarkerDrag);
-            marker.on('click', this.onImageMarkerClick);
-            currentImageBinding.activeMarker = marker;
-        },
-        onImageMarkerDrag(event) {
-            const marker = currentImageBinding?.activeMarker;
-            const imageBinding = currentImageBinding;
-            if (!marker || !imageBinding) return;
-
-            const { lat, lng } = marker.getLatLng();
-            const bounds = imageBinding.imageBounds;            
-            const clampedLat = Math.max(bounds.getSouth(), Math.min(bounds.getNorth(), lat));
-            const clampedLng = Math.max(bounds.getWest(), Math.min(bounds.getEast(), lng));
-            marker.setLatLng([clampedLat, clampedLng]);
-        },
-        onImageMarkerClick(event) {
-            if (event.originalEvent.shiftKey) {
-                isMarkerInBinding = !isMarkerInBinding;
-            }
-        },
-        onGCPMarkerClick(event) {
-            if (isMarkerInBinding && event.originalEvent.shiftKey) {
-                isMarkerInBinding = false;
-                component.bindGCP(event.target);
-            }
-        },
-        onImageMapMouseMove(e) {
-            coordDisplay.textContent = `X: ${e.latlng.lng.toFixed(2)} | Y: ${e.latlng.lat.toFixed(2)}`;
-        },
-        bindedGCPsToTXT(workspaceUUID) {
-            if (!workspaceUUID) return null;
+        saveChanges() {
             
-            const bindedGCPs = this.storage.get(workspaceUUID);
-            if (!bindedGCPs) return;
-            
-            return bindedGCPs.map(bindedGCP => {
-                const gcpLatLng = bindedGCP.gcp?.marker.getLatLng();
-                const imgLatLng = bindedGCP.image?.marker.getLatLng();
-                
-                if (!gcpLatLng || !imgLatLng) return null;
-                
-                const gcpX = gcpLatLng.lng.toFixed(6);
-                const gcpY = gcpLatLng.lat.toFixed(6);
-                const gcpH = (bindedGCP.gcp?.height ?? 0).toFixed(2);
-                const imX = imgLatLng.lng.toFixed(6);
-                const imY = imgLatLng.lat.toFixed(6);
-                const imName = bindedGCP.image?.name ?? "";
-        
-                return `${gcpX} ${gcpY} ${gcpH} ${imX} ${imY} ${imName} ${bindedGCP.id}`;
-            }).filter(line => line !== null).join("\n");
         },
     } as GCPEditorComponent;
-    return component;
 };
