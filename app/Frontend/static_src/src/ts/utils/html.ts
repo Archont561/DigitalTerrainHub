@@ -9,7 +9,3 @@ export function html(strings: TemplateStringsArray, ...expressions: any[]): HTML
 
     return doc.body.firstElementChild as HTMLElement;
 }
-
-export default {
-    html,
-}
