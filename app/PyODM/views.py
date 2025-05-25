@@ -132,7 +132,7 @@ class WorkspaceUploadImagesView(WorkspaceActionMixin, TusUpload):
         tus_upload_finished_signal.send(
             sender=self.__class__,
             upload_file_path=settings.TUS_DESTINATION_DIR / tus_file.filename,
-            destination_folder=self.get_object().get_dir())
+            workspace=self.get_object())
 
 
 class WorkspaceDetailView(WorkspaceActionMixin, DetailView):
@@ -158,11 +158,13 @@ class WorkspaceDetailView(WorkspaceActionMixin, DetailView):
         if are_thumbnails and are_images:
             return HttpResponseBadRequest("Please specify either 'thumbnails' or 'images', not both.")
         
-        if are_thumbnails or are_images:
+        if are_thumbnails:
             file_names = [file_path.name for file_path in workspace.get_images_paths(thumbnails=are_thumbnails)]
             context.update({ "thumbnails": file_names })
             partial = f"{settings.TEMPLATES_NAMESPACES.cotton.components.workspace.miscellaneous.edit}#workspace-thumbnails"
             return render(request, partial, context)
+
+        if are_images: return HttpResponseForbidden("Not implemented")
 
         return render(request, self.template_name, context)
 
@@ -252,14 +254,16 @@ class WorkspaceCreateTaskView(WorkspaceActionMixin, View):
 
 
 @method_decorator(cache_control(public=True, max_age=3600), name="get")
-class WorkspaceServeImages(WorkspaceActionMixin, View):
+class WorkspaceServeImagesView(WorkspaceActionMixin):
     http_method_names = ["get"]
 
     def get(self, request, *args, **kwargs):
         is_thumbnail = "thumbnails" in request.path
         filename = kwargs.get("filename", "")
         base_dir = self.get_object().get_dir()
-        file_path = (base_dir / settings.THUMBNAIL_DIR_NAME / filename) if is_thumbnail else (base_dir / filename)
+        if thumbnails: target_dir = base / settings.THUMBNAIL_DIR_NAME
+        else: target_dir = base / settings.IMAGES_DIR_NAME
+        file_path = target_dir / filename
 
         if not file_path.exists() or not file_path.is_file():
             raise Http404("Image not found")

@@ -158,6 +158,7 @@ TUS_FILE_NAME_FORMAT = 'random-suffix'
 TUS_EXISTING_FILE = 'overwrite'
 WORKSPACES_DIR = MEDIA_ROOT / "workspaces"
 THUMBNAIL_DIR_NAME = "thumbnail"
+IMAGES_DIR_NAME = "images"
 WORKSPACE_ALLOWED_FILE_MIME_TYPES = [
     "image/jpeg", "image/png", "image/bmp", 
     "image/webp", "image/tiff", "image/heif",

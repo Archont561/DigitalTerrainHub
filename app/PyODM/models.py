@@ -21,8 +21,9 @@ class Workspace(models.Model):
     
     def get_images_paths(self, thumbnails=False) -> list[Path]:
         base_dir = self.get_dir()
-        images_dir = base_dir / settings.THUMBNAIL_DIR_NAME if thumbnails else base_dir
-        return [file for file in images_dir.iterdir() if file.is_file()]
+        if thumbnails: target_dir = base / settings.THUMBNAIL_DIR_NAME
+        else: target_dir = base / settings.IMAGES_DIR_NAME
+        return [file for file in target_dir.iterdir() if file.is_file()]
     
     @property
     def created_at_epoch(self):

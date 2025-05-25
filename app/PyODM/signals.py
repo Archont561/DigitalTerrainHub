@@ -13,7 +13,9 @@ from PIL import Image
 def create_workspace_folder(sender, instance, created, **kwargs):
     if created:
         thumbnails_dir = instance.get_dir() / settings.THUMBNAIL_DIR_NAME
+        images_dir = instance.get_dir() / settings.IMAGES_DIR_NAME
         thumbnails_dir.mkdir(parents=True, exist_ok=True)
+        images_dir.mkdir(parents=True, exist_ok=True)
 
 
 @receiver(post_delete, sender=Workspace)
@@ -24,26 +26,29 @@ def delete_workspace_folder(sender, instance, **kwargs):
 
 
 @receiver(tus_upload_finished_signal, sender=WorkspaceUploadImagesView)
-def handle_tus_upload_finished(sender, upload_file_path: Path, destination_folder: Path, **kwargs):
-    if upload_file_path.exists() and destination_folder.exists():
-        mime = magic.Magic(mime=True)
-        file_mime_type = mime.from_file(str(upload_file_path))
-        
-        if file_mime_type not in settings.WORKSPACE_ALLOWED_FILE_MIME_TYPES:
-            upload_file_path.unlink()
-            return
-        else:
-            final_path = destination_folder / upload_file_path.name
-            upload_file_path.rename(final_path)
+def handle_tus_upload_finished(sender, upload_file_path: Path, workspace: Workspace, **kwargs):
+    if not upload_file_path.exists(): return
+    mime = magic.Magic(mime=True)
+    file_mime_type = mime.from_file(str(upload_file_path))
+    filename = upload_file_path.name
+    workspace_dir = workspace.get_dir()
 
-        if file_mime_type.startswith("image"):
-            with Image.open(final_path) as img:
-                img.thumbnail((256, 256))
-                img.save(destination_folder / settings.THUMBNAIL_DIR_NAME / final_path.name)
+    if file_mime_type not in settings.WORKSPACE_ALLOWED_FILE_MIME_TYPES:
+        upload_file_path.unlink()
+        return
+    else:
+        images_dir = workspace_dir / settings.IMAGES_DIR_NAME
+        upload_file_path.rename(images_dir / filename)
+
+    if file_mime_type.startswith("image"):
+        thumbnails_dir = workspace_dir / settings.THUMBNAIL_DIR_NAME
+        with Image.open(final_path) as img:
+            img.thumbnail((256, 256))
+            img.save(thumbnails_dir / filename)
 
 
 @receiver(post_migrate)
 def create_global_presets(sender, **kwargs):    
     for name, options in settings.GLOBAL_OPTION_PRESETS.items():
-        OptionsPreset.objects.get_or_create( user=None, name=name, defaults={"options": options})
+        OptionsPreset.objects.get_or_create(user=None, name=name, defaults={"options": options})
 
