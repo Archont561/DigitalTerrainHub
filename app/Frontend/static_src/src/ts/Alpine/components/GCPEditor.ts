@@ -20,6 +20,7 @@ import { Coordinate } from "ol/coordinate";
 export default () => {
     window.Alpine.store("GCPMapData", new Map());
     const store = window.Alpine.store("GCPMapData") as Store;
+    let previousWorkspaceUUID: {} | null = null;
 
     return {
         workspaceBinding: null,
@@ -104,7 +105,8 @@ export default () => {
 
         onReveal() {
             const workspaceUUID = window.Alpine.store("currentWorkspaceUUID");
-            if (!workspaceUUID) return;
+            if (!workspaceUUID || workspaceUUID === previousWorkspaceUUID) return;
+            previousWorkspaceUUID = workspaceUUID;
 
             window.htmx.ajax('GET',
                 `/pyodm/workspace/${workspaceUUID}/?thumbnails`,
