@@ -261,8 +261,8 @@ class WorkspaceServeImagesView(WorkspaceActionMixin):
         is_thumbnail = "thumbnails" in request.path
         filename = kwargs.get("filename", "")
         base_dir = self.get_object().get_dir()
-        if thumbnails: target_dir = base / settings.THUMBNAIL_DIR_NAME
-        else: target_dir = base / settings.IMAGES_DIR_NAME
+        if is_thumbnail: target_dir = base_dir / settings.THUMBNAIL_DIR_NAME
+        else: target_dir = base_dir / settings.IMAGES_DIR_NAME
         file_path = target_dir / filename
 
         if not file_path.exists() or not file_path.is_file():
