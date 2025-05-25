@@ -2,31 +2,36 @@
 
 <c-daisy.dialogs.button
     id="workspace-edit-dialog"
-    x-data="{ currentImage: null }"
-    class="w-full h-full max-w-[calc(100%-10rem)] max-h-[calc(100%-10rem)] p-0 flex flex-col border-2"
-    hx-on:htmx:before-request="window.AlpineManager.findComponent('GCPEditor')?.changeGCPs(window.Alpine.store('currentWorkspaceUUID') || '')"
->
+    x-data="{ currentImage: null, open: false }"
+    x-effect="open ? $el.showModal() : $el.close()"
+    class="w-full h-full max-w-[calc(100%-10rem)] max-h-[calc(100%-10rem)] p-0 flex flex-col border-2">
+
     <c-slot name="trigger">
         <div class="size-10 z-100" 
-            @click="currentImage = null">
+            @click.prevent="currentImage = null; open=false">
             {% heroicon_outline 'x-mark' class="size-full" %}
         </div>
     </c-slot>
+
     <div class="bg-secondary">
         <h2 class="text-secondary-content text-3xl p-2">Editing</h2>
     </div>
-    <div x-data="GCPEditor" class="flex flex-row h-full w-full overflow-hidden" 
-        x-effect="$data.changeGCPs($store.currentWorkspaceUUID)">
-        <div class="grow relative min-w-0 max-w-1/2 bg-base-100" 
-            x-effect="$data.changeImage(currentImage?.replace('thumbnails', 'images'))">
-            <div x-ref="thumbnailContainer" class="grid grid-flow-row grid-cols-3 place-items-center gap-4 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
+
+    <div x-data="GCPEditor" 
+        x-effect="open ? $data.onReveal() : $data.saveChanges()"
+        class="flex flex-row h-full w-full overflow-hidden">
+
+        <div class="grow relative min-w-0 max-w-1/2 bg-base-100">
+
+            <div x-ref="thumbnailContainer" 
+                class="grid grid-flow-row grid-cols-3 place-items-center gap-4 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
                 {% partialdef workspace-thumbnails inline %}
                     {% for thumbnail in thumbnails %}
                         <div @click="currentImage = $el.querySelector('img').src" 
                             class="card size-full bg-base-100 shadow-md hover:scale-102 transition-transform duration-300">
                             <figure class="overflow-hidden rounded-t-lg">
                                 <img src="{% url 'workspace:serve-thumbnail' ws_uuid=workspace.uuid filename=thumbnail %}" 
-                                    alt="Thumbnail {{ thumbnail }}" 
+                                    alt="Thumbnail {{ thumbnail }}"
                                     class="size-full object-cover transition-transform duration-300 hover:scale-110">
                             </figure>
                             <div class="card-body p-2 text-center">
@@ -38,36 +43,66 @@
                     {% endfor %}
                 {% endpartialdef workspace-thumbnails %}
             </div>
+            
             <div class="absolute inset-0 bg-inherit"
                 :class="!currentImage && 'opacity-0 pointer-events-none'" >
                 <div class="size-full relative isolate">
-                    <div x-ref="imageMapContainer" class="size-full z-0" style="background-color: transparent;"></div> 
-                    <button class="size-10 absolute right-2 top-2 btn btn-circle btn-primary z-10" 
-                        @click="currentImage = null">
-                        {% heroicon_outline 'x-mark' class="size-full" %}
-                    </button>
-                    <div class="absolute w-full bottom-2 left-0 flex justify-center z-10">
-                        <button @click="$data.createMarker($event)" class="size-10">
+                    <ol-map x-ref="imageMapContainer" class="size-full">
+                        <ol-image-layer x-ref="imageLayerContainer"
+                            x-effect="$data.changeImage(currentImage?.replace('thumbnails', 'images') || '')"></ol-image-layer>
+                        <ol-vector-layer x-ref="imageMarkersLayerContainer"></ol-vector-layer>
+                        <ol-control
+                            position="top-right"
+                            class="size-10 btn btn-circle btn-primary" 
+                            @click="currentImage = null; $refs.imageMarkersLayerContainer.getSource().clear(true);">
+                            {% heroicon_outline 'x-mark' class="size-full" %}
+                        </ol-control>
+                        <ol-control 
+                            position="bottom-center"
+                            class="size-10 btn btn-circle btn-primary"
+                            @click="(marker => $data.registerImageMarker(marker))
+                                ($refs.imageMarkersLayerContainer.createMarkerAtViewCenter())"
+                        >
                             {% heroicon_outline 'plus-circle' class="size-full" %}
-                        </button>
-                    </div>
+                        </ol-control>
+                    </ol-map>
                 </div>
             </div>
         </div>
+        
         <div class="w-2 bg-gray-200 hover:bg-gray-300 relative">
             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-10 bg-gray-600 rounded"></div>
         </div>
-        <div class="grow">
-            <div x-show="$data.showMap" x-ref="gcpMapContainer" class="size-full"></div>
-            <div x-show="!$data.showMap" class="size-full flex" 
-                @file-upload.prevent="$data.readFile($event.detail.file)">
-                <c-components.file-dropzone 
-                    id="gcp-dropzone"
-                    mimes=".txt"
-                    label="Upload your file (TXT)"
-                ><c-slot name="svg"><c-svgs.upload /></c-slot>
-                </c-components.file-dropzone>
-            </div>
+
+        <ol-map x-ref="gcpMapContainer" center="0 0" zoom="2" class="grow" >
+            <ol-tile-layer src.osm></ol-tile-layer>
+            <ol-vector-layer x-ref="GCPsLayerContainer"></ol-vector-layer>
+            <ol-control position="center-left" class="btn btn-circle btn-ghost p-3 text-accent left-center size-16">
+                <label class="size-full">
+                    <input type="file" 
+                        class="hidden" 
+                        accept=".txt" 
+                        x-ref="fileInput"
+                        @change="$data.loadGCPsFromFile($event.target.files?.[0]);"
+                    />
+                    <c-svgs.upload />
+                </label>
+            </ol-control>
+            <ol-control 
+                position="top-right" 
+                class="btn btn-circle btn-ghost size-10 btn-info"
+                @click="alert(JSON.stringify($data.getBindedFeatures(), null, 2))">
+                {% heroicon_outline 'arrow-up-circle' class="size-full" %}
+            </ol-control>
+            <ol-control 
+                position="bottom-center"
+                class="size-10 btn btn-circle btn-primary"
+                @click="(marker => $data.registerGCPMarker(marker))
+                    ($refs.GCPsLayerContainer.createMarkerAtViewCenter())"
+            >
+                {% heroicon_outline 'plus-circle' class="size-full" %}
+            </ol-control>    
+        </ol-map>
         </div>
     </div>
 </c-daisy.dialogs.button>
