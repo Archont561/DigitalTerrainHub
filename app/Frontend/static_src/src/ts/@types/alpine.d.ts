@@ -1,32 +1,37 @@
-type PluginLoader = () => Promise<any>;
-type ComponentLoader = () => Promise<(...args: any[]) => any>;
-type LoaderMap = Record<string, PluginLoader | ComponentLoader>;
-type RegisterFunction = (name: string, loaded: any) => void;
+import type { AlpineComponent } from "alpinejs";
 
-interface GlobalIntervalStore {
-    interval: number;
-    flag: boolean;
-    intervalID: ReturnType<typeof setInterval> | null;
+export namespace alpine {
+    type PluginLoader = () => Promise<any>;
+    type ComponentLoader = () => Promise<(...args: any[]) => any>;
+    type LoaderMap = Record<string, PluginLoader | ComponentLoader>;
+    type RegisterFunction = (name: string, loaded: any) => void;
 
-    stop(): void;
-    init(): void;
-    update(): void;
-    setIntervalValue(interval: number): void;
-    resume(): void;
-}
+    interface GlobalIntervalStore {
+        interval: number;
+        flag: boolean;
+        intervalID: ReturnType<typeof setInterval> | null;
 
-import * as components from "./alpineComponents";
-import type { Alpine } from "alpinejs";
+        stop(): void;
+        init(): void;
+        update(): void;
+        setIntervalValue(interval: number): void;
+        resume(): void;
+    }
 
-export declare global {
-    var Alpine: Alpine;
-}
+    interface AlpineManager {
+        loadedAlpinePlugins: Set<string>;
+        loadedAlpineComponents: Set<string>;
 
-export {
-    components,
-    PluginLoader,
-    ComponentLoader,
-    LoaderMap,
-    RegisterFunction,
-    GlobalIntervalStore,
+        async init(): Promise<void>;
+        async initComponents(): void;
+        findComponent(name: string): AlpineComponent<any>;
+        loadAlpineGlobalState(): void;
+        loadItems(
+            names: string[],
+            loadedSet: Set<string>,
+            loaders: LoaderMap,
+            registerFn: RegisterFunction,
+            itemType: "plugin" | "component"
+        ): Promise<void>;
+    }
 }
