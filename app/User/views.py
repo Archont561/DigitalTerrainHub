@@ -1,16 +1,19 @@
 from django.shortcuts import render, redirect, reverse
 from django.conf import settings
+from django.contrib.auth import login as auth_login
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth import views as auth_views, login
-from django.views.generic import CreateView, UpdateView, DeleteView, DetailView, TemplateView, FormView
+from django.views.generic import CreateView, UpdateView, DeleteView, DetailView, TemplateView, FormView, View
 from django.template import loader
 from django.urls import reverse_lazy
 from django.http import HttpResponse, Http404, HttpResponseBadRequest
+from django_htmx.http import HttpResponseClientRedirect
+
 from .models import UserProfile
 from .forms import UserRegisterForm, UserUpdateForm, UserProfileUpdateForm
-from PyODM.models import OptionsPreset
+from PyODM.models import OptionsPreset, NodeODMTask
 from PyODM.enums import NodeODMOptions
 
 
