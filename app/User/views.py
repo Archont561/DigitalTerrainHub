@@ -25,6 +25,12 @@ class CredentialsLoginView(LoginView):
     template_name = settings.TEMPLATES_NAMESPACES.pages.credentials.login
     next_page = reverse_lazy("account:home")
 
+    def form_valid(self, form):
+        auth_login(self.request, form.get_user())
+        if self.request.htmx:
+            return HttpResponseClientRedirect(self.get_success_url())
+        return HttpResponseRedirect(self.get_success_url())
+
 
 class CredentialsLogoutView(LoginRequiredMixin, LogoutView):
     next_page = reverse_lazy("core:home")   
