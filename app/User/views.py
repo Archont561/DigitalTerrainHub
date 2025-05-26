@@ -85,7 +85,10 @@ class AccountProfileView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         user = self.get_object()
         user_workspaces = user.workspaces.all()
-        user_presets = OptionsPreset.objects.filter(user=user, name__not="Default").values_list('name', flat=True)
+        user_presets = OptionsPreset \
+            .objects.filter(user=user) \
+            .exclude(name="Default") \
+            .values_list('name', flat=True)
         user_tasks = NodeODMTask.objects.filter(workspace__in=user_workspaces)
         context.update({
             "options": NodeODMOptions.to_dict(group=True),
