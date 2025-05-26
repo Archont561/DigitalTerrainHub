@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
-from django_eventstream import urls as event_urls
+from django_eventstream.views import events
 
 
 urlpatterns = [
@@ -12,5 +12,5 @@ urlpatterns = [
     path('map/', include('MapViewer.urls')),
     path('admin/', admin.site.urls),
     path("__reload__/", include("django_browser_reload.urls")),
-    path('events/<channel>/', include((event_urls, 'eventstream'), namespace='eventstream')),
+    path('events/<channel>/', events, name='events'),
 ]
