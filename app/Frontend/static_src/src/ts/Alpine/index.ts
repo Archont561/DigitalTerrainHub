@@ -1,7 +1,23 @@
 import Alpine from "alpinejs";
-import AlpinePluginLoaders from "./loaders/AlpinePluginLoaders";
-import AlpineComponentLoaders from "./loaders/AlpineComponentLoaders";
 import { alpine } from "../@types";
+
+const AlpineComponentLoaders: Record<string, alpine.ComponentLoader> = {
+    OptionsForm: async () => (await import('./components/OptionsForm')).default,
+    UppyWidget: async () => (await import('./components/UppyWidget')).default,
+    GCPEditor: async () => (await import('./components/GCPEditor')).default,
+};
+
+const AlpinePluginLoaders: Record<string, alpine.PluginLoader> = {
+    // anchor: async () => (await import('@alpinejs/anchor')).default,
+    // mask: async () => (await import('@alpinejs/mask')).default,
+    // focus: async () => (await import('@alpinejs/focus')).default,
+    // intersect: async () => (await import('@alpinejs/intersect')).default,
+    // resize: async () => (await import('@alpinejs/resize')).default,
+    // persist: async () => (await import('@alpinejs/persist')).default,
+    // collapse: async () => (await import('@alpinejs/collapse')).default,
+    // morph: async () => (await import('@alpinejs/morph')).default,
+    // sort: async () => (await import('@alpinejs/sort')).default,
+};
 
 
 const GlobalIntervalStore = {
