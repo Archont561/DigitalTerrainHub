@@ -1,97 +1,32 @@
-import json, re, mimetypes
-from django.shortcuts import get_object_or_404
+import json, mimetypes
+from django.conf import settings
+from django.db import IntegrityError
+from django.shortcuts import render, redirect, reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
-from django.views.generic import View, DetailView, CreateView, DeleteView, ListView, TemplateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import PermissionDenied
-from django.template.loader import render_to_string
-from django.shortcuts import render, redirect
-from django.conf import settings
-from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest, HttpResponseNotFound, FileResponse, Http404, HttpResponseForbidden
-from django.urls import reverse_lazy
-from django.db import IntegrityError
+from django.views.generic import (
+    View, 
+    DetailView, 
+    CreateView,
+    DeleteView,
+    UpdateView,
+)
+from django.http import (
+    HttpResponse, 
+    JsonResponse, 
+    HttpResponseBadRequest, 
+    HttpResponseNotFound, 
+    FileResponse, 
+    Http404, 
+    HttpResponseForbidden
+)
 from django_tus.views import TusUpload
 from django_tus.signals import tus_upload_finished_signal
 from pyodm import Node, exceptions
-from pyodm.types import TaskStatus
-from .models import Workspace, NodeODMTask, OptionsPreset
-from .enums import NodeODMOptions
-from .forms import WorkspaceForm
-
-
-def get_task_statuses(request):
-   return JsonResponse({status.name: status.value for status in TaskStatus})
-
-
-def get_task_options(request):
-    response = NodeODMOptions.to_dict()
-    if response:
-        return JsonResponse(response, safe=False)
-    
-    error_response = {
-        "error": "Internal Server Error",
-        "message": "Failed to fetch task options"
-    }
-    return JsonResponse(error_response, status=500)
-
-
-class TaskActionMixin(LoginRequiredMixin, View):
-    def dispatch(self, request, *args, **kwargs):
-        self.task: NodeODMTask = get_object_or_404(NodeODMTask, uuid=kwargs["uuid"])
-        if self.task.workspace.user != request.user:
-            raise PermissionDenied
-        self.node = Node.from_url(settings.NODEODM_URL)
-        return super().dispatch(request, *args, **kwargs)
-    
-    def get_odm_task(self):
-        return self.node.get_task(str(self.task.uuid))
-
-
-class TaskInfoView(TaskActionMixin):
-    def post(self, request, *args, **kwargs):
-        odm_task = self.get_odm_task()
-        task_info = odm_task.info()
-        return JsonResponse({
-            "uuid": str(task_info.uuid),
-            "status": task_info.status.name,
-            "name": self.task.name,
-            "created_at": self.task.created_at.isoformat(),
-        })
-
-
-class TaskCancelView(TaskActionMixin):
-    def post(self, request, *args, **kwargs):
-        odm_task = self.get_odm_task()
-        odm_task.cancel()
-        return JsonResponse({"message": "Task canceled"}, status=201)
-
-
-class TaskDeleteView(TaskActionMixin):
-    def post(self, request, *args, **kwargs):
-        odm_task = self.get_odm_task()
-        odm_task.cancel()
-        odm_task.remove()
-        self.task.delete()
-        return JsonResponse({"message": "Task deleted"}, status=201)
-
-
-class TaskRestartView(TaskActionMixin):
-    def post(self, request, *args, **kwargs):
-        odm_task = self.get_odm_task()
-        odm_task.restart()
-        return JsonResponse({"message": "Task restarted"}, status=201)
-
-
-class TaskOutputView(TaskActionMixin):
-    def post(self, request, *args, **kwargs):
-        odm_task = self.get_odm_task()
-        return JsonResponse(odm_task.output)
-
-
-class TaskStatusView(TaskActionMixin):
-    def post(self, request, *args, **kwargs):
-        return JsonResponse({"status": self.task.status.name})
+from PyODM.models import Workspace, NodeODMTask, OptionsPreset
+from PyODM.enums import NodeODMOptions
+from PyODM.forms import WorkspaceForm
 
 
 class WorkspaceCreateView(LoginRequiredMixin, View):
@@ -104,8 +39,11 @@ class WorkspaceCreateView(LoginRequiredMixin, View):
         return render(request, self.template_name, { self.context_object_name: workspace })
 
 
-class WorkspaceActionMixin(LoginRequiredMixin, View):
+class WorkspaceActionMixin(View):
     def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse("credentials:login"))
+            
         self.workspace_uuid = kwargs.get("ws_uuid", getattr(self, "workspace_uuid", None))
         try: 
             self.workspace = Workspace.objects.get(uuid=self.workspace_uuid)

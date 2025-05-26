@@ -5,7 +5,7 @@ from django.dispatch import receiver
 from django_tus.signals import tus_upload_finished_signal
 from django_eventstream import send_event
 from .models import Workspace, OptionsPreset, NodeODMTask
-from .views import WorkspaceUploadImagesView
+from PyODM.views.workspaces import WorkspaceUploadImagesView
 from pathlib import Path
 from PIL import Image
 
