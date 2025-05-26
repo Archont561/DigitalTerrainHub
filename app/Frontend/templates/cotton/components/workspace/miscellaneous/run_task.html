@@ -36,7 +36,7 @@
                     class="select join-item"
                     x-model="selectedPreset"
                 >
-                    <option disabled selected value="">Pick options preset</option>
+                    <option disabled selected value="Default">Default</option>
                     <optgroup label="Global Presets">
                         {% for name in presets_names.global %}
                             <option value="{{ name }}">{{ name|title }}</option>

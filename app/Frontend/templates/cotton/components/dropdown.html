@@ -2,6 +2,6 @@
     class="dropdown isolate {% if placement %}{{ placement }}{% endif %}" 
     @click.away="$el.open=false"
 >
-    <summary class="contents">{{ header }}</summary>
+    <summary class="appearance-none">{{ header }}</summary>
     <div class="dropdown-content z-10">{{ content }}</div>
 </details>

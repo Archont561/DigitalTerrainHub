@@ -1,0 +1,9 @@
+{% for item in menu_items %}
+    <li>
+        <a data-tab="{{ item }}"
+        @click="currentSettingsTab = $el.dataset.tab"
+        :class="isCurrentTab($el, currentSettingsTab) && 'menu-active font-semibold'" >
+            {{ item }}
+        </a>
+    </li>
+{% endfor %} 

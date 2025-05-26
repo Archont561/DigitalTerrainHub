@@ -5,13 +5,11 @@
             <a class="btn btn-ghost size-full border-4 border-neutral-300" href="{% url 'credentials:login' %}">Login</a>
             <a class="btn btn-ghost size-full border-4 border-neutral-300" href="{% url 'credentials:register' %}">Register</a>
             {% if user.is_authenticated %}
-                <form class="btn btn-ghost size-full border-4 border-neutral-300" 
-                    method="POST"
-                    action="{% url 'credentials:logout' %}">  
-                    <input type="submit" value="Logout">
+                <form method="POST" action="{% url 'credentials:logout' %}">  
+                    {% csrf_token %}
+                    <input type="submit" class="btn btn-ghost size-full border-4 border-neutral-300" value="Logout">
                 </form>
             {% endif %}
         </div>
-        
     </c-slot>
 </c-layouts.base>
