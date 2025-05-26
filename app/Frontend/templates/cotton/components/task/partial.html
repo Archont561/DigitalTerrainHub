@@ -1,6 +1,6 @@
 {% load heroicons %}
 
-<div class="p-5 bg-white border border-gray-200 task rounded-xl shadow-theme-sm dark:border-gray-800 dark:bg-white/5">
+<div class="p-5 border border-neutral rounded-xl shadow-theme-sm">
     <div class="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
         <div class="flex items-start w-full gap-4">
             <span class="text-gray-400">
@@ -9,7 +9,7 @@
             <div>{{ task.uuid }}</div>
             <div>{{ task.name }}</div>
             <div>{{ task.workspace }}</div>
-            <div>{{ task.status }}</div>
+            <div sse-swap="task-{{ task.uuid }}-status" hx-on:htmx:sse-before-message="console.log(event)">{{ task.status }}</div>
             <div>{{ task.created_at }}</div>
         </div>
     </div>
