@@ -92,52 +92,45 @@ class AccountProfileView(LoginRequiredMixin, DetailView):
 
 
 
-class AccountUpdateView(LoginRequiredMixin, UpdateView):
+class AccountUpdateView(LoginRequiredMixin, View):
     forms_mapping = {
         "profile": {
             "class": UserProfileUpdateForm,
             "getter": lambda request: request.user.profile,
-            "template": settings.TEMPLATES_NAMESPACES.cotton.forms.user_profile,
+            "template": settings.TEMPLATES_NAMESPACES.cotton.forms.settings.profile,
         },
         "user": {
             "class": UserUpdateForm,
             "getter": lambda request: request.user,
-            "template": settings.TEMPLATES_NAMESPACES.cotton.forms.user_update,
+            "template": settings.TEMPLATES_NAMESPACES.cotton.forms.settings.user,
         },
-    }    
+    }
+    http_method_names = ["get", "post"]
+
+    def dispatch(self, request, *args, **kwargs):
+        source = request.GET if request.method == 'GET' else request.POST
+        form_type = source.get("form", "").lower()
+        if not form_type: return HttpResponseBadRequest("Missing form type!")
+
+        self.form_mapping = form_mapping = self.forms_mapping.get(form_type, None)
+        if not form_mapping: raise Http404("No such form!")
+
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        rendered_forms = []
-        for _, form_mapping in self.forms_mapping.items():
-            form = form_mapping["class"](instance=form_mapping["getter"](request))
-            rendered_forms.append(
-                loader.render_to_string(form_mapping["template"], { "form": form })
-            )
-        return HttpResponse("".join(rendered_forms))
-
-    def get_form_class(self, request):
-        form_type = self.request.GET.get("form", None)
-        if not form_type: 
-            return HttpResponseBadRequest("Missing form type!")
-
-        form_object = self.forms_mapping.get(form_type, None)
-        if not form_class: 
-            raise Http404("No such form!")
-
-        return form_object["class"], form_object["getter"](request)
+        form_class = self.form_mapping["class"]
+        getter = self.form_mapping["getter"]
+        template = self.form_mapping["template"]
+        form = form_class(instance=getter(request))
+        return render(request, self.form_mapping["template"], { "form": form })
 
     def post(self, request, *args, **kwargs):
-        form_class, instance = self.get_form_class(request)
-        is_file_upload = form_class == UserProfileUpdateForm
-
-        form = form_class(
-            request.POST,
-            request.FILES if is_file_upload else None,
-            instance=instance
-        )
+        form_class = self.form_mapping["class"]
+        getter = self.form_mapping["getter"]
+        template = self.form_mapping["template"]
+        form = form_class(request.POST, request.FILES, instance=getter(request))
         if form.is_valid(): form.save()
-
-        return render(request, self.template_name, {"form": form})
+        return render(request, template, {"form": form })
     
 
 class AccountDeleteView(LoginRequiredMixin, DeleteView):
