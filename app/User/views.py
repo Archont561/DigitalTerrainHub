@@ -80,13 +80,18 @@ class AccountProfileView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        user = self.get_object()
+        user_workspaces = user.workspaces.all()
+        user_presets = OptionsPreset.objects.filter(user=user, name__not="Default").values_list('name', flat=True)
+        user_tasks = NodeODMTask.objects.filter(workspace__in=user_workspaces)
         context.update({
             "options": NodeODMOptions.to_dict(group=True),
-            "workspaces": self.get_object().workspaces.all(),
+            "workspaces": user_workspaces,
             "presets_names": {
                 "global": settings.GLOBAL_OPTION_PRESETS.keys(),
-                "user": OptionsPreset.objects.filter(user=self.get_object()).values_list('name', flat=True),
-            }
+                "user": user_presets,
+            },
+            "tasks": user_tasks
         })
         return context
 
