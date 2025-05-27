@@ -3,7 +3,6 @@ from django.db.models.signals import post_save, post_delete, post_migrate
 from django.conf import settings
 from django.dispatch import receiver
 from django_tus.signals import tus_upload_finished_signal
-from django_eventstream import send_event
 from .models import Workspace, OptionsPreset, NodeODMTask
 from PyODM.views.workspaces import WorkspaceUploadImagesView
 from pathlib import Path
@@ -52,13 +51,3 @@ def handle_tus_upload_finished(sender, upload_file_path: Path, workspace: Worksp
 def create_global_presets(sender, **kwargs):    
     for name, options in settings.GLOBAL_OPTION_PRESETS.items():
         OptionsPreset.objects.get_or_create(user=None, name=name, defaults={"options": options})
-
-
-@receiver(post_save, sender=NodeODMTask)
-def task_status_changed(sender, instance, created, **kwargs):
-    if not created:
-        send_event(
-            channel="pyodm",
-            event_type=f"task-{instance.uuid}-status",
-            data=instance.status
-        )
