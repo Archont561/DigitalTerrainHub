@@ -107,7 +107,6 @@ class WorkspaceDetailView(WorkspaceActionMixin, DetailView):
         return render(request, self.template_name, context)
 
 
-
 class WorkspaceUpdateView(WorkspaceActionMixin):
     http_method_names = ["post", "patch"]
     template_name = settings.TEMPLATES_NAMESPACES.cotton.components.workspace.card
@@ -138,57 +137,79 @@ class WorkspaceDeleteView(WorkspaceActionMixin):
 
 class WorkspaceCreateTaskView(WorkspaceActionMixin, View):
     http_method_names = ["post"]
-    
-    def post(self, request, *args, **kwargs):
+    template_name = settings.TEMPLATES_NAMESPACES.cotton.components.task.partial
+
+    def _parse_request_data(self, request):
         try:
-            data = json.loads(request.body)
+            return json.loads(request.body), None
         except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON"}, status=400)
-            
+            return None, ["Invalid JSON"]
+
+    def _validate_options(self, data):
         task_name = data.get("name", None)
         options_preset = data.get("options-preset", None)
+
         if options_preset == "custom":
             options = data.get("options", None)
             if not options:
-                JsonResponse({"error": "No options given!"}, status=400)
+                return None, ["No options given!"]
         elif not options_preset:
-            return JsonResponse({"error": "No preset specfied and no options send!"}, status=400)
+            return None, ["No preset specified and no options sent!"]
         else:
-            try: 
+            try:
                 options = OptionsPreset.objects.get(name=options_preset)
-            except OptionsPreset.DoesNotExist: 
-                return JsonResponse({"error": "No such preset!"}, status=400)
+            except OptionsPreset.DoesNotExist:
+                return None, ["No such preset!"]
+        
+        return {"name": task_name, "options": options}, []
 
-        node = Node.from_url(settings.NODEODM_URL)
-
-        # Attempt to create the task
+    def _create_task(self, task_data, workspace):
+        try:
+            node = Node.from_url(settings.NODEODM_URL)
+        except exceptions.OdmError as e:
+            return None, [str(e)]
         while True:
             try:
                 task = node.create_task(
-                    files=self.get_object().get_images_paths(),
-                    name=task_name,
-                    options=options,
+                    files=workspace.get_images_paths(),
+                    name=task_data["name"],
+                    options=task_data["options"],
                 )
             except exceptions.NodeResponseError as e:
-                return HttpResponseBadRequest(e)
-            task_info = task.info()
-            task.cancel()
-            try:
-                odm_task = NodeODMTask.objects.create(
-                    uuid=task_info.uuid,
-                    status=task_info.status.value,
-                    name=task_name,
-                    workspace=self.get_object(),
-                )
-            except IntegrityError:
-                task.remove()  # Task already exists, clean up
+                return None, [str(e)]
             else:
-                # Task creation succeeded, restart task and save to DB
-                task.restart()
-                odm_task.save()
-                break
+                task.cancel()
+                try:
+                    odm_task = NodeODMTask.objects.create(
+                        uuid=task.uuid,
+                        status=task.status.value,
+                        name=task_data["name"],
+                        workspace=workspace,
+                    )
+                except IntegrityError:
+                    task.remove()
+                    return None, ["Task creation failed due to integrity error"]
+                else:
+                    task.restart()
+                    odm_task.save()
+                    return task, None
 
-        return JsonResponse({ "uuid": task_info.uuid }, status=200)
+    def post(self, request, *args, **kwargs):
+        steps = [
+            (self._parse_request_data, [request]),
+            (self._validate_options, [None]),
+            (self._create_task, [None, self.get_object()]),
+        ]
+
+        result = None
+        for i, (func, args) in enumerate(steps):
+            if i != 0: args[0] = result
+
+            result, errors = func(*args)
+            if errors:
+                return HttpResponseBadRequest(errors[0])
+
+        return render(request, self.template_name, { "task": result })
 
 
 @method_decorator(cache_control(public=True, max_age=3600), name="get")
