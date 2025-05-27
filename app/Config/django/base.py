@@ -61,7 +61,7 @@ MIDDLEWARE = [
     "Core.middleware.SpacelessMiddleware",
 ]
 
-ROOT_URLCONF = 'Config.urls'
+ROOT_URLCONF = 'Core.urls'
 
 TEMPLATES = [
     {
