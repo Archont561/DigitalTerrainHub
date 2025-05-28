@@ -24,7 +24,7 @@ class CreateCheckoutSessionView(LoginRequiredMixin, View):
         DOMAIN = f"{request.scheme}://{request.get_host()}"
         
         checkout_session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
+            payment_method_types=['card', "blik"],
             line_items=[
                 {
                     'price_data': {
