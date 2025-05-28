@@ -162,11 +162,11 @@ class WorkspaceCreateTaskView(WorkspaceActionMixin, View):
             return None, ["No preset specified and no options sent!"]
         else:
             try:
-                options = OptionsPreset.objects.get(name=options_preset)
+                preset = OptionsPreset.objects.get(name=options_preset)
             except OptionsPreset.DoesNotExist:
                 return None, ["No such preset!"]
         
-        return {"name": task_name, "options": options}, []
+        return {"name": task_name, "options": preset.options}, []
 
     def _create_task(self, task_data, workspace):
         node = Node.from_url(settings.NODEODM_URL)
