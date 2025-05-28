@@ -1,6 +1,6 @@
 <c-layouts.base title="Password reset done">
     <c-slot name="page">
-        <form hx-post="{% url 'credentials:reset-done' %}">
+        <form hx-post="{% url 'credentials:password-reset-done' %}">
             {% csrf_token %}
             {{ form }}
             <input type="submit" value="Submit">
