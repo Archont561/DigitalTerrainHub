@@ -5,7 +5,7 @@ from unittest.mock import patch, Mock, mock_open, MagicMock
 
 from django.test import TestCase, Client
 from django.db import IntegrityError
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound
 from django.urls import reverse
 from django.apps import apps
@@ -26,6 +26,7 @@ from PyODM.views.workspaces import (
 )
 
 app_config = apps.get_app_config("PyODM")
+User = get_user_model()
 
 class WorkspaceViewsTests(TestCase):
     def setUp(self):

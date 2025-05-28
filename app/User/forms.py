@@ -1,9 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from django.contrib.auth import get_user_model
-from .models import UserProfile
-
-User = get_user_model()
+from .models import UserProfile, CustomUser as User
 
 class UserRegisterForm(UserCreationForm):
     email = forms.EmailField()

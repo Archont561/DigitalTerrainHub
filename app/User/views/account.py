@@ -14,6 +14,7 @@ from PyODM.enums import NodeODMOptions
 
 User = get_user_model()
 app_config = apps.get_app_config("User")
+User = get_user_model
 
 class AccountProfileView(LoginRequiredMixin, DetailView):
     model = User

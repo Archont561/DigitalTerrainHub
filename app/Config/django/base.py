@@ -145,6 +145,8 @@ LOGIN_REDIRECT_URL = "/user/profile/"
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+AUTH_USER_MODEL = 'User.CustomUser'
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 TAILWIND_APP_NAME = 'Frontend'
