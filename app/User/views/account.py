@@ -1,5 +1,5 @@
 from django.shortcuts import render, reverse
-from django.conf import settings
+from django.apps import apps
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
@@ -12,11 +12,11 @@ from PyODM.models import OptionsPreset, NodeODMTask
 from PyODM.enums import NodeODMOptions
 
 User = get_user_model()
-
+app_config = apps.get_app_config("User")
 
 class AccountProfileView(LoginRequiredMixin, DetailView):
     model = User
-    template_name = settings.TEMPLATES_NAMESPACES.pages.user_profile
+    template_name = app_config.templates.user_profile
     context_object_name = 'user'
     
     def get_object(self):
@@ -49,12 +49,12 @@ class AccountUpdateView(LoginRequiredMixin, View):
         "profile": {
             "class": UserProfileUpdateForm,
             "getter": lambda request: request.user.profile,
-            "template": settings.TEMPLATES_NAMESPACES.cotton.forms.settings.profile,
+            "template": app_config.templates.cotton.forms.settings.profile,
         },
         "user": {
             "class": UserUpdateForm,
             "getter": lambda request: request.user,
-            "template": settings.TEMPLATES_NAMESPACES.cotton.forms.settings.user,
+            "template": app_config.templates.cotton.forms.settings.user,
         },
     }
     http_method_names = ["get", "post"]

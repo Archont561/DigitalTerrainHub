@@ -41,10 +41,10 @@
         title="Upload images"
     >{% heroicon_outline 'arrow-up-tray' class="size-full" %}</button>
     
-    <c-components.workspace.miscellaneous.run_task
+    <c-workspace.miscellaneous.run_task
         horizontal="dropdown-left" vertical="dropdown-start" 
         class="btn btn-square btn-ghost"
-    >{% heroicon_outline 'wrench' class="size-full" %}</c-components.workspace.miscellaneous.run_task>
+    >{% heroicon_outline 'wrench' class="size-full" %}</c-workspace.miscellaneous.run_task>
     <button
         class="btn btn-square btn-ghost"
         hx-post="{% url 'workspace:delete' ws_uuid=workspace.uuid %}"

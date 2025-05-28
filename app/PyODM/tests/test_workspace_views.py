@@ -8,6 +8,7 @@ from django.db import IntegrityError
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound
 from django.urls import reverse
+from django.apps import apps
 from django.conf import settings
 
 from pyodm import exceptions
@@ -24,6 +25,8 @@ from PyODM.views.workspaces import (
     WorkspaceCreateTaskView,
 )
 
+app_config = apps.get_app_config("PyODM")
+
 class WorkspaceViewsTests(TestCase):
     def setUp(self):
         self.client = Client()
@@ -35,7 +38,7 @@ class WorkspaceViewsTests(TestCase):
     def test_workspace_create_view(self):
         response = self.client.post(reverse("workspace:create"))  # Adjust URL name
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, settings.TEMPLATES_NAMESPACES.cotton.components.workspace.card)
+        self.assertTemplateUsed(response, app_config.templates.cotton.workspace.card)
         self.assertIn("workspace", response.context)
         self.assertEqual(Workspace.objects.filter(user=self.user).count(), 2)  # One from setUp, one created
 
@@ -47,7 +50,7 @@ class WorkspaceViewsTests(TestCase):
     def test_workspace_detail_view_get(self):
         response = self.client.get(reverse("workspace:detail", kwargs={"ws_uuid": self.workspace_uuid}))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, settings.TEMPLATES_NAMESPACES.cotton.components.workspace.card)
+        self.assertTemplateUsed(response, app_config.templates.cotton.workspace.card)
         self.assertEqual(response.context["workspace"], self.workspace)
 
     def test_workspace_detail_view_count_images(self):
