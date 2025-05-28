@@ -172,28 +172,28 @@ class WorkspaceCreateTaskView(WorkspaceActionMixin, View):
         node = Node.from_url(settings.NODEODM_URL)
         while True:
             try:
-                task = node.create_task(
-                    files=workspace.get_images_paths(),
+                odm_task = node.create_task(
+                    files=[str(file_path) for file_path in workspace.get_images_paths()],
                     name=task_data["name"],
                     options=task_data["options"],
                 )
+                task_info = odm_task.info()
             except odm_exceptions.OdmError as e:
                 return None, [str(e)]
             else:
-                task.cancel()
+                odm_task.cancel()
                 try:
-                    odm_task = NodeODMTask.objects.create(
-                        uuid=task.uuid,
-                        status=task.status.value,
+                    task = NodeODMTask.objects.create(
+                        uuid=task_info.uuid,
                         name=task_data["name"],
                         workspace=workspace,
                     )
                 except IntegrityError:
-                    task.remove()
+                    odm_task.remove()
                     return None, ["Task creation failed due to integrity error"]
                 else:
-                    task.restart()
-                    odm_task.save()
+                    odm_task.restart()
+                    task.save()
                     return task, None
 
     def post(self, request, *args, **kwargs):
