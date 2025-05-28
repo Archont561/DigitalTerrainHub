@@ -13,7 +13,7 @@ from django_eventstream.views import events
 
 urlpatterns = [
     path('user/', include('User.urls')),
-    path('payment/', include('Payment.urls')),
+    path('payment/', include(('Payment.urls', "payment"))),
     path('pyodm/', include('PyODM.urls')),
     path('map/', include('MapViewer.urls')),
     path('admin/', admin.site.urls),
