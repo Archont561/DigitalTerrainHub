@@ -3,7 +3,7 @@ from django.apps import apps
 from django.contrib.auth import login as auth_login, views as auth_views
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.views.generic import CreateView, TemplateView, View
 from django.urls import reverse_lazy
 from django.http import HttpResponse
@@ -11,6 +11,8 @@ from django_htmx.http import HttpResponseClientRedirect
 from User.forms import UserRegisterForm
 
 app_config = apps.get_app_config("User")
+User = get_user_model()
+
 
 class CredentialsRegisterView(CreateView):
     model = User
