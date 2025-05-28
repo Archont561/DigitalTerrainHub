@@ -20,7 +20,8 @@
     <form 
         hx-post="{% url 'workspace:create-task' ws_uuid=workspace.uuid %}"
         hx-trigger="submit"
-        hx-swap="none"
+        hx-target="body div[sse-connect='{% url 'events' channel='pyodm' %}']"
+        hx-swap="afterbegin"
         hx-ext="form-json"
         class="bg-base-100 border-neutral border-2 p-3 min-w-xs rounded-box flex flex-col"
     >
@@ -31,12 +32,8 @@
         <div class="join">
             <label class="label join-item">Options</label>
             <div class="join join-item">
-                <select required
-                    name="options-preset" 
-                    class="select join-item"
-                    x-model="selectedPreset"
-                >
-                    <option disabled selected value="Default">Default</option>
+                <select required name="options-preset" class="select join-item">
+                    <option selected value="Default">Default</option>
                     <optgroup label="Global Presets">
                         {% for name in presets_names.global %}
                             <option value="{{ name }}">{{ name|title }}</option>
@@ -54,13 +51,12 @@
                 <button type="button" 
                     class="join-item btn btn-secondary"
                     @click="handleDialogClose()"
-                    :disabled="!selectedPreset"
                 >Edit</button>
             </div>
         </div>
         <input type="hidden" name="options" x-ref="optionsInput" x-model="$store.optionsData">
         <div class="flex justify-end">
-            <input type="submit" value="Create task" class="btn btn-primary" :disabled="!selectedPreset">
+            <input type="submit" value="Create task" class="btn btn-primary">
         </div>
     </form>
 </c-daisy.popover>
