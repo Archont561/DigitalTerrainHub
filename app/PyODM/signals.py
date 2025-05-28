@@ -37,8 +37,8 @@ def handle_tus_upload_finished(sender, upload_file_path: Path, workspace: Worksp
         upload_file_path.unlink()
         return
     else:
-        images_dir = workspace_dir / settings.IMAGES_DIR_NAME
-        upload_file_path.rename(images_dir / filename)
+        final_path = workspace_dir / settings.IMAGES_DIR_NAME / filename
+        upload_file_path.rename(final_path)
 
     if file_mime_type.startswith("image"):
         thumbnails_dir = workspace_dir / settings.THUMBNAIL_DIR_NAME
