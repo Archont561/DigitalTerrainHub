@@ -1,4 +1,5 @@
 import json, mimetypes
+
 from django.apps import apps
 from django.conf import settings
 from django.db import IntegrityError
@@ -24,7 +25,9 @@ from django.http import (
 )
 from django_tus.views import TusUpload
 from django_tus.signals import tus_upload_finished_signal
-from pyodm import Node, exceptions
+
+from pyodm import Node, exceptions as odm_exceptions
+
 from PyODM.models import Workspace, NodeODMTask, OptionsPreset
 from PyODM.enums import NodeODMOptions
 from PyODM.forms import WorkspaceForm
@@ -166,10 +169,7 @@ class WorkspaceCreateTaskView(WorkspaceActionMixin, View):
         return {"name": task_name, "options": options}, []
 
     def _create_task(self, task_data, workspace):
-        try:
-            node = Node.from_url(settings.NODEODM_URL)
-        except exceptions.OdmError as e:
-            return None, [str(e)]
+        node = Node.from_url(settings.NODEODM_URL)
         while True:
             try:
                 task = node.create_task(
@@ -177,7 +177,7 @@ class WorkspaceCreateTaskView(WorkspaceActionMixin, View):
                     name=task_data["name"],
                     options=task_data["options"],
                 )
-            except exceptions.NodeResponseError as e:
+            except odm_exceptions.OdmError as e:
                 return None, [str(e)]
             else:
                 task.cancel()
