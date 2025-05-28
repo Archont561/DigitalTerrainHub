@@ -18,6 +18,7 @@ DEFAULT_FROM_EMAIL = env("DJANGO_APP_EMAIL",
     default=f'{"".join([chunk.lower() for chunk in APP_NAME.split(" ")])}@localhost')
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -44,6 +45,8 @@ INSTALLED_APPS = [
     "PyODM",
     "MapViewer",
 ]
+
+ASGI_APPLICATION = "Config.asgi.application"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
