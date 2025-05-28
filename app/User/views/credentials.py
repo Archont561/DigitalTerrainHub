@@ -32,7 +32,7 @@ class CredentialsLoginView(LoginView):
 
 
 class CredentialsLogoutView(LoginRequiredMixin, LogoutView):
-    next_page = reverse_lazy("home")   
+    next_page = reverse_lazy("core:home")   
 
 
 class CredentialsPasswordResetView(auth_views.PasswordResetView):

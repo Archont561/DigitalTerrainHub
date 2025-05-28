@@ -11,7 +11,13 @@ from .views import (
 from django_eventstream.views import events
 
 
+core_patterns = [
+    path('', HomeView.as_view(), name='home'),
+    path('products-viewer/', ProductsView.as_view(), name='products-viewer'),
+]
+
 urlpatterns = [
+    path("", include((core_patterns, "core"))),
     path('user/', include('User.urls')),
     path('payment/', include(('Payment.urls', "payment"))),
     path('pyodm/', include('PyODM.urls')),
@@ -19,9 +25,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("__reload__/", include("django_browser_reload.urls")),
     path('events/<channel>/', events, name='events'),
-    
-    path('', HomeView.as_view(), name='home'),
-    path('products-viewer/', ProductsView.as_view(), name='products-viewer'),
 ]
 
 handler404 = Custom404View.as_view()
