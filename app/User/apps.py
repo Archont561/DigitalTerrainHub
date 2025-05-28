@@ -1,9 +1,14 @@
 from django.apps import AppConfig
+from Core.helpers.generators import generate_templates_namespaces
+from pathlib import Path
 
+templates_dir = Path(__file__).parent / "templates"
+templates_dir.mkdir(exist_ok=True)
 
 class UsersConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'User'
+    templates = generate_templates_namespaces(templates_dir)
 
     def ready(self):
         import User.signals

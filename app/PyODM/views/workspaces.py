@@ -1,4 +1,5 @@
 import json, mimetypes
+from django.apps import apps
 from django.conf import settings
 from django.db import IntegrityError
 from django.shortcuts import render, redirect, reverse
@@ -28,9 +29,10 @@ from PyODM.models import Workspace, NodeODMTask, OptionsPreset
 from PyODM.enums import NodeODMOptions
 from PyODM.forms import WorkspaceForm
 
+app_config = apps.get_app_config("PyODM")
 
 class WorkspaceCreateView(LoginRequiredMixin, View):
-    template_name = settings.TEMPLATES_NAMESPACES.cotton.components.workspace.card
+    template_name = app_config.templates.cotton.workspace.card
     context_object_name = "workspace"
     http_method_names = ["post"]
     
@@ -74,7 +76,7 @@ class WorkspaceUploadImagesView(WorkspaceActionMixin, TusUpload):
 
 
 class WorkspaceDetailView(WorkspaceActionMixin, DetailView):
-    template_name = settings.TEMPLATES_NAMESPACES.cotton.components.workspace.card
+    template_name = app_config.templates.cotton.workspace.card
     context_object_name = "workspace"
     http_method_names = ["get"]
     
@@ -99,7 +101,7 @@ class WorkspaceDetailView(WorkspaceActionMixin, DetailView):
         if are_thumbnails:
             file_names = [file_path.name for file_path in workspace.get_images_paths(thumbnails=are_thumbnails)]
             context.update({ "thumbnails": file_names })
-            partial = f"{settings.TEMPLATES_NAMESPACES.cotton.components.workspace.miscellaneous.edit}#workspace-thumbnails"
+            partial = f"{app_config.templates.cotton.workspace.miscellaneous.edit}#workspace-thumbnails"
             return render(request, partial, context)
 
         if are_images: return HttpResponseForbidden("Not implemented")
@@ -109,7 +111,7 @@ class WorkspaceDetailView(WorkspaceActionMixin, DetailView):
 
 class WorkspaceUpdateView(WorkspaceActionMixin):
     http_method_names = ["post", "patch"]
-    template_name = settings.TEMPLATES_NAMESPACES.cotton.components.workspace.card
+    template_name = app_config.templates.cotton.workspace.card
 
     def patch(self, request, *args, **kwargs):
         workspace = self.get_object()
@@ -137,7 +139,7 @@ class WorkspaceDeleteView(WorkspaceActionMixin):
 
 class WorkspaceCreateTaskView(WorkspaceActionMixin, View):
     http_method_names = ["post"]
-    template_name = settings.TEMPLATES_NAMESPACES.cotton.components.task.partial
+    template_name = app_config.templates.cotton.task.partial
 
     def _parse_request_data(self, request):
         try:

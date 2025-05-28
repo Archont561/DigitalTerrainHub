@@ -1,7 +1,7 @@
 import json
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.conf import settings 
+from django.apps import apps
 from django.http import HttpResponseForbidden, HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect, reverse
 from django.views.generic import View, DetailView, DeleteView
@@ -9,6 +9,7 @@ from django.views.generic import View, DetailView, DeleteView
 from PyODM.models import NodeODMTask
 from pyodm import exceptions
 
+app_config = apps.get_app_config("PyODM")
 
 class TaskActionMixin(View):
     http_method_names = ["post"]
@@ -30,7 +31,7 @@ class TaskActionMixin(View):
 
 class TaskDetailView(TaskActionMixin, DetailView):
     http_method_names = ["get"]
-    template_name = settings.TEMPLATES_NAMESPACES.cotton.components.task.partial
+    template_name = app_config.templates.cotton.task.partial
     context_object_name = "task"
 
     def get_object(self):

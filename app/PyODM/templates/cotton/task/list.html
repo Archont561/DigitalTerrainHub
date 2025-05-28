@@ -33,7 +33,7 @@
             hx-ext="sse" 
             sse-connect="{% url 'events' channel='pyodm' %}">
             {% for task in tasks %}
-                <c-components.task.partial />
+                <c-task.partial />
             {% endfor %}
         </div>
     </div>

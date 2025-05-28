@@ -2,7 +2,6 @@ import shutil, sys
 from Config.env import BASE_DIR, env
 
 sys.path.append(BASE_DIR / "Core")
-from Core.helpers.generators import generate_templates_namespaces
 
 env.read_env(BASE_DIR / ".env")
 
@@ -67,7 +66,12 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / "Frontend" / "templates"
+            BASE_DIR / "Frontend" / "templates",
+            BASE_DIR / "Core" / "templates",
+            BASE_DIR / "MapViewer" / "templates",
+            BASE_DIR / "Payment" / "templates",
+            BASE_DIR / "PyODM" / "templates",
+            BASE_DIR / "User" / "templates",
         ],
         'APP_DIRS': False,
         'OPTIONS': {
@@ -143,7 +147,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 TAILWIND_APP_NAME = 'Frontend'
 TAILWIND_CSS_PATH = 'dist/styles.css'
 NPM_BIN_PATH = shutil.which("npm")
-TEMPLATES_NAMESPACES = generate_templates_namespaces(BASE_DIR / "Frontend" / "templates")
 
 DJANGO_VITE = {
     "default": {
