@@ -1,73 +1,74 @@
-import json, re, mimetypes
-from django.shortcuts import get_object_or_404
-from django.views.generic import View
+import json
+
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, redirect
-from django.conf import settings
-from django.http import (
-    HttpResponse, 
-    JsonResponse, 
-    HttpResponseForbidden
-)
-from pyodm import Node, exceptions
-from pyodm.types import TaskStatus
+from django.conf import settings 
+from django.http import HttpResponseForbidden, HttpResponse
+from django.shortcuts import get_object_or_404, render, redirect, reverse
+from django.views.generic import View, DetailView, DeleteView
+
 from PyODM.models import NodeODMTask
-from PyODM.enums import NodeODMOptions
+from pyodm import exceptions
 
-class TaskActionMixin(LoginRequiredMixin, View):
+
+class TaskActionMixin(View):
+    http_method_names = ["post"]
+
     def dispatch(self, request, *args, **kwargs):
-        self.task: NodeODMTask = get_object_or_404(NodeODMTask, uuid=kwargs["uuid"])
+        if not request.user.is_authenticated:
+            return redirect(reverse("credentials:login"))
+
+        task_uuid = kwargs.get("uuid", None)
+        if not task_uuid: 
+            return HttpResponseForbidden("The task ID (UUID) is missing in the request URL.")
+        
+        self.task = get_object_or_404(NodeODMTask, uuid=task_uuid)
         if self.task.workspace.user != request.user:
-            return HttpResponseForbidden()
-        self.node = Node.from_url(settings.NODEODM_URL)
+            return HttpResponseForbidden("You do not have permission to access this task.")
+        
         return super().dispatch(request, *args, **kwargs)
-    
-    def get_odm_task(self):
-        return self.node.get_task(str(self.task.uuid))
 
 
-class TaskInfoView(TaskActionMixin):
-    def post(self, request, *args, **kwargs):
-        odm_task = self.get_odm_task()
-        task_info = odm_task.info()
-        return JsonResponse({
-            "uuid": str(task_info.uuid),
-            "status": task_info.status.name,
-            "name": self.task.name,
-            "created_at": self.task.created_at.isoformat(),
-        })
+class TaskDetailView(TaskActionMixin, DetailView):
+    http_method_names = ["get"]
+    template_name = settings.TEMPLATES_NAMESPACES.cotton.components.task.partial
+    context_object_name = "task"
+
+    def get_object(self):
+        return self.task
 
 
 class TaskCancelView(TaskActionMixin):
     def post(self, request, *args, **kwargs):
-        odm_task = self.get_odm_task()
-        odm_task.cancel()
-        return JsonResponse({"message": "Task canceled"}, status=201)
+        try:
+            self.task.cancel()
+            return HttpResponse()
+        except exceptions.OdmError as e:
+            return HttpResponse(str(e), status=500)
 
 
 class TaskDeleteView(TaskActionMixin):
     def post(self, request, *args, **kwargs):
-        odm_task = self.get_odm_task()
-        odm_task.cancel()
-        odm_task.remove()
-        self.task.delete()
-        return JsonResponse({"message": "Task deleted"}, status=201)
+        try:
+            self.task.delete()
+            return HttpResponse()
+        except exceptions.OdmError as e:
+            return HttpResponse(str(e), status=500)
 
 
 class TaskRestartView(TaskActionMixin):
     def post(self, request, *args, **kwargs):
-        odm_task = self.get_odm_task()
-        odm_task.restart()
-        return JsonResponse({"message": "Task restarted"}, status=201)
+        try:
+            self.task.restart()
+            return HttpResponse()
+        except exceptions.OdmError as e:
+            return HttpResponse(str(e), status=500)
 
 
 class TaskOutputView(TaskActionMixin):
     def post(self, request, *args, **kwargs):
-        odm_task = self.get_odm_task()
-        return JsonResponse(odm_task.output)
-
-
-class TaskStatusView(TaskActionMixin):
-    def post(self, request, *args, **kwargs):
-        return JsonResponse({"status": self.task.status.name})
+        try:
+            output = self.task.output()
+            return HttpResponse(json.dumps(output))
+        except exceptions.OdmError as e:
+            return HttpResponse(str(e), status=500)
 

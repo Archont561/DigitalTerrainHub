@@ -1,9 +1,13 @@
 import uuid, calendar
-from django.db import models
-from django.contrib.auth.models import User
-from pyodm.types import TaskStatus
-from django.conf import settings
 from pathlib import Path
+
+from django.db import models
+from django.conf import settings
+from django.contrib.auth.models import User
+
+from pyodm import Node, exceptions
+from pyodm.types import TaskStatus
+
 from Core.helpers.generators import generate_docker_container_style_name
 
 
@@ -44,8 +48,23 @@ class NodeODMTask(models.Model):
     )
     name = models.CharField(max_length=100)
 
-    def get_status(self) -> TaskStatus:
-            return TaskStatus(self.status)
+    def get_odm_task(self):
+        node = Node.from_url(settings.NODEODM_URL)
+        return node.get_task(self.uuid) 
+
+    def cancel(self):
+        return self.get_odm_task().cancel()
+
+    def restart(self, options: dict):
+        return self.get_odm_task().restart(options)
+
+    def output(self, line: int):
+        return self.get_odm_task().output(line)
+
+    def delete(self, *args, **kwargs):
+        self.get_odm_task().delete()
+        return super().delete(*args, **kwargs)
+
 
 class OptionsPreset(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="presets", null=True)
