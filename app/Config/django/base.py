@@ -174,3 +174,4 @@ TUS_MAX_FILE_SIZE = DATA_UPLOAD_MAX_MEMORY_SIZE
 EVENTSTREAM_CHANNELMANAGER_CLASS = 'Core.eventstream.DelegatingChannelManager'
 
 from Config.settings.NodeODM import *
+from Config.settings.Stripe import *
