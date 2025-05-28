@@ -30,7 +30,7 @@ class CredentialsLoginView(LoginView):
         auth_login(self.request, form.get_user())
         if self.request.htmx:
             return HttpResponseClientRedirect(self.get_success_url())
-        return HttpResponseRedirect(self.get_success_url())
+        return redirect(self.get_success_url())
 
 
 class CredentialsLogoutView(LoginRequiredMixin, LogoutView):
@@ -60,7 +60,7 @@ class CredentialsPasswordResetCompleteView(auth_views.PasswordResetCompleteView)
 
 class CredentialsPasswordChangeView(auth_views.PasswordChangeView):
     template_name = app_config.templates.password.change
-    success_url = reverse_lazy('user-password:change-done')
+    success_url = reverse_lazy('credentials:password-change-done')
 
 
 class CredentialsPasswordChangeDoneView(auth_views.PasswordChangeDoneView):
