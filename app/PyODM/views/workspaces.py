@@ -32,16 +32,21 @@ from PyODM.models import Workspace, NodeODMTask, OptionsPreset
 from PyODM.enums import NodeODMOptions
 from PyODM.forms import WorkspaceForm
 
+from Core.mixins import MessagesMixin
+from Core.models import Notification
+
 app_config = apps.get_app_config("PyODM")
 
-class WorkspaceCreateView(LoginRequiredMixin, View):
+class WorkspaceCreateView(LoginRequiredMixin, View, MessagesMixin):
     template_name = app_config.templates.cotton.workspace.card
     context_object_name = "workspace"
     http_method_names = ["post"]
     
     def post(self, request, *args, **kwargs):
         workspace = Workspace.objects.create(user=request.user)
-        return render(request, self.template_name, { self.context_object_name: workspace })
+        Notification.add(request, "Workspace Created")
+        return self.render_with_oob_messages(
+            request, self.template_name, { self.context_object_name: workspace })
 
 
 class WorkspaceActionMixin(View):
