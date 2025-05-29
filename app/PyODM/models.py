@@ -46,7 +46,7 @@ class NodeODMTask(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.SmallIntegerField(
         choices=[(status.value, status.name) for status in TaskStatus],
-        default=TaskStatus.RUNNING.value,
+        default=TaskStatus.QUEUED.value,
     )
     name = models.CharField(max_length=100)
 
