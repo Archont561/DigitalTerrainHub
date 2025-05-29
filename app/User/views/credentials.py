@@ -26,6 +26,14 @@ class CredentialsLoginView(LoginView):
     template_name = app_config.templates.login
     next_page = reverse_lazy("account:home")
 
+    def get(self, request, *arg, **kwargs):
+        if not request.user.is_authenticated:
+            return super().get(self, request, *arg, **kwargs)
+        
+        if self.request.htmx:
+            return HttpResponseClientRedirect(self.get_success_url())
+        return redirect(self.get_success_url())
+
     def form_valid(self, form):
         auth_login(self.request, form.get_user())
         if self.request.htmx:

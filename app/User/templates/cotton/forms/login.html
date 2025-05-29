@@ -5,9 +5,6 @@
     hx-post="{% url 'credentials:login' %}"
     hx-target="#login-form"
     hx-swap="outerHTML"
-    data-show-loader="modal"
-    hx-on:htmx:before-swap="event.preventDefault();console.log(event);"
-    hx-on:htmx:after-request="event.preventDefault();console.log(event);(loc => loc && (loc))(event.detail.xhr.getResponseHeader('Location'))"
     class="space-y-4"
 >
     {% csrf_token %}
