@@ -7,6 +7,7 @@ from .views import (
     HomeView,
     ProductsView,
     Custom404View,
+    NotificationReadView,
 )
 from django_eventstream.views import events
 
@@ -14,6 +15,7 @@ from django_eventstream.views import events
 core_patterns = [
     path('', HomeView.as_view(), name='home'),
     path('products-viewer/', ProductsView.as_view(), name='products-viewer'),
+    path('notifications/<int:pk>/', NotificationReadView.as_view(), name="read-notification"),
 ]
 
 urlpatterns = [
