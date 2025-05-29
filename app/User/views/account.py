@@ -10,7 +10,7 @@ from django.http import HttpResponse, Http404, HttpResponseBadRequest
 from User.models import UserProfile
 from User.forms import UserUpdateForm, UserProfileUpdateForm
 from PyODM.models import OptionsPreset, NodeODMTask
-from PyODM.enums import NodeODMOptions
+from PyODM.utils import ODMTaskOptions
 
 User = get_user_model()
 app_config = apps.get_app_config("User")
@@ -34,7 +34,7 @@ class AccountProfileView(LoginRequiredMixin, DetailView):
             .values_list('name', flat=True)
         user_tasks = NodeODMTask.objects.filter(workspace__in=user_workspaces)
         context.update({
-            "options": NodeODMOptions.to_dict(group=True),
+            "options": ODMTaskOptions.to_dict(group=True),
             "workspaces": user_workspaces,
             "presets_names": {
                 "global": settings.GLOBAL_OPTION_PRESETS.keys(),

@@ -29,7 +29,6 @@ from django_tus.signals import tus_upload_finished_signal
 from pyodm import Node, exceptions as odm_exceptions
 
 from PyODM.models import Workspace, NodeODMTask, OptionsPreset
-from PyODM.enums import NodeODMOptions
 from PyODM.forms import WorkspaceForm
 
 from Core.mixins import MessagesMixin
