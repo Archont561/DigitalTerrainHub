@@ -9,7 +9,9 @@
             <div>{{ task.uuid }}</div>
             <div>{{ task.name }}</div>
             <div>{{ task.workspace }}</div>
-            <div sse-swap="task-{{ task.uuid }}-status" hx-on:htmx:sse-before-message="console.log(event)">{{ task.status }}</div>
+            <div hx-get="{% url 'task:status' uuid=task.uuid %}"
+                hx-trigger="sse:task-{{ task.uuid }}-status"
+                >{{ task.get_status_display }}</div>
             <div>{{ task.created_at }}</div>
         </div>
     </div>
