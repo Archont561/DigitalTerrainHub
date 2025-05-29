@@ -44,7 +44,7 @@ class WorkspaceCreateView(LoginRequiredMixin, View, MessagesMixin):
     
     def post(self, request, *args, **kwargs):
         workspace = Workspace.objects.create(user=request.user)
-        Notification.add(request, "Workspace Created")
+        Notification.add(request, "Workspace Created", related_object=workspace)
         return self.render_with_oob_messages(
             request, self.template_name, { self.context_object_name: workspace })
 
