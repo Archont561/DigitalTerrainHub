@@ -1,4 +1,4 @@
-<c-layouts.base title="Password reset confirm">
+<c-base title="Password reset confirm">
     <c-slot name="page">
         <form hx-post="?">
             {% csrf_token %}
@@ -7,4 +7,4 @@
         </form>
         <a class="bg-primary m-4" href="{% url 'account:home' %}">Profile</a>
     </c-slot>
-</c-layouts.base>
+</c-base>
