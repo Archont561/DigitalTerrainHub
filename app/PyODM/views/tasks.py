@@ -73,3 +73,8 @@ class TaskOutputView(TaskActionMixin):
         except exceptions.OdmError as e:
             return HttpResponse(str(e), status=500)
 
+class TaskStatusView(TaskActionMixin):
+    http_method_names = ["get"]
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponse(self.task.get_status_display())
