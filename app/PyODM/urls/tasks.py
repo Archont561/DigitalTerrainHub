@@ -5,6 +5,7 @@ from PyODM.views.tasks import (
     TaskRestartView,
     TaskOutputView,
     TaskDeleteView,
+    TaskStatusView,
 )
 
 url_patterns = [
@@ -13,4 +14,5 @@ url_patterns = [
     path("<uuid:uuid>/restart/", TaskRestartView.as_view(), name="restart"),
     path("<uuid:uuid>/delete/", TaskDeleteView.as_view(), name="delete"),
     path("<uuid:uuid>/output/", TaskOutputView.as_view(), name="output"),
+    path("<uuid:uuid>/status/", TaskStatusView.as_view(), name="status"),
 ]
