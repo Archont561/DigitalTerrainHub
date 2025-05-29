@@ -1,0 +1,10 @@
+{% if messages %}
+    <div id="notification-stack" hx-swap-oob="beforeend">
+        {% for message in messages %}
+            <div x-init="$nextTick(() => { setTimeout(() => { $el.remove() }, 3000) })"
+                class="alert{% if alert_styling %} {{ alert_styling }}{% endif %}">
+                <span>{{ message }}</span>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}

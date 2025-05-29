@@ -22,5 +22,7 @@
 </head>
 <body hx-headers='{"x-csrftoken": "{{ csrf_token }}"}' hx-ext="inner">
     {{ page }}
+
+    <div id="notification-stack" class="stack toast"></div>
 </body>
 </html>
