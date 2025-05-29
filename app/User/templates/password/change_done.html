@@ -1,4 +1,4 @@
-<c-layouts.base title="Password change done">
+<c-base title="Password change done">
     <c-slot name="page">
         <form hx-post="{% url 'credentials:password-change-done' %}">
             {% csrf_token %}
@@ -7,4 +7,4 @@
         </form>
         <a class="bg-primary m-4" href="{% url 'core:home' %}">Home</a>
     </c-slot>
-</c-layouts.base>
+</c-base>

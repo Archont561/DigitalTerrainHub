@@ -1,6 +1,6 @@
 {% load heroicons %}
 
-<c-layouts.base title="Profile">
+<c-base title="Profile">
     <c-slot name="page">
         <div x-data="{ currentMainTab: 'Home', isCurrentTab(el, tab) { return tab === el.dataset.tab; } }" 
             class="bg-base-100 text-base-content min-h-screen flex">
@@ -109,4 +109,4 @@
             </c-daisy.dialogs.button>
         </div>
     </c-slot>
-</c-layouts.base>
+</c-base>
