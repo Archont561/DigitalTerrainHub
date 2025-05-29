@@ -51,3 +51,14 @@ def handle_tus_upload_finished(sender, upload_file_path: Path, workspace: Worksp
 def create_global_presets(sender, **kwargs):    
     for name, options in settings.GLOBAL_OPTION_PRESETS.items():
         OptionsPreset.objects.get_or_create(user=None, name=name, defaults={"options": options})
+
+
+@receiver(post_save, sender=NodeODMTask)
+def start_monitoring_task_status(sender, instance, created, **kwargs):
+    if created:
+        from .sse import PyODMChannelManager
+        PyODMChannelManager.start_monitoring_task_status(
+            channel="pyodm",
+            uuid=instance.uuid,
+        )
+
