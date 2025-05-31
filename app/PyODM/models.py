@@ -67,6 +67,11 @@ class NodeODMTask(models.Model):
         self.get_odm_task().delete()
         return super().delete(*args, **kwargs)
 
+    def get_task_output_dir(self):
+        task_output_dir = self.workspace.get_dir() / settings.OUTPUT_DIR_NAME / str(self.uuid)
+        task_output_dir.mkdir(parents=True, exist_ok=True)
+        return task_output_dir
+
 
 class OptionsPreset(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="presets", null=True)

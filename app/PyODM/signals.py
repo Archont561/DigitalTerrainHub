@@ -14,8 +14,10 @@ def create_workspace_folder(sender, instance, created, **kwargs):
     if created:
         thumbnails_dir = instance.get_dir() / settings.THUMBNAIL_DIR_NAME
         images_dir = instance.get_dir() / settings.IMAGES_DIR_NAME
+        outputs_dir = instance.get_dir() / settings.OUTPUT_DIR_NAME
         thumbnails_dir.mkdir(parents=True, exist_ok=True)
         images_dir.mkdir(parents=True, exist_ok=True)
+        outputs_dir.mkdir(parents=True, exist_ok=True)
 
 
 @receiver(post_delete, sender=Workspace)
