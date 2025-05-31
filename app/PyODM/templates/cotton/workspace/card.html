@@ -7,7 +7,7 @@
     class="list-row place-items-center"
     data-uuid="{{ workspace.uuid }}"
     x-effect="(window.Alpine.store('globalInterval').flag).toString() && (relativeTime = window.luxon.DateTime.fromSeconds(createdEpoch).toRelative())"
-    @click="$store.currentWorkspaceUUID = $el.dataset.uuid"
+    @click.capture="$store.currentWorkspaceUUID = $el.dataset.uuid"
 >
     <div class="grid place-items-center grid-cols-[auto_auto] gap-1">
         <c-svgs.photos class="size-16"></c-svgs.photos>
