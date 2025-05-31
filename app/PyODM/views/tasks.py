@@ -78,3 +78,11 @@ class TaskStatusView(TaskActionMixin):
 
     def get(self, request, *args, **kwargs):
         return HttpResponse(self.task.get_status_display())
+
+class TaskProcessingEndWebhookView(View):
+
+    def dispatch(self, request, *args, **kwargs):
+        print(request)
+        print(args)
+        print(kwargs)
+        return super().dispatch(request, *args, **kwargs)

@@ -6,6 +6,7 @@ from PyODM.views.tasks import (
     TaskOutputView,
     TaskDeleteView,
     TaskStatusView,
+    TaskProcessingEndWebhookView,
 )
 
 url_patterns = [
@@ -15,4 +16,5 @@ url_patterns = [
     path("<uuid:uuid>/delete/", TaskDeleteView.as_view(), name="delete"),
     path("<uuid:uuid>/output/", TaskOutputView.as_view(), name="output"),
     path("<uuid:uuid>/status/", TaskStatusView.as_view(), name="status"),
+    path("processing-end-webhook/", TaskProcessingEndWebhookView.as_view(), name="processing-end-webhook"),
 ]
