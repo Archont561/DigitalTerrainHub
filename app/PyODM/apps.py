@@ -1,5 +1,5 @@
 from django.apps import AppConfig
-from Core.helpers.generators import generate_templates_namespaces
+from Core.utils.generators import generate_templates_namespaces
 from pathlib import Path
 
 templates_dir = Path(__file__).parent / "templates"

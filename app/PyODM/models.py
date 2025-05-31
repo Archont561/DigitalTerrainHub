@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 from pyodm import Node, exceptions
 from pyodm.types import TaskStatus
 
-from Core.helpers.generators import generate_docker_container_style_name
+from Core.utils.generators import generate_docker_container_style_name
 
 User = get_user_model()
 
