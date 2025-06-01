@@ -17,11 +17,11 @@ load_env() {
 
 MANAGE_PY="./app/manage.py"
 NPM_DIR="./app/Frontend/static_src"
-NGROK="./ngrok.exe"
+NGROK="./test/ngrok.exe"
 NGROK_URL="sensible-firstly-labrador.ngrok-free.app"
 PORT="8000"
 ENV_FILE="./app/.env"
-STRIPE="./stripe.exe"
+STRIPE="./test/stripe.exe"
 
 # Main command handler
 case "$1" in
