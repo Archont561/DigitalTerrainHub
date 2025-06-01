@@ -2,12 +2,16 @@ import json
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.apps import apps
-from django.http import HttpResponseForbidden, HttpResponse
+from django.http import HttpResponseForbidden, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, render, redirect, reverse
 from django.views.generic import View, DetailView, DeleteView
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
+from PyODM.signals import odm_task_download
 from PyODM.models import NodeODMTask
 from pyodm import exceptions
+from pyodm.types import TaskStatus
 
 app_config = apps.get_app_config("PyODM")
 
@@ -79,10 +83,22 @@ class TaskStatusView(TaskActionMixin):
     def get(self, request, *args, **kwargs):
         return HttpResponse(self.task.get_status_display())
 
+@method_decorator(csrf_exempt, name='dispatch')
 class TaskProcessingEndWebhookView(View):
 
-    def dispatch(self, request, *args, **kwargs):
-        print(request)
-        print(args)
-        print(kwargs)
-        return super().dispatch(request, *args, **kwargs)
+    def post(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+        except Exception:
+            return HttpResponseBadRequest()
+            
+        task_uuid = data["uuid"]
+        task_status_code = data["status"]["code"]
+        task = NodeODMTask.objects.get(uuid=task_uuid)
+        task.status = task_status_code
+        task.save()
+
+        if task_status_code == TaskStatus.COMPLETED.value:
+            odm_task_download.send(sender=task.__class__, instance=task)
+
+        return HttpResponse(status=200)

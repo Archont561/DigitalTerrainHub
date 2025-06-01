@@ -72,6 +72,9 @@ class NodeODMTask(models.Model):
         task_output_dir.mkdir(parents=True, exist_ok=True)
         return task_output_dir
 
+    def download_on_complete(self, *args, **kwargs):
+        return self.get_odm_task().download_assets(*args, **kwargs)
+
 
 class OptionsPreset(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="presets", null=True)

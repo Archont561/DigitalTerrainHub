@@ -180,7 +180,7 @@ class WorkspaceCreateTaskView(WorkspaceActionMixin, View):
                     files=[str(file_path) for file_path in workspace.get_images_paths()],
                     name=task_data["name"],
                     options=task_data["options"],
-                    webhook=request.build_absolute_uri(reverse("task:processing-end-webhook")),
+                    webhook=self.request.build_absolute_uri(reverse("task:processing-end-webhook")),
                 )
                 task_info = odm_task.info()
             except odm_exceptions.OdmError as e:

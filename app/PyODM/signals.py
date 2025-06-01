@@ -1,5 +1,5 @@
 import shutil, magic
-from django.db.models.signals import post_save, post_delete, post_migrate
+from django.db.models.signals import post_save, post_delete, post_migrate, Signal
 from django.conf import settings
 from django.dispatch import receiver
 from django_tus.signals import tus_upload_finished_signal
@@ -64,3 +64,9 @@ def start_monitoring_task_status(sender, instance, created, **kwargs):
             uuid=instance.uuid,
         )
 
+odm_task_download = Signal()
+
+@receiver(odm_task_download, sender=NodeODMTask)
+def download_task_on_complete(sender, task, **kwargs):
+    task_output_dir = task.get_task_output_dir()
+    task.download_on_complete(destination=task_output_dir)
