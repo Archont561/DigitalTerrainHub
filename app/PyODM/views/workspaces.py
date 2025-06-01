@@ -76,10 +76,11 @@ class WorkspaceUploadImagesView(WorkspaceActionMixin, TusUpload):
         return super().dispatch(request, *args, **kwargs)
 
     def send_signal(self, tus_file):
+        workspace = self.get_object()
         tus_upload_finished_signal.send(
-            sender=self.__class__,
+            sender=workspace.__class__,
             upload_file_path=settings.TUS_DESTINATION_DIR / tus_file.filename,
-            workspace=self.get_object())
+            workspace=workspace)
 
 
 class WorkspaceDetailView(WorkspaceActionMixin, DetailView):

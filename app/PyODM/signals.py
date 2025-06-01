@@ -4,7 +4,6 @@ from django.conf import settings
 from django.dispatch import receiver
 from django_tus.signals import tus_upload_finished_signal
 from .models import Workspace, OptionsPreset, NodeODMTask
-from PyODM.views.workspaces import WorkspaceUploadImagesView
 from pathlib import Path
 from PIL import Image
 
@@ -27,7 +26,7 @@ def delete_workspace_folder(sender, instance, **kwargs):
         shutil.rmtree(workspace_path)
 
 
-@receiver(tus_upload_finished_signal, sender=WorkspaceUploadImagesView)
+@receiver(tus_upload_finished_signal, sender=Workspace)
 def handle_tus_upload_finished(sender, upload_file_path: Path, workspace: Workspace, **kwargs):
     if not upload_file_path.exists(): return
     mime = magic.Magic(mime=True)
