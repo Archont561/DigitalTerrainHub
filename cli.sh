@@ -17,6 +17,9 @@ load_env() {
 
 MANAGE_PY="./app/manage.py"
 NPM_DIR="./app/Frontend/static_src"
+NGROK="./ngrok.exe"
+NGROK_URL="sensible-firstly-labrador.ngrok-free.app"
+PORT="8000"
 ENV_FILE="./app/.env"
 
 # Main command handler
@@ -44,6 +47,9 @@ case "$1" in
     npm "$@"
     cd "$cwd"
     ;;
+  ngrok)
+    $NGROK http --url=sensible-firstly-labrador.ngrok-free.app $PORT
+  ;;
   *)
     echo "❌ Unknown command: $1"
     exit 1
