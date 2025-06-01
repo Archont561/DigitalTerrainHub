@@ -21,6 +21,7 @@ NGROK="./ngrok.exe"
 NGROK_URL="sensible-firstly-labrador.ngrok-free.app"
 PORT="8000"
 ENV_FILE="./app/.env"
+STRIPE="./stripe.exe"
 
 # Main command handler
 case "$1" in
@@ -49,7 +50,11 @@ case "$1" in
     ;;
   ngrok)
     $NGROK http --url=sensible-firstly-labrador.ngrok-free.app $PORT
-  ;;
+    ;;
+  stripe)
+    shift
+    $STRIPE "$@"
+    ;;
   *)
     echo "❌ Unknown command: $1"
     exit 1
