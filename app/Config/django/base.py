@@ -1,8 +1,6 @@
 import shutil, sys
 from Config.env import BASE_DIR, env
 
-sys.path.append(BASE_DIR / "Core")
-
 env.read_env(BASE_DIR / ".env")
 
 DATA_DIR = BASE_DIR / "data"
