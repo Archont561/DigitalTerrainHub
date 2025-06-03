@@ -27,6 +27,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("__reload__/", include("django_browser_reload.urls")),
     path('events/<channel>/', events, name='events'),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
 
 handler404 = Custom404View.as_view()
