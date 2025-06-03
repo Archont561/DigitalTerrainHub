@@ -1,15 +1,18 @@
+from django.apps import apps
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.template.loader import render_to_string
 import uuid
 
 User = get_user_model()
+app_config = apps.get_app_config("Core")
 
 
 class NotificationManager(models.Manager):
-    def add(self, user, message, status=messages.INFO, extra_tags='', related_object=None, request=None):
+    def add(self, user, message, status=messages.INFO, extra_tags='', related_object=None):
         content_type = None
         related_object_id = None
         related_object_uuid = None
@@ -30,10 +33,13 @@ class NotificationManager(models.Manager):
             related_object_uuid=related_object_uuid,
         )
 
-        if request is not None:
-            extra_tags = f"{extra_tags} notification_pk:{notification.pk}".strip()
-            messages.add_message(request, status, message, extra_tags=extra_tags)
-
+        extra_tags = f"{extra_tags} notification_pk:{notification.pk}".strip()
+        messages.add_message(request, status, message, extra_tags=extra_tags)
+        
+        send_event(
+            channel="notifications",
+            data=render_to_string(app_config.templates.notification)
+        )
         return notification
 
     def filter_by_object(self, related_object=None, related_object_uuid=None, user=None):
