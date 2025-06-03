@@ -5,6 +5,7 @@ class DelegatingChannelManager(DefaultChannelManager):
 
     manager_map = {
         "pyodm": PyODMChannelManager,
+        "notifications": NotificationsChannelManager,
     }
 
     def get_manager(self, channel):
@@ -15,3 +16,9 @@ class DelegatingChannelManager(DefaultChannelManager):
 
     def can_read_channel(self, user, channel):
         return self.get_manager(channel).can_read_channel(user, channel)
+
+
+class NotificationsChannelManager:
+
+    def can_read_channel(self, user, channel):
+        return user.is_authenticated
