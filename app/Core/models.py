@@ -47,7 +47,7 @@ class Notification(models.Model):
         return f"{self.status}: {self.message[:50]}"
 
     @classmethod
-    def add(cls, request, message, status=messages.INFO, extra_tags='', related_object=None):
+    def add(cls, user, message, status=messages.INFO, extra_tags='', related_object=None):
         content_type = None
         related_object_id = None
         related_object_uuid = None
@@ -60,7 +60,7 @@ class Notification(models.Model):
                 related_object_id = related_object.pk
 
         notification = cls.objects.create(
-            user=request.user,
+            user=user,
             message=message,
             status=status,
             content_type=content_type,
