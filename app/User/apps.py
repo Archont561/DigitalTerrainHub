@@ -9,6 +9,3 @@ class UsersConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'User'
     templates = generate_templates_namespaces(templates_dir)
-
-    def ready(self):
-        import User.signals
