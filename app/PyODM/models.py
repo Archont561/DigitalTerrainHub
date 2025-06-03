@@ -52,12 +52,12 @@ class Workspace(models.Model):
 
 
 class NodeODMTaskManager(models.Manager):
-    def create_task(self, workspace, name, preset: OptionsPreset, webhook):
+    def create_task(self, workspace, name, options, webhook):
         node = Node.from_url(settings.NODEODM_URL)
         odm_task = node.create_task(
             files=[str(file_path) for file_path in workspace.get_images_paths()],
             name=name,
-            options=preset.options,
+            options=options,
             webhook=webhook,
         )
         task_info = odm_task.info()
