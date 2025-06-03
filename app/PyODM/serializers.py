@@ -22,6 +22,8 @@ class WorkspaceSerializer(serializers.ModelSerializer):
 
 class NodeODMTaskSerializer(serializers.ModelSerializer):
     workspace_uuid = serializers.UUIDField(source='workspace.uuid', read_only=True)
+    options_preset = serializers.CharField(write_only=True, required=False)
+    options = serializers.JSONField(write_only=True, required=False, allow_null=True)
 
     class Meta:
         model = NodeODMTask
@@ -31,8 +33,45 @@ class NodeODMTaskSerializer(serializers.ModelSerializer):
             'created_at',
             'status',
             'name',
+            'options',
+            'options_preset',
         ]
-        read_only_fields = ['uuid', 'workspace_uuid', 'created_at', 'status']
+        read_only_fields = [
+            'uuid',
+            'workspace_uuid',
+            'created_at',
+            'status',
+        ]
+
+    def create(self, validated_data):
+        preset_name = validated_data.pop("options_preset", None)
+        options = validated_data.get("options", None)
+
+        if preset_name == "custom":
+            if not options:
+                raise serializers.ValidationError({"options": "Options are required for custom preset."})
+            validated_data["options"] = options
+        elif not preset_name:
+            raise serializers.ValidationError({"options_preset": "Preset is required."})
+        else:
+            try:
+                preset = OptionsPreset.objects.get(name=preset_name)
+            except OptionsPreset.DoesNotExist:
+                raise serializers.ValidationError({"options_preset": "Preset not found."})
+            validated_data["options"] = preset.options
+
+        workspace = self.context.get("workspace")
+        webhook = self.context.get("webhook")
+
+        if not workspace:
+            raise serializers.ValidationError("Missing 'workspace' in serializer context.")
+        
+        return NodeODMTask.objects.create_task(
+            workspace=workspace,
+            name=validated_data.get("name"),
+            options=validated_data.get("options"),
+            webhook=webhook,
+        )
 
 
 class OptionsPresetSerializer(serializers.ModelSerializer):
