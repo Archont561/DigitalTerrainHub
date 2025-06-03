@@ -13,6 +13,17 @@ from Core.utils.generators import generate_docker_container_style_name
 User = get_user_model()
 
 
+class OptionsPreset(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="presets", null=True)
+    name = models.CharField(max_length=100, default=generate_docker_container_style_name)
+    options = models.JSONField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'name'], name='unique_user_preset_name')
+        ]
+
+
 class Workspace(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="workspaces")
@@ -40,6 +51,23 @@ class Workspace(models.Model):
         return len(self.get_images_paths())
 
 
+class NodeODMTaskManager(models.Manager):
+    def create_task(self, workspace, name, preset: OptionsPreset, webhook):
+        node = Node.from_url(settings.NODEODM_URL)
+        odm_task = node.create_task(
+            files=[str(file_path) for file_path in workspace.get_images_paths()],
+            name=name,
+            options=preset.options,
+            webhook=webhook,
+        )
+        task_info = odm_task.info()
+        return self.create(
+            uuid=task_info.uuid,
+            workspace=workspace,
+            name=name,
+            status=task_info.status
+        )
+
 class NodeODMTask(models.Model):
     uuid = models.UUIDField(editable=True, unique=True, primary_key=True)
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="tasks")
@@ -49,6 +77,8 @@ class NodeODMTask(models.Model):
         default=TaskStatus.QUEUED.value,
     )
     name = models.CharField(max_length=100)
+
+    objects = NodeODMTaskManager()
 
     def get_odm_task(self):
         node = Node.from_url(settings.NODEODM_URL)
@@ -74,14 +104,3 @@ class NodeODMTask(models.Model):
 
     def download_on_complete(self, *args, **kwargs):
         return self.get_odm_task().download_assets(*args, **kwargs)
-
-
-class OptionsPreset(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="presets", null=True)
-    name = models.CharField(max_length=100, default=generate_docker_container_style_name)
-    options = models.JSONField()
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['user', 'name'], name='unique_user_preset_name')
-        ]
