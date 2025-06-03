@@ -3,12 +3,14 @@ from pathlib import Path
 
 from django.db import models
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 from pyodm import Node, exceptions
 from pyodm.types import TaskStatus
 
 from Core.helpers.generators import generate_docker_container_style_name
+
+User = get_user_model()
 
 
 class Workspace(models.Model):

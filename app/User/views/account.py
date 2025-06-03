@@ -2,7 +2,7 @@ from django.shortcuts import render, reverse
 from django.conf import settings
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.views.generic import UpdateView, DeleteView, DetailView, View
 from django.urls import reverse_lazy
 from django.http import HttpResponse, Http404, HttpResponseBadRequest
@@ -10,6 +10,8 @@ from User.models import UserProfile
 from User.forms import UserUpdateForm, UserProfileUpdateForm
 from PyODM.models import OptionsPreset, NodeODMTask
 from PyODM.enums import NodeODMOptions
+
+User = get_user_model()
 
 
 class AccountProfileView(LoginRequiredMixin, DetailView):

@@ -1,14 +1,15 @@
 from django.shortcuts import redirect, reverse
 from django.conf import settings
-from django.contrib.auth import login as auth_login, views as auth_views
+from django.contrib.auth import login as auth_login, views as auth_views, get_user_model
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
 from django.views.generic import CreateView, TemplateView, View
 from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django_htmx.http import HttpResponseClientRedirect
 from User.forms import UserRegisterForm
+
+User = get_user_model()
 
 
 class CredentialsRegisterView(CreateView):

@@ -8,6 +8,7 @@ from pyodm import Node, exceptions
 from pyodm.types import TaskStatus
 from PyODM.models import NodeODMTask
 
+User = get_user_model()
 logger = logging.getLogger(__name__)
 
 
@@ -71,7 +72,7 @@ class PyODMChannelManager(DefaultChannelManager):
 
     def _poll_once(self, node, user_id, shutdown_event):
         # Exit early if user no longer exists
-        if not get_user_model().objects.filter(id=user_id).exists():
+        if not User.objects.filter(id=user_id).exists():
             shutdown_event.set()
             return
 
