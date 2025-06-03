@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     # django extensions
     'django_vite',    
     'django_htmx',
+    'rest_framework',
     'django_eventstream',
     'django_cotton.apps.SimpleAppConfig',
     "template_partials.apps.SimpleAppConfig",
