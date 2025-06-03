@@ -12,7 +12,6 @@ class WorkspaceSerializer(serializers.ModelSerializer):
         model = Workspace
         fields = [
             'uuid',
-            'user',
             'name',
             'created_at',
             'created_at_epoch',
