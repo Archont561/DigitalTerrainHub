@@ -13,8 +13,8 @@ class PyODMChannelManager:
     connections = {}
     lock = threading.Lock()
     
-    def can_read_channel(self, uuid, channel):
-        return uuid.is_authenticated
+    def can_read_channel(self, user, channel):
+        return user.is_authenticated
 
     @classmethod
     def start_monitoring_task_status(cls, uuid, channel):
