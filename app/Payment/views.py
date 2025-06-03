@@ -1,90 +1,93 @@
-import stripe
-from django.shortcuts import redirect, reverse
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response
 from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.utils.decorators import method_decorator
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import View
-from django.http import HttpResponseBadRequest, HttpResponseNotFound, HttpResponse
+from django.utils.decorators import method_decorator
+from django.http import HttpResponse
+import stripe
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
-class CreateCheckoutSessionView(LoginRequiredMixin, View):
-    http_method_names = ["get"]
 
-    def get(self, request, *args, **kwargs):
-        product_uuid = kwargs.get("product_uuid", None)
-        if not product_uuid: 
-            return HttpResponseBadRequest("The product UUID is missing in the request URL.")
+class StripePaymentViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
 
-        try: product = DYMMY_PRODUCT_MODEL.objects.get(uuid=product_uuid)
-        except DYMMY_PRODUCT_MODEL.DoesNotExist: 
-            return HttpResponseNotFound("Product not found!")
-
-        DOMAIN = f"{request.scheme}://{request.get_host()}"
-        
-        checkout_session = stripe.checkout.Session.create(
-            payment_method_types=['card', "blik"],
-            line_items=[
-                {
-                    'price_data': {
-                        'currency': 'pl',
-                        'unit_amount': product.price * 100,
-                        'product_data': {
-                            'name': product.name,
-                            'images': [product.image.url]
-                        },
-                    },
-                    'quantity': 1,
-                },
-            ],
-            metadata = {
-                'product_uuid': product_uuid,
-                'user_email': request.user.email
-            },
-            
-            mode='payment',
-
-            success_url=f"{DOMAIN}{reverse('payment:payment-success', kwargs={ 'product_uuid': product_uuid })}",
-            cancel_url=f"{DOMAIN}{reverse('payment:checkout-cancel', kwargs={ 'product_uuid': product_uuid })}",
-        )
-
-        return redirect(checkout_session.url)
-
-
-class CheckoutSessionCancelView(LoginRequiredMixin, View):
-    ...
-
-
-class PaymentSuccesfulView(LoginRequiredMixin, View):
-    ...
-
-
-@method_decorator(csrf_exempt, name="get")
-class StripeWebhookView(View):
-    http_method_names = ["get"]
-    
-    def get(self, request, *args, **kwargs):
-        payload = request.body
-        sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    @action(detail=True, methods=["post"], url_path="create-session")
+    def create_session(self, request, pk=None):
+        try:
+            product = CUSTOMPRODUCTMODEL.objects.get(uuid=pk)
+        except CUSTOMPRODUCTMODEL.DoesNotExist:
+            return Response({"detail": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
 
         try:
-            event = stripe.Webhook.construct_event(
-                payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+            success_url = request.build_absolute_uri(
+                reverse('checkout-success', kwargs={'pk': str(product.uuid)})
             )
-        except ValueError as e:
-            return HttpResponse(status=400)
-        except stripe.error.SignatureVerificationError as e:
+            cancel_url = request.build_absolute_uri(
+                reverse('checkout-cancel', kwargs={'pk': str(product.uuid)})
+            )
+
+            session = stripe.checkout.Session.create(
+                payment_method_types=['card', 'blik'],
+                line_items=[
+                    {
+                        'price_data': {
+                            'currency': 'pln',
+                            'unit_amount': int(product.price * 100),
+                            'product_data': {
+                                'name': product.name,
+                                'images': [request.build_absolute_uri(product.image.url)],
+                            },
+                        },
+                        'quantity': 1,
+                    },
+                ],
+                metadata={
+                    'product_uuid': str(product.uuid),
+                    'user_email': request.user.email,
+                },
+                mode='payment',
+                success_url=success_url,
+                cancel_url=cancel_url,
+            )
+
+            return Response({"checkout_url": session.url})
+
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=True, methods=["get"], url_path="success", permission_classes=[AllowAny])
+    def payment_success(self, request, pk=None):
+        return Response({"message": f"Payment for product {pk} was successful!"})
+
+    @action(detail=True, methods=["get"], url_path="cancel", permission_classes=[AllowAny])
+    def payment_cancel(self, request, pk=None):
+        return Response({"message": f"Payment for product {pk} was canceled."})
+
+    @method_decorator(csrf_exempt)
+    @action(detail=False, methods=["post"], url_path="webhook", permission_classes=[AllowAny])
+    def webhook(self, request):
+        payload = request.body
+        sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+        endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
+
+        try:
+            event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
+        except (ValueError, stripe.error.SignatureVerificationError):
             return HttpResponse(status=400)
 
-        # Handle the event
-        match event.get('type', None):
-            case 'checkout.session.completed':
-                session = event['data']['object']
-            case 'checkout.session.async_payment_failed':
-                session = event['data']['object']
-            case event_type:
-                print(f'Unhandled event type {event_type}')
+        event_type = event.get("type")
+        session = event["data"]["object"]
 
-        return HttpResponse()
+        if event_type == "checkout.session.completed":
+            print(f"✅ Payment succeeded for session: {session['id']}")
+        elif event_type == "checkout.session.async_payment_failed":
+            print(f"❌ Payment failed for session: {session['id']}")
+        else:
+            print(f"Unhandled event type: {event_type}")
+
+        return HttpResponse(status=200)
 
