@@ -2,16 +2,9 @@ from django.conf import settings
 from django.contrib import admin
 from django.conf.urls import handler404
 from django.urls import path, include
-from .views import (
-    NotificationViewSet,
-    HomeView,
-    Custom404View,
-)
-from rest_framework.routers import DefaultRouter
+from .views import HomeView, Custom404View
 from django_eventstream.views import events
-
-router = DefaultRouter()
-router.register(r'notifications', NotificationViewSet, basename='notification')
+from .api import apipatterns
 
 core_patterns = [
     path("", HomeView.as_view(), name="home"),
@@ -19,14 +12,13 @@ core_patterns = [
 
 urlpatterns = [
     path("", include((core_patterns, "core"))),
-    path("", include(router.urls)),
     path('user/', include('User.urls')),
     path('payment/', include(('Payment.urls', "payment"))),
     path('pyodm/', include('PyODM.urls')),
     path('map/', include('MapViewer.urls')),
     path('admin/', admin.site.urls),
     path('events/<channel>/', events, name='events'),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('api/', include(apipatterns))
 ]
 
 handler404 = Custom404View.as_view()
