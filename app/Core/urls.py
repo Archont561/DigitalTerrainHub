@@ -6,12 +6,9 @@ from .views import HomeView, Custom404View
 from django_eventstream.views import events
 from .api import apipatterns
 
-core_patterns = [
-    path("", HomeView.as_view(), name="home"),
-]
 
 urlpatterns = [
-    path("", include((core_patterns, "core"))),
+    path("", HomeView.as_view(), name="home"),
     path('admin/', admin.site.urls),
     path('events/<channel>/', events, name='events'),
     path('api/', include(apipatterns))
