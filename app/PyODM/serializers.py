@@ -88,3 +88,8 @@ class OptionsPresetSerializer(serializers.ModelSerializer):
 
     def get_preset_type(self, obj):
         return "global" if obj.user is None else "custom"
+
+class AvailablePresetSerializer(OptionsPresetSerializer):
+    class Meta(OptionsPresetSerializer.Meta):
+        fields = ['id', 'name', 'preset_type']
+        read_only_fields = fields
