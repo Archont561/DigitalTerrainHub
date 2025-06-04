@@ -13,11 +13,10 @@ class WorkspaceSerializer(serializers.ModelSerializer):
         fields = [
             'uuid',
             'name',
-            'created_at',
             'created_at_epoch',
             'image_count',
         ]
-        read_only_fields = ['uuid', 'created_at', 'created_at_epoch', 'image_count']
+        read_only_fields = ['uuid', 'created_at_epoch', 'image_count']
 
 
 class NodeODMTaskSerializer(serializers.ModelSerializer):
