@@ -12,10 +12,6 @@ core_patterns = [
 
 urlpatterns = [
     path("", include((core_patterns, "core"))),
-    path('user/', include('User.urls')),
-    path('payment/', include(('Payment.urls', "payment"))),
-    path('pyodm/', include('PyODM.urls')),
-    path('map/', include('MapViewer.urls')),
     path('admin/', admin.site.urls),
     path('events/<channel>/', events, name='events'),
     path('api/', include(apipatterns))
