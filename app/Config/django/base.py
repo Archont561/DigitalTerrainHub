@@ -25,21 +25,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     # django extensions
-    'django_vite',    
     'django_htmx',
     'rest_framework',
     'django_eventstream',
-    'django_cotton.apps.SimpleAppConfig',
-    "template_partials.apps.SimpleAppConfig",
     'widget_tweaks',
-    'tailwind',
-    'django_browser_reload',
     'heroicons',
     'django_tus',
     # created apps,
     "Core",
     "User",
-    "Frontend",
     "Payment",
     "PyODM",
     "MapViewer",
@@ -57,7 +51,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     ####
     'django_htmx.middleware.HtmxMiddleware',
-    'django_browser_reload.middleware.BrowserReloadMiddleware',
     ####
     "Core.middleware.SpacelessMiddleware",
 ]
@@ -67,41 +60,15 @@ ROOT_URLCONF = 'Core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            BASE_DIR / "Frontend" / "templates",
-            BASE_DIR / "Core" / "templates",
-            BASE_DIR / "MapViewer" / "templates",
-            BASE_DIR / "Payment" / "templates",
-            BASE_DIR / "PyODM" / "templates",
-            BASE_DIR / "User" / "templates",
-        ],
-        'APP_DIRS': False,
+        'DIRS': [],
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
-            "loaders": [
-                (
-                    "template_partials.loader.Loader",
-                    [
-                        (
-                            "django.template.loaders.cached.Loader",
-                            [
-                                "django_cotton.cotton_loader.Loader",
-                                "django.template.loaders.filesystem.Loader",
-                                "django.template.loaders.app_directories.Loader",
-                            ],
-                        )
-                    ],
-                )
-            ],
-            "builtins": [
-                "django_cotton.templatetags.cotton",
-                "template_partials.templatetags.partials",
-            ],
-        },
+        }
     },
 ]
 
@@ -180,3 +147,4 @@ EVENTSTREAM_CHANNELMANAGER_CLASS = 'Core.sse.DelegatingChannelManager'
 
 from Config.settings.NodeODM import *
 from Config.settings.Stripe import *
+from Config.settings.Astro import *

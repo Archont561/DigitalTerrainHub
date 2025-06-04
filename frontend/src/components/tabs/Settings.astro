@@ -1,0 +1,55 @@
+---
+const { } = Astro.props;
+const urls = {
+    account: {
+        update: "",
+    },
+    credentials: {
+        passwordChange: "",
+    }
+}
+---
+
+<div x-data="{ currentSettingsTab: 'Profile' }"
+    class="flex grow gap-6 bg-base-100 p-6 rounded-lg shadow-lg">
+    <aside class="w-36">
+        <menu class="size-full menu menu-compact flex flex-col gap-1 border-r-1">
+            {["Profile", "Security", "Notifications", "Payment"].map(tab => 
+                <li>
+                    <a data-tab="{tab}"
+                        x-on:click="currentSettingsTab = $el.dataset.tab"
+                        x-bind:class="isCurrentTab($el, currentSettingsTab) && 'menu-active font-semibold'"
+                    >{tab}</a>
+                </li>
+            )}
+            <li>
+                <a @click="currentSettingsTab = ''; window.htmx.find('#accountDeletionConfirmModal').showModal();"
+                    :class="isCurrentTab($el, currentSettingsTab) && 'menu-active font-semibold'"
+                    class="text-warning">Delete Account</a>
+            </li>
+        </menu>
+    </aside>
+    <div class="flex-1" data-tab="Profile" x-show="isCurrentTab($el, currentSettingsTab)">
+        <h2 class="text-3xl font-semibold mb-4">Profile</h2>
+        <div
+            hx-get={urls.account.update}
+            hx-vals='{"form": "profile"}'
+            hx-trigger="revealed"
+            hx-swap="outerHTML"
+        ></div>
+        <div
+            hx-get={urls.account.update}
+            hx-trigger="revealed"
+            hx-vals='{"form": "user"}'
+            hx-swap="outerHTML"
+        ></div>
+    </div>
+    <div class="flex-1" data-tab="Security" x-show="isCurrentTab($el, currentSettingsTab)">
+        <h2 class="text-3xl font-semibold mb-4">Security</h2>
+        <div
+            hx-get={urls.credentials.passwordChange}
+            hx-trigger="revealed"
+            hx-swap="outerHTML"
+        ></div>
+    </div>
+</div>

@@ -1,0 +1,10 @@
+---
+const props = Astro.props;
+---
+
+<ol-map {...props} ><slot /></ol-map>
+
+<script>
+    import { HTMLOlMap } from "../../lib/WebComponents";
+    customElements.define("ol-map", HTMLOlMap);
+</script>

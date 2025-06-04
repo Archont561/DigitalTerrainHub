@@ -1,0 +1,22 @@
+---
+import { Icon } from "astro-icon/components";
+import Layouts from "../layouts";
+
+const urls = {
+    home: "",
+};
+---
+
+<Layouts.Base title="Page Not Found">
+    <div class="text-center space-y-6 p-6">
+        <h1 class="text-6xl font-bold text-error">404</h1>
+        <h2 class="text-2xl font-semibold text-base-content">Oops! Page Not Found</h2>
+        <p class="text-base-content/80 max-w-md mx-auto">
+            The page you're looking for doesn't exist or has been moved. Let's get you back on track!
+        </p>
+        <a href={urls.home} class="btn btn-primary btn-lg">
+            <Icon name="ooui:article-not-found-ltr" />
+            Back to Home
+        </a>
+    </div>
+</Layouts.Base>

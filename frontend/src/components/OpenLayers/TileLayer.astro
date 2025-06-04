@@ -1,0 +1,10 @@
+---
+const props = Astro.props;
+---
+
+<ol-tile-layer {...props} ><slot /></ol-tile-layer>
+
+<script>
+    import { HTMLOlTileLayer } from "../../lib/WebComponents";
+    customElements.define("ol-tile-layer", HTMLOlTileLayer);
+</script>

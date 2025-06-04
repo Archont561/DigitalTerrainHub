@@ -1,0 +1,44 @@
+---
+interface Props {
+    thumbnails: string[];
+    workspace: any;
+}
+
+const { 
+    thumbnails = [], 
+    workspace,
+    ...props
+} = Astro.props as Props;
+
+const getThumbnailUrl = (filename: string) => `/workspace/${workspace.uuid}/serve-thumbnail/${filename}`;
+---
+
+<div
+    class="grid grid-flow-row grid-cols-3 place-items-center gap-4 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
+>
+    {
+        thumbnails.length === 0 ? (
+            <div class="text-center text-base-content">NO IMAGES</div>
+        ) : (
+            thumbnails.map((thumbnail) => (
+                <div
+                    class="card size-full bg-base-100 shadow-md hover:scale-102 transition-transform duration-300 cursor-pointer"
+                    x-on:click="currentImage = $el.querySelector('img').src"
+                >
+                    <figure class="overflow-hidden rounded-t-lg">
+                        <img
+                            src={getThumbnailUrl(thumbnail)}
+                            alt={`Thumbnail ${thumbnail}`}
+                            class="size-full object-cover transition-transform duration-300 hover:scale-110"
+                        />
+                    </figure>
+                    <div class="card-body p-2 text-center">
+                        <p class="text-sm font-medium text-base-content truncate">
+                            {thumbnail}
+                        </p>
+                    </div>
+                </div>
+            ))
+        )
+    }
+</div>

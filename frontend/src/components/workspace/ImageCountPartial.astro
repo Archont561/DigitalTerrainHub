@@ -1,0 +1,18 @@
+---
+import { Icon } from "astro-icon/components";
+
+const { 
+    workspace,
+    ...props
+} = Astro.props;
+---
+
+<div class="grid place-items-center grid-cols-[auto_auto] gap-1">
+    <Icon name="ion:images-outline" />
+    <div
+        class="image-count text-3xl font-bold text-nowrap p-2"
+        hx-get={`/workspaces/${workspace.uuid}/image_count`}
+        hx-trigger="upload:done"
+        hx-vals='{"count": "images"}'
+    >{workspace.image_count}</div>
+</div>

@@ -1,0 +1,20 @@
+---
+const {
+    horizontal,
+    vertical,
+    ...props
+} = Astro.props;
+---
+
+<details x-init 
+    class={`dropdown isolate ${horizontal} ${vertical}`}
+    @click.away="$el.open=false"
+    {...props}
+>
+    <summary class="appearance-none">
+        <slot name="header" />
+    </summary>
+    <div class="dropdown-content z-10">
+        <slot />
+    </div>
+</details>

@@ -1,0 +1,74 @@
+---
+import { Icon } from "astro-icon/components";
+import { Workspace } from "../index";
+
+interface WorkspaceApi{
+    uuid: string;
+    name: string;
+    created_at_epoch: number;
+    image_count: number;
+}
+
+interface Props {
+    workspace: WorkspaceApi;
+}
+
+const { 
+    workspace,
+    ...props
+} = Astro.props;
+---
+
+<li
+    x-data={`{createdEpoch: ${workspace.created_at_epoch}, relativeTime: null }`}
+    x-init="wsCount++"
+    class="list-row place-items-center"
+    data-uuid={workspace.uuid}
+    x-effect="(window.Alpine.store('globalInterval').flag).toString() && (relativeTime = window.luxon.DateTime.fromSeconds(createdEpoch).toRelative())"
+    @click.capture="$store.currentWorkspaceUUID = $el.dataset.uuid"
+>
+    <Workspace.ImageCountPartial workspace={workspace} />
+
+    <div class="text-sm flex flex-col list-col-grow items-start w-full">
+        <form
+            hx-ext="form-json"
+            hx-patch={`/workspaces/${workspace.uuid}`}
+            hx-swap="none"
+            class="contents"
+            hx-trigger="submit"
+            @htmx:after-request.self="(i => i.blur())($el.querySelector('input'))"
+        >
+            <input
+                name="name"
+                value={workspace.name}
+                class="text-xs uppercase font-semibold opacity-60 truncate"
+            />
+        </form>
+        <p>Created: <span x-text="relativeTime">{workspace.created_at_epoch}</span></p>
+    </div>
+
+    <button
+        @click="(d => d && (d.open = true))(window.Alpine.$data(window.htmx.find('#workspace-edit-dialog')));"
+        class="btn btn-square btn-ghost"
+        title="Edit"
+    ><Icon name="mage:edit"/></button>
+
+    <button
+        @click="window.htmx.find('#upload-images-dialog').showModal()"
+        class="btn btn-square btn-ghost"
+        title="Upload images"
+    ><Icon name="ooui:upload" /></button>
+
+    <Workspace.RunTaskDropDown workspaceUUID={workspace.uuid}>
+        <slot name="header"><Icon name="ooui:upload" /></slot>
+    </Workspace.RunTaskDropDown>
+    
+    <button
+        class="btn btn-square btn-ghost"
+        hx-delete={`/workspace/${workspace.uuid}`}
+        hx-target="closest li"
+        hx-swap="delete"
+        @htmx:before-cleanup-element.self="wsCount--"
+        title="Delete"
+    ><Icon name="tabler:trash" /></button>
+</li>

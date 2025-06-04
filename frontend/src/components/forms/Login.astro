@@ -1,0 +1,13 @@
+---
+const {
+    loginURL, 
+} = Astro.props;
+---
+
+<form
+    hx-post={loginURL}
+    hx-swap="outerHTML"
+    class="space-y-6"
+>
+    <input type="submit" class="btn btn-primary w-full" value="Login" />
+</form>

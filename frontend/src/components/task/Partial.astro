@@ -1,0 +1,38 @@
+---
+import { Icon } from "astro-icon/components";
+
+
+interface Task {
+    uuid: string;
+    name: string;
+    workspace_uuid: string;
+    status: string;
+    created_at: number;
+}
+
+interface Props {
+    task: Task;
+}
+
+const {
+    task,
+    ...props
+} = Astro.props as Props;
+const taskPartialUrl = `workspaces/${task.workspace_uuid}/tasks/${task.uuid}`;
+const taskStatusUrl = `${taskPartialUrl}/status`;
+---
+
+<div class="p-5 border border-neutral rounded-xl shadow-theme-sm">
+    <div class="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+        <div class="flex items-start w-full gap-4">
+            <Icon name="heroicons:bars-4-16-solid" />
+            <div>{task.uuid}</div>
+            <div>{task.name}</div>
+            <div>{task.workspace_uuid}</div>
+            <div hx-get={taskStatusUrl}
+                hx-trigger={`sse:task-${task.uuid}-status`}
+            >{task.status}</div>
+            <div>{task.created_at}</div>
+        </div>
+    </div>
+</div>

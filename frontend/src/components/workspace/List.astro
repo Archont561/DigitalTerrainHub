@@ -1,0 +1,53 @@
+---
+import { Icon } from "astro-icon/components";
+import { Forms, Utils, Workspace } from "../index";
+
+const workspaceURL = `${import.meta.env.PUBLIC_DJANGO_URL}/pyodm/workspaces/?format=html`;
+
+const {
+    id,
+    workspaces,
+    options,
+    ...props
+} = Astro.props;
+---
+
+<section id={id} class="size-full overflow-y-scroll" {...props}>
+    <div class="mx-auto py-10 min-w-md max-w-xl">
+        <h2 class="text-2xl mb-3">Workspace management board</h2>
+
+        <div class="bg-base-100 rounded-box p-1">
+            <nav class="flex justify-end p-2 bg-base-200 rounded-box">
+                <button
+                    hx-target={`${id} .list`}
+                    hx-trigger="click"
+                    hx-post={workspaceURL}
+                    hx-swap="afterbegin"
+                    class="btn btn-primary"
+                >Create new</button>
+            </nav>
+            <ul 
+                x-data="{ wsCount: 0 }"
+                class="relative list min-h-[20rem] gap-2"
+            >
+                <template x-if="!wsCount" >
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-2">
+                        <h2 class="text-lg">No workspaces created yet!</h2>
+                    </div>
+                </template>
+                {workspaces.map(workspace => <Workspace.Partial workspace={workspace} />)}
+            </ul>
+        </div>
+    </div>
+    <Workspace.GCPEditor id="workspace-edit-dialog" />
+    <Utils.Dialog id="upload-images-dialog" class="h-full w-full p-0 -z-1 xs:h-3/4 md:w-3/5 md:max-w-full"
+    ><Workspace.UppyWidget /></Utils.Dialog>
+    <Utils.Dialog
+        id="options-dialog"
+        x-data="{ handleSubmit(event) { event.preventDefault(); $store.optionsData = JSON.stringify(event.detail.requestConfig.parameters); $el.close(); } }"
+        class="h-full w-full p-0 xs:h-3/4 md:w-3/5 md:max-w-full overflow-y-scroll"
+        @htmx:before-request.self="handleSubmit($event)">   
+        <slot name="trigger"><Icon name="heroicons:x-mark" /></slot>
+        <Forms.TaskOptions options={options}/>
+    </Utils.Dialog>
+</section>

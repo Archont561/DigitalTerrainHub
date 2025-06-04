@@ -16,7 +16,7 @@ load_env() {
 }
 
 MANAGE_PY="./app/manage.py"
-NPM_DIR="./app/Frontend/static_src"
+NPM_DIR="./frontend"
 NGROK="./test/ngrok.exe"
 NGROK_URL="sensible-firstly-labrador.ngrok-free.app"
 PORT="8000"

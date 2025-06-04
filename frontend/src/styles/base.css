@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@import "tailwindcss-animated";
+@import "./animations.css";
+@import "./utils.css";
+
+@source "../../src/**/*.{astro,ts,css}";
+@plugin "daisyui" {
+  exclude: rootscrollgutter;
+  themes: bumblebee --default, night --prefersDark;
+}
+
+@theme {
+  --breakpoint-xs: 30rem;
+}
+

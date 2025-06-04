@@ -1,0 +1,55 @@
+---
+import { getUrlWithBase} from "../utils";
+import globalStyleURL from "../styles/global.css?url";
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href=/favicon.svg' />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+		<link rel="stylesheet" href={getUrlWithBase(globalStyleURL)}>
+		<script>
+			import { 
+				UtilsManager, 
+				AlpineManager,
+			} from "../lib";
+			import { DateTime } from "luxon";
+
+			(() => {
+				window.addEventListener("DOMContentLoaded", () => {
+					// @ts-ignore
+					window.luxon = { DateTime };
+					UtilsManager.init();
+					AlpineManager.init();
+				});
+
+				const setThemeBasedOnPreference = (preference: boolean) => {
+					document.documentElement.setAttribute('data-theme', preference ? 'night' : 'bumblebee');
+				}
+				
+				const themeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+				themeMediaQuery.addEventListener('change', e => setThemeBasedOnPreference(e.matches));
+				setThemeBasedOnPreference(themeMediaQuery.matches);
+				
+			})();
+		</script>
+		<script> 
+			import htmx from "htmx.org"; 
+			import "htmx-ext-sse"; 
+			window.htmx = htmx;
+			window.addEventListener("DOMContentLoaded", async () => {
+				const htmxExtension = "https://unpkg.com/htmx-ext-form-json";
+				await import(/* @vite-ignore */ htmxExtension);
+			});
+		</script>
+	</head>
+	<body>
+		<slot />
+		<div id="notification-stack" class="stack toast"></div>
+	</body>
+</html>

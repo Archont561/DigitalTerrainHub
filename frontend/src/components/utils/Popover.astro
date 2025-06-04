@@ -1,0 +1,15 @@
+---
+const {
+    horizontal,
+    vertical,
+} = Astro.props;
+---
+
+<div class={`dropdown ${horizontal} ${vertical}`}>
+    <button tabindex="0" role="button" class="{{ class }}">
+        <slot name="trigger" />
+    </button>
+    <div tabindex="0" class="dropdown-content">
+        <slot />
+    </div>
+</div>

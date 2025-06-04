@@ -1,0 +1,57 @@
+---
+import { Icon } from "astro-icon/components";
+import { Task } from "../index";
+
+const {
+    id = "task-management-board",
+    tasks,
+    ...props
+} = Astro.props;
+---
+
+<div id={`#${id}`} x-data="{ currentTaskTab: 'All' }"
+    class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+    
+    <!-- Task header Start -->
+    <div class="flex flex-col items-center px-4 py-5 xl:px-6 xl:py-6">
+        <div class="flex flex-col w-full gap-5 sm:justify-between xl:flex-row xl:items-center">
+            <div class="items-center gap-x-1 gap-y-2 rounded-lg menu menu-horizontal bg-base-200">
+                {[
+                    { 'name': 'All', 'label': 'All Tasks', 'count': '11' },
+                    { 'name': 'Todo', 'label': 'To do', 'count': '3' },
+                    { 'name': 'InProgress', 'label': 'In Progress', 'count': '12' },
+                    { 'name': 'Completed', 'label': 'Completed', 'count': '3' },
+                    { 'name': 'Failed', 'label': 'Failed', 'count': '0' },
+                ].map(tab => (
+                    <button data-tab={tab.name}
+                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md h "
+                        x-bind:class="isCurrentTab($el, currentTaskTab) && 'menu-active'"
+                        x-on:click={`currentTaskTab = '${tab.name}'`}>
+                        {tab.label}
+                        <span
+                            class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium leading-normal group-hover:bg-brand-50 group-hover:text-brand-500 dark:group-hover:bg-brand-500/15 dark:group-hover:text-brand-400 text-brand-500 dark:text-brand-400 bg-brand-50 dark:bg-brand-500/15">
+                            {tab.count}
+                        </span>
+                    </button>
+                ))}
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3 xl:justify-end">
+                <button
+                    class="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-white/[0.03]">
+                    <Icon name="tdesign:adjustment" />
+                    Filter &amp; Short
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="p-4 space-y-8 border-t border-gray-200 mt-7 dark:border-gray-800 sm:mt-0 xl:p-6">
+        <div class="flex flex-col gap-4 swim-lane" 
+            hx-ext="sse" 
+            sse-connect="/events/pyodm">
+            {tasks.map(task => <Task.Partial task={task} />)}
+        </div>
+    </div>
+    <!-- Task wrapper End -->
+</div>
