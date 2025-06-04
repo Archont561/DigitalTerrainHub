@@ -1,24 +1,25 @@
-
 from django.conf import settings
-from django.http import HttpResponseRedirect
-from django.urls import re_path
 from django.contrib import admin
 from django.conf.urls import handler404
 from django.urls import path, include
 from .views import (
-    NotificationReadView,
+    NotificationViewSet,
     HomeView,
     Custom404View,
 )
+from rest_framework.routers import DefaultRouter
 from django_eventstream.views import events
+
+router = DefaultRouter()
+router.register(r'notifications', NotificationViewSet, basename='notification')
 
 core_patterns = [
     path("", HomeView.as_view(), name="home"),
-    path('notifications/<int:pk>/', NotificationReadView.as_view(), name="read-notification"),
 ]
 
 urlpatterns = [
     path("", include((core_patterns, "core"))),
+    path("", include(router.urls)),
     path('user/', include('User.urls')),
     path('payment/', include(('Payment.urls', "payment"))),
     path('pyodm/', include('PyODM.urls')),
@@ -30,7 +31,10 @@ urlpatterns = [
 
 handler404 = Custom404View.as_view()
 
-if settings.DEBUG: 
+if settings.DEBUG:
+    from django.http import HttpResponseRedirect
+    from django.urls import re_path
+    
     redirect_to_astro = lambda request: HttpResponseRedirect(f'{settings.ASTRO_URL}{request.path}')
     urlpatterns += [
         re_path(r'^astro', redirect_to_astro),

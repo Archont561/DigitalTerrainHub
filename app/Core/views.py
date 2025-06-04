@@ -1,10 +1,16 @@
 from django.views.generic import View
+from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.http import HttpResponseBadRequest, HttpResponseNotFound, HttpResponse
 
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+
 from .utils.http import AstroTemplateResponse
 from .models import Notification
-
+from .serializers import NotificationSerializer
 
 class HomeView(View):
     def get(self, request, *args, **kwargs):
@@ -19,25 +25,19 @@ class Custom404View(View):
         })
 
 
-class NotificationReadView(View):
-    http_method_names = ["patch"]
-    
-    def patch(self, request, *args, **kwargs):
-        pk = kwargs.get("pk", None)
-        if not pk:
-            return HttpResponseBadRequest("Notification ID is required")
+class NotificationViewSet(viewsets.ModelViewSet):
+    serializer_class = NotificationSerializer
+    permission_classes = [IsAuthenticated]
 
-        try:
-            notification = Notification.objects.get(pk=pk)
-        except Notification.DoesNotExist:
-            return HttpResponseNotFound("Notification not found")
+    def get_queryset(self):
+        return Notification.objects.filter(user=self.request.user)
 
-        if notification.user != request.user:
-            return HttpResponseForbidden("You are not authorized to mark this notification as read")
+    @action(detail=True, methods=["patch"], url_path="read")
+    def mark_as_read(self, request, pk=None):
+        notification = get_object_or_404(Notification, pk=pk, user=request.user)
+        if notification.read:
+            return Response({'detail': 'Already read'}, status=status.HTTP_200_OK)
 
         notification.read = True
         notification.save()
-
-        return HttpResponse()
-
-    
+        return Response({'detail': 'Marked as read'}, status=status.HTTP_200_OK)
