@@ -1,0 +1,13 @@
+{
+    "id": 1,
+    "username": "johndoe",
+    "email": "johndoe@example.com",
+    "first_name": "John",
+    "last_name": "Doe",
+    "profile": {
+      "bio": "Software engineer and avid coffee enthusiast.",
+      "avatar": "/media/avatars/johndoe.jpg",
+      "birth_date": "1990-05-15"
+    }
+  }
+  

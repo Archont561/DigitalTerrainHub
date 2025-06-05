@@ -1,0 +1,12 @@
+[
+    {
+        "id": 1,
+        "name": "global dummy preset",
+        "type": "global"
+    },
+    {
+        "id": 2,
+        "name": "custom dummy preset",
+        "type": "custom"
+    }
+]
