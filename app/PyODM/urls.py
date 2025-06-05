@@ -16,3 +16,5 @@ urlpatterns = [
     path("", include(workspaces_router.urls)),
     path("task-webhook/", TaskProcessingEndWebhookView.as_view(), name="task-webhook")
 ]
+
+app_name = "pyodm"

@@ -8,3 +8,5 @@ router.register(r'stripe', StripePaymentViewSet, basename='stripe')
 urlpatterns = [
     path('', include(router.urls)),
 ]
+
+app_name = "payment"

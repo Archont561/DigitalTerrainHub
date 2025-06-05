@@ -11,3 +11,5 @@ router.register(r'profiles', UserProfileViewSet, basename='profile')
 urlpatterns = [
     path('', include(router.urls)),
 ]
+
+app_name = "user"
