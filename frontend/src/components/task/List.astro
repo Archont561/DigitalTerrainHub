@@ -2,14 +2,26 @@
 import { Icon } from "astro-icon/components";
 import { Task } from "../index";
 
+interface Props {
+    id: string;
+    tasks: DjangoAPI.Task[];
+}
+
 const {
     id = "task-management-board",
-    tasks,
+    tasks = [] as DjangoAPI.Task[],
     ...props
 } = Astro.props;
+
+if (!tasks.length) {
+    const dummyTask = (await import("../../assets/dummy/task.json")).default as DjangoAPI.Task;
+    for (let i = 0; i < 10; i++) tasks.push(dummyTask);
+}
+
+const sseChannel = "/events/pyodm";
 ---
 
-<div id={`#${id}`} x-data="{ currentTaskTab: 'All' }"
+<div id={id} x-data="{ currentTaskTab: 'All' }"
     class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
     
     <!-- Task header Start -->
@@ -49,7 +61,7 @@ const {
     <div class="p-4 space-y-8 border-t border-gray-200 mt-7 dark:border-gray-800 sm:mt-0 xl:p-6">
         <div class="flex flex-col gap-4 swim-lane" 
             hx-ext="sse" 
-            sse-connect="/events/pyodm">
+            sse-connect={sseChannel}>
             {tasks.map(task => <Task.Partial task={task} />)}
         </div>
     </div>

@@ -2,14 +2,17 @@
 import { Icon } from "astro-icon/components";
 import { Ol, Utils, Workspace } from "../index";
 
+interface Props {
+    id: string;
+}
+
 const {
-    id,
-    workspace,
-} = Astro.props;
+    id = "workspace-edit-dialog",
+} = Astro.props as Props;
 ---
 
 <Utils.Dialog type="button"
-    id={`#{id}`}
+    id={id}
     x-data="{ currentImage: null, open: false }"
     x-effect="open ? $el.showModal() : $el.close()"
     class="w-full h-full max-w-[calc(100%-10rem)] max-h-[calc(100%-10rem)] p-0 flex flex-col border-2">
@@ -31,7 +34,7 @@ const {
 
         <div class="grow relative min-w-0 max-w-1/2 bg-base-100">
 
-            <Workspace.ThumbnailGallery workspace={workspace} thumbnails={[]}/>
+            <Workspace.ThumbnailGallery />
 
             <div class="absolute inset-0 bg-inherit" x-bind:class="!currentImage && 'opacity-0 pointer-events-none'" >
                 <Ol.Map x-ref="imageMapContainer" class="size-full relative isolate">
@@ -42,7 +45,7 @@ const {
                         position="top-right"
                         class="size-10 btn btn-circle btn-primary" 
                         x-on:click="currentImage = null; $refs.imageMarkersLayerContainer.getSource().clear(true);">
-                        <Icon name="mdi:heroicons:x-mark-16-solid" />
+                        <Icon name="heroicons:x-mark" />
                     </Ol.MapControl>
                     <Ol.MapControl
                         position="bottom-center"
@@ -90,10 +93,8 @@ const {
 
 <script>
     import type {
-        GCPEditorComponent,
         Store,
         OlPoint,
-        UUID,
         Binding,
         BindedGCP,
     } from "../../types/alpineComponents/GCPEditor";
@@ -200,7 +201,7 @@ const {
                     this.$refs.thumbnailContainer,
                 );
 
-                this.workspaceBinding = this.getOrCreateBinding(workspaceUUID as string);
+                this.workspaceBinding = this.getOrCreateBinding(workspaceUUID as UUID);
 
                 const GCPsLayerContainer = this.$refs.GCPsLayerContainer as HTMLOlVectorLayer;
                 const GCPsMarkersSource = GCPsLayerContainer.getSource();
@@ -226,7 +227,7 @@ const {
             },
 
             registerImageMarker(marker) {
-                const workspaceUUID = window.Alpine.store("currentWorkspaceUUID") as string | undefined;
+                const workspaceUUID = window.Alpine.store("currentWorkspaceUUID") as UUID | undefined;
                 //@ts-ignore
                 const imageUrl = this.$data.currentImage as (string | null);
                 if (!workspaceUUID || !imageUrl) return;
@@ -239,7 +240,7 @@ const {
             },
 
             registerGCPMarker(marker) {
-                const workspaceUUID = window.Alpine.store("currentWorkspaceUUID") as string | undefined;
+                const workspaceUUID = window.Alpine.store("currentWorkspaceUUID") as UUID | undefined;
                 if (!workspaceUUID) return;
                 const uuid = this.getOrSetUUID(marker);
                 const binding = this.getOrCreateBinding(workspaceUUID);
@@ -267,11 +268,11 @@ const {
             bindCurrentSelection() {
                 if (!this.workspaceBinding || !this.currentGCPFeature || !this.currentImageMarkerFeature) return;
                 const uuid = this.getOrSetUUID(this.currentImageMarkerFeature as OlPoint);
-                this.workspaceBinding.set(uuid as UUID, {
+                this.workspaceBinding.set(uuid, {
                     gcp: this.currentGCPFeature as OlPoint,
                     image: this.currentImageMarkerFeature as OlPoint,
                 })
-                this.workspaceBinding?.delete(String(this.currentGCPFeature.getId()));
+                this.workspaceBinding?.delete(String(this.currentGCPFeature.getId()) as UUID);
                 this.currentGCPFeature.setId(uuid);
                 this.currentGCPFeature = null;
                 this.currentImageMarkerFeature = null;
@@ -321,6 +322,6 @@ const {
             saveChanges() {
                 
             },
-        } as GCPEditorComponent;
+        } as alpine.Components.GCPEditor;
     })
 </script>

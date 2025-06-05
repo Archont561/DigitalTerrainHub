@@ -1,20 +1,8 @@
 ---
 import { Icon } from "astro-icon/components";
 
-interface OptionField {
-    name: string;
-    type: string;
-    help: string;
-    domain: string;
-}
-
-interface Options {
-    groupName: string;
-    OptionFields: OptionField[];
-}
-
 interface Props {
-    options: Options;
+    options: DjangoAPI.TaskOption[];
 }
 
 const {
@@ -32,17 +20,17 @@ const {
     hx-trigger="submit"
 >
     <h2 class="text-2xl font-bold mb-4">Processing Options</h2>
-    {Object.entries(options).forEach(([groupName, fields]) => 
+    {options.map(option => 
         <fieldset class="border border-gray-300 rounded p-4 bg-gray-50">
-            <legend class="text-lg font-semibold text-gray-700 mb-4">{groupName ?? "None"}</legend>
-            {(fields as OptionField[]).map((field) => <div>{field.name}</div>)}
+            <legend class="text-lg font-semibold text-gray-700 mb-4">{option.groupName ?? "None"}</legend>
+            {option.fields.map((field) => <div>{field.name}</div>)}
         </fieldset>
     )}
     <input type="submit" class="btn" value="Submit">
 </form>
 
 <script>
-    import type { FormComponent } from "../../@types/alpineComponents/OptionsForm";
+    import type { FormComponent } from "../../types/alpineComponents/OptionsForm";
 
     window.Alpine.data('OptionsForm', () => {
         return {

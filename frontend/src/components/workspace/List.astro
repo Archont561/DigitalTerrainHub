@@ -2,14 +2,25 @@
 import { Icon } from "astro-icon/components";
 import { Forms, Utils, Workspace } from "../index";
 
-const workspaceURL = `${import.meta.env.PUBLIC_DJANGO_URL}/pyodm/workspaces/?format=html`;
+const workspaceURL = `${import.meta.env.PUBLIC_DJANGO_URL}/pyodm/workspaces/?format=astro`;
+
+interface Props {
+    id: string;
+    workspaces: DjangoAPI.Workspace[];
+    options: DjangoAPI.TaskOption[];
+}
 
 const {
-    id,
-    workspaces,
-    options,
+    id = "workspace-management-board",
+    workspaces = [] as DjangoAPI.Workspace[],
+    options = {} as DjangoAPI.TaskOption[],
     ...props
-} = Astro.props;
+} = Astro.props as Props;
+
+if (!workspaces.length) {
+    const workspace = (await import("../../assets/dummy/workspace.json")).default as DjangoAPI.Workspace;
+    for (let i = 0; i < 10; i++) workspaces.push(workspace);
+}
 ---
 
 <section id={id} class="size-full overflow-y-scroll" {...props}>

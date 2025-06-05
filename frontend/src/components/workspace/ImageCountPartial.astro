@@ -1,10 +1,14 @@
 ---
 import { Icon } from "astro-icon/components";
 
+interface Props {
+    workspace: DjangoAPI.Workspace;
+}
+
 const { 
     workspace,
     ...props
-} = Astro.props;
+} = Astro.props as Props;
 ---
 
 <div class="grid place-items-center grid-cols-[auto_auto] gap-1">

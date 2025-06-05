@@ -1,28 +1,25 @@
 ---
 import { Utils } from "../index";
 
-interface Preset {
-    id: number;
-    name: string;
-    preset_type: "global" | "custom";
+interface Props {
+  presets: DjangoAPI.Preset[];
+  workspace: DjangoAPI.Workspace;
 }
 
-const presetsURL = `${import.meta.env.PUBLIC_DJANGO_URL}/pyodm/presets/available/?format=json`
-const presetsResult = await fetch(presetsURL);
-const presets = await presetsResult.json() as Preset[];
+const { 
+    workspace,
+    presets,
+    ...props
+} = Astro.props as Props;
+
 const { globalPresets, userPresets } = presets.reduce<{
-  globalPresets: Preset[];
-  userPresets: Preset[];
+  globalPresets: DjangoAPI.Preset[];
+  userPresets: DjangoAPI.Preset[];
 }>((acc, preset) => {
   if (preset.preset_type === "global") acc.globalPresets.push(preset);
   else if (preset.preset_type === "custom") acc.userPresets.push(preset);
   return acc;
 }, { globalPresets: [], userPresets: [] });
-
-const { 
-    workspace,
-    ...props
-} = Astro.props;
 
 const toTitle = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 ---

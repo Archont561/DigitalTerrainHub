@@ -10,7 +10,6 @@ const { } = Astro.props;
     import Tus from "@uppy/tus";
     import '@uppy/core/dist/style.min.css';
     import '@uppy/dashboard/dist/style.min.css';
-    import type { UppyWidgetComponent } from "../../types/alpineComponents/UppyWidgets";
 
     window.Alpine.data("UppyWidget",  () => {
         let modal: HTMLDialogElement | null = null;
@@ -76,6 +75,6 @@ const { } = Astro.props;
                     chunkSize: 50 * 1024 ** 2,
                 });
             },
-        } as UppyWidgetComponent;
+        } as alpine.Components.UppyWidget;
     });
 </script>

@@ -1,23 +1,24 @@
 ---
+
 interface Props {
-    thumbnails: string[];
-    workspace: any;
+    thumbnails?: string[];
+    workspace?: DjangoAPI.Workspace;
 }
 
 const { 
-    thumbnails = [], 
+    thumbnails = [] as string[], 
     workspace,
     ...props
 } = Astro.props as Props;
 
-const getThumbnailUrl = (filename: string) => `/workspace/${workspace.uuid}/serve-thumbnail/${filename}`;
+const getThumbnailUrl = (filename: string) => `/workspace/${workspace?.uuid}/serve-thumbnail/${filename}`;
 ---
 
 <div
     class="grid grid-flow-row grid-cols-3 place-items-center gap-4 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
 >
     {
-        thumbnails.length === 0 ? (
+        !workspace || thumbnails.length === 0 ? (
             <div class="text-center text-base-content">NO IMAGES</div>
         ) : (
             thumbnails.map((thumbnail) => (
