@@ -19,7 +19,17 @@ export default defineConfig({
     alpinejs(), 
     icon({
       include: {
-        "ooui": ["article-not-found-ltr"],
+        "ooui": ["article-not-found-ltr", "upload"],
+        "mage": ["edit"],
+        "mdi": ["arrow-up-circle"],
+        "heroicons": ["x-mark", "bars-4-16-solid"],
+        "iconoir": ["plus-circle"],
+        "ion": ["*"],
+        "tabler": ["trash"],
+        "tdesign": ["adjustment"],
+        "ep": ["upload-filled"],
+        "fa-solid": ["hands-helping"],
+        "mingcute": ["lock-line"],
       }
     }),
   ],
