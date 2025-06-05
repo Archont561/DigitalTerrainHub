@@ -9,5 +9,10 @@ class AstroHTMLRenderer(BaseRenderer):
         request = renderer_context.get('request') if renderer_context else None
         view = renderer_context.get('view') if renderer_context else None
         template = getattr(view, "template_name", None)
-        astroResponse = AstroTemplateResponse(request, template, data)
-        return astroResponse.content
+        prop_name = getattr(view, "prop_name", None)
+        extra_props = getattr(view, "extra_props", {})
+        astroResponse = AstroTemplateResponse(request, template, {
+            prop_name: data,
+            **extra_props
+        })
+        return astroResponse.render()
