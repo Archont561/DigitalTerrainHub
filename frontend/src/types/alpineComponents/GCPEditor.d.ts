@@ -6,7 +6,6 @@ import type { Extent } from "ol/extent";
 import type { Coordinate } from 'ol/coordinate';
 import type { AlpineComponent } from 'alpinejs';
 
-export type UUID = string;
 export type Binding = Map<UUID, BindedGCP>;
 export type Store = Map<UUID, Binding>;
 export type OlPoint = Feature<Point>;
