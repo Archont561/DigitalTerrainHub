@@ -115,15 +115,6 @@ AUTH_USER_MODEL = 'User.CustomUser'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-TAILWIND_APP_NAME = 'Frontend'
-TAILWIND_CSS_PATH = 'dist/styles.css'
-NPM_BIN_PATH = shutil.which("npm")
-
-DJANGO_VITE = {
-    "default": {
-        "dev_mode": DEBUG,
-    }
-}
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
