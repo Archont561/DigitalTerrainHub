@@ -9,39 +9,39 @@ Astro.response.status = 404;
 await (async () => {
     type AstroRenderFn = (props: any) => {};
 
+    const crsfToken = Astro.request.headers.get("X-CRSFToken");
     if (Astro.request.method === "POST") {
-        const crsfToken = Astro.request.headers.get("X-CRSFToken");
         try {
             props = await Astro.request.json();
         } catch (err) {
             console.error("Failed to parse request body:", err);
         }
-        props = { ...props, crsfToken };
-        const path = (Astro.params.path || "")
-            .toLowerCase()
-            .split("/")
-            .filter(Boolean)
-            .join(".");
+    }
+    props = { ...props, crsfToken };
+    const path = (Astro.params.path || "")
+        .toLowerCase()
+        .split("/")
+        .filter(Boolean)
+        .join(".");
 
-        const renderMap = {
-            "page.home": Page.Home,
-            "page.profile": Page.Profile,
-            "page.credentials.login": Page.Login,
-            "page.credentials.register": Page.Register,
-            "component.workspace.list": Component.Workspace.List,
-            "component.workspace.partial": Component.Workspace.Partial,
-            "component.workspace.imagecountpartial": Component.Workspace.ImageCountPartial,
-            "component.workspace.thumbnailgallery": Component.Workspace.ThumbnailGallery,
-            "component.task.list": Component.Task.List,
-            "component.task.partial": Component.Task.Partial,
-            "component.preset.list": Component.Preset.List,
-            "component.preset.partial": Component.Preset.Partial,
-        } as Record<string, AstroRenderFn>;
+    const renderMap = {
+        "page.home": Page.Home,
+        "page.profile": Page.Profile,
+        "page.credentials.login": Page.Login,
+        "page.credentials.register": Page.Register,
+        "component.workspace.list": Component.Workspace.List,
+        "component.workspace.partial": Component.Workspace.Partial,
+        "component.workspace.imagecountpartial": Component.Workspace.ImageCountPartial,
+        "component.workspace.thumbnailgallery": Component.Workspace.ThumbnailGallery,
+        "component.task.list": Component.Task.List,
+        "component.task.partial": Component.Task.Partial,
+        "component.preset.list": Component.Preset.List,
+        "component.preset.partial": Component.Preset.Partial,
+    } as Record<string, AstroRenderFn>;
 
-        if (renderMap[path]) {
-            ComponentToRender = renderMap[path];
-            Astro.response.status = 200;
-        }
+    if (renderMap[path]) {
+        ComponentToRender = renderMap[path];
+        Astro.response.status = 200;
     }
 })();
 ---
