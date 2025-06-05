@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser, MultiPartParser
+from rest_framework.renderers import JSONRenderer
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
@@ -18,6 +19,7 @@ import mimetypes
 
 from PyODM.models import Workspace
 from PyODM.serializers import WorkspaceSerializer
+from Core.utils.drf import AstroHTMLRenderer
 
 
 class WorkspaceTusUploadView(TusUpload):
@@ -28,6 +30,7 @@ class WorkspaceTusUploadView(TusUpload):
             workspace=self.workspace)
 
 class WorkspaceViewSet(viewsets.ModelViewSet):
+    renderer_classes = [JSONRenderer, AstroHTMLRenderer]
     serializer_class = WorkspaceSerializer
     parser_classes = [JSONParser, MultiPartParser]
     permission_classes = [IsAuthenticated]
@@ -37,6 +40,26 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
 
     def get_object(self):
         return get_object_or_404(self.get_queryset(), uuid=self.kwargs.get(self.lookup_field))
+
+    def list(self, request, *args, **kwargs):
+        self.template_name = "component/workspace/list"
+        self.prop_name = "workspaces"
+        return super().list(self, request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        self.template_name = "component/workspace/partial"
+        self.prop_name = "workspace"
+        return super().retrieve(self, request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        self.template_name = "component/workspace/partial"
+        self.prop_name = "workspace"
+        return super().create(self, request, *args, **kwargs)
+    
+    def update(self, request, *args, **kwargs):
+        self.template_name = "component/workspace/partial"
+        self.prop_name = "workspace"
+        return super().update(self, request, *args, **kwargs)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
