@@ -2,7 +2,7 @@ import GCPEditor from "./GCPEditor.astro";
 import List from "./List.astro";
 import Partial from "./Partial.astro";
 import ImageCountPartial from "./ImageCountPartial.astro";
-import RunTaskDropDown from "./RunTaskDropDown.astro";
+import RunTaskDropDown from "./RunTaskDropdown.astro";
 import ThumbnailGallery from "./ThumbnailGallery.astro";
 import UppyWidget from "./UppyWidget.astro";
 
