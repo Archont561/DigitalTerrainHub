@@ -1,4 +1,5 @@
 from django.views.generic import View
+from django.conf import settings
 from .utils.http import AstroTemplateResponse
 
 class HomeView(View):
