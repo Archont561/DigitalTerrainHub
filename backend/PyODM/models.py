@@ -1,7 +1,7 @@
 import uuid, calendar
 from pathlib import Path
 
-from django.db import models
+from django.contrib.gis.db import models
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
@@ -68,6 +68,7 @@ class NodeODMTaskManager(models.Manager):
             status=task_info.status
         )
 
+
 class NodeODMTask(models.Model):
     uuid = models.UUIDField(editable=True, unique=True, primary_key=True)
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="tasks")
@@ -104,3 +105,52 @@ class NodeODMTask(models.Model):
 
     def download_on_complete(self, *args, **kwargs):
         return self.get_odm_task().download_assets(*args, **kwargs)
+
+
+class GCPPointManager(models.Manager):
+    def to_txt(self, filepath, queryset=None):
+        if queryset is None: queryset = self.all()
+
+        with open(filepath, 'w') as f:
+            for i, point in enumerate(queryset):
+                if i == 0: f.write(f"EPSG:{p.location.srid}")
+                f.write(" ".join(
+                    point.location.y,
+                    point.location.x,
+                    point.altitude,
+                    int(point.image_coords.x),
+                    int(point.image_coords.y),
+                    point.image_name,
+                    point.label if point.label else '',
+                ) + "\n")
+
+
+class GCPPoint(models.Model):
+    workspace = models.ForeignKey(
+        'Workspace', 
+        on_delete=models.CASCADE, 
+        related_name='gcp_points',
+        help_text="Workspace to which this GCP point belongs"
+    )
+    labal = models.CharField(max_length=100)
+    location = models.PointField(geography=True, srid=4326)
+    altitude = models.FloatField(help_text="Altitude in meters")
+    image_name = models.CharField(max_length=255, help_text="Image file name or identifier")
+    image_coords = models.PointField(srid=0, dim=2, geography=False, help_text="Image pixel coordinates (x, y) in Cartesian space")
+
+    objects = GCPPointManager()
+
+    def __str__(self):
+        return (
+            f"GCPPoint(lat={self.location.y}, lng={self.location.x}, alt={self.altitude}, "
+            f"image={self.image_name}, pixel=({self.image_coords.x}, {self.image_coords.y}))"
+        )
+
+    def clean(self):
+        super().clean()
+        if self.workspace:
+            valid_images = [p.name for p in self.workspace.get_images_paths()]
+            if self.image_name not in valid_images:
+                raise ValidationError({
+                    'image_name': f"Image '{self.image_name}' does not exist in the workspace."
+                })

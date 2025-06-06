@@ -1,5 +1,5 @@
 from django.apps import apps
-from django.db import models
+from django.contrib.gis.db import models
 from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
