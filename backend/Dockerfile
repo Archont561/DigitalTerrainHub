@@ -53,4 +53,5 @@ ENV CPLUS_INCLUDE_PATH=/usr/include/gdal \
 
 EXPOSE 8000
 
+ENTRYPOINT ["sh", "-c", "uv run python manage.py makemigrations && uv run python manage.py migrate"]
 CMD ["uv", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]
