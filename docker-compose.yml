@@ -6,23 +6,29 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/app
+      - ./backend/Config:/app/Config
+      - ./backend/Core:/app/Core
+      - ./backend/MapViewer:/app/MapViewer
+      - ./backend/Payment:/app/Payment
+      - ./backend/PyODM:/app/PyODM
+      - ./backend/User:/app/User
     depends_on:
       - nodeodm
       - postgres
+      # - frontend
     env_file:
       - ./backend/.env
 
-  frontend:
-    build:
-      context: ./frontend
-    image: astrotemplatesgenerator
-    ports:
-      - "4321:4321"
-    volumes:
-      - ./frontend:/app
-    env_file:
-      - ./frontend/.env
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #   image: astrotemplatesgenerator
+  #   ports:
+  #     - "4321:4321"
+  #   volumes:
+  #     - ./frontend:/app
+  #   env_file:
+  #     - ./frontend/.env
 
   nodeodm:
     image: opendronemap/nodeodm
