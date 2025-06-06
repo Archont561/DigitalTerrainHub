@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser, MultiPartParser
-from rest_framework.renderers import JSONRenderer
+from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
@@ -30,7 +30,7 @@ class WorkspaceTusUploadView(TusUpload):
             workspace=self.workspace)
 
 class WorkspaceViewSet(viewsets.ModelViewSet):
-    renderer_classes = [JSONRenderer, AstroHTMLRenderer]
+    renderer_classes = [JSONRenderer, AstroHTMLRenderer, BrowsableAPIRenderer]
     serializer_class = WorkspaceSerializer
     parser_classes = [JSONParser, MultiPartParser]
     permission_classes = [IsAuthenticated]
