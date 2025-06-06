@@ -8,13 +8,13 @@ interface Props {
     presets?: DjangoAPI.Preset[];
 }
 
-let { 
+const { 
     workspace = {} as DjangoAPI.Workspace,
-    presets = {} as DjangoAPI.Preset[],
+    presets = [] as DjangoAPI.Preset[],
     ...props
 } = Astro.props as Props;
 
-if (!workspace) Object.assign(workspace, (await import("../../assets/dummy/workspace.json")).default);
+if (!Object.keys(workspace).length) Object.assign(workspace, (await import("../../assets/dummy/workspace.json")).default);
 ---
 
 <li

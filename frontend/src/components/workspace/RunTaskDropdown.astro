@@ -7,8 +7,8 @@ interface Props {
 }
 
 const { 
-    workspace,
-    presets,
+    workspace = {} as DjangoAPI.Workspace,
+    presets = [] as DjangoAPI.Preset[],
     ...props
 } = Astro.props as Props;
 
