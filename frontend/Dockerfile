@@ -1,15 +1,13 @@
-FROM node:20-alpine
+FROM node:lts AS dev
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json* /app/
 
 RUN npm install
 
-COPY . .
+COPY . /app/
 
-RUN npm run build
-
-EXPOSE 3000
+EXPOSE 4321
 
 CMD ["npm", "run", "dev"]
