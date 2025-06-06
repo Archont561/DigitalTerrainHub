@@ -2,11 +2,11 @@
     {
         "id": 1,
         "name": "global dummy preset",
-        "type": "global"
+        "preset_type": "global"
     },
     {
         "id": 2,
         "name": "custom dummy preset",
-        "type": "custom"
+        "preset_type": "custom"
     }
 ]
