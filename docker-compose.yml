@@ -1,5 +1,5 @@
 services:
-  dth:
+  backend:
     build:
       context: .
     image: digitalterrainhub:v1.0
