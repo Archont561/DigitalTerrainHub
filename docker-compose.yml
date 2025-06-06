@@ -13,6 +13,17 @@ services:
     env_file:
       - ./backend/.env
 
+  frontend:
+    build:
+      context: ./frontend
+    image: astrotemplatesgenerator
+    ports:
+      - "4321:4321"
+    volumes:
+      - ./frontend:/app
+    env_file:
+      - ./frontend/.env
+
   nodeodm:
     image: opendronemap/nodeodm
     ports:
