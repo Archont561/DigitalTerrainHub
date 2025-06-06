@@ -26,6 +26,7 @@ dependencies = [
     "django-template-partials>=24.4",
     "django-tus>=0.5.0",
     "djangorestframework>=3.16.0",
+    "djangorestframework-gis>=1.2.0",
     "dotenv==0.9.9",
     "drf-nested-routers>=0.94.2",
     "heroicons[django]>=2.11.0",

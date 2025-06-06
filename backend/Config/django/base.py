@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     # django extensions
     'django_htmx',
     'rest_framework',
+    'rest_framework_gis',
     'django_eventstream',
     'heroicons',
     'django_tus',
