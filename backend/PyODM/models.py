@@ -132,7 +132,7 @@ class GCPPoint(models.Model):
         related_name='gcp_points',
         help_text="Workspace to which this GCP point belongs"
     )
-    labal = models.CharField(max_length=100)
+    label = models.CharField(max_length=100)
     location = models.PointField(geography=True, srid=4326)
     altitude = models.FloatField(help_text="Altitude in meters")
     image_name = models.CharField(max_length=255, help_text="Image file name or identifier")
