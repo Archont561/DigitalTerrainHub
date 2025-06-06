@@ -27,14 +27,6 @@ STRIPE="./test/stripe.exe"
 case "$1" in
   dev)
     load_env $ENV_FILE
-    uv run $MANAGE_PY tailwind start & uv run $MANAGE_PY runserver
-    ;;
-  build)
-    uv run $MANAGE_PY tailwind install --no-package-lock
-    uv run $MANAGE_PY tailwind build
-    ;;
-  start)
-    load_env $ENV_FILE
     uv run $MANAGE_PY runserver
     ;;
   manage)
