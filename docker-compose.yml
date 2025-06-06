@@ -1,28 +1,29 @@
 services:
-  app:
-    build: 
+  dth:
+    build:
       context: .
+    image: digitalterrainhub:v1.0
     ports:
-      - 8000:8000
+      - "8000:8000"
     volumes:
-      - .:/app
+      - ./backend:/app/backend
     depends_on:
       - nodeodm
       - postgres
+    env_file:
+      - ./backend/.env
 
   nodeodm:
     image: opendronemap/nodeodm
     ports:
-      - 3000:3000
+      - "3000:3000"
 
   postgres:
-    image: postgres:15
+    image: postgis/postgis:15-3.5
     ports:
-      - 5432:5432
-    environment:
-      PG_DB: mydb
-      PG_USER: user
-      PG_PASSWORD: password
+      - "5432:5432"
+    env_file:
+      - ./backend/.env
     volumes:
       - pgdata:/var/lib/postgresql/data
 
