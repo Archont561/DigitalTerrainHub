@@ -35,7 +35,7 @@ RUN if grep -q "python-magic-bin" pyproject.toml; then \
 RUN uv sync --frozen --no-install-project --no-dev
 
 # Copy backend project
-COPY /backend /app/backend
+COPY . /app
 
 
 RUN cat <<EOF > /app/.venv/lib/python3.11/site-packages/django_tus/signals.py
@@ -53,4 +53,4 @@ ENV CPLUS_INCLUDE_PATH=/usr/include/gdal \
 
 EXPOSE 8000
 
-CMD ["uv", "run", "python", "./backend/manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["uv", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]
