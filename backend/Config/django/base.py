@@ -22,7 +22,6 @@ INSTALLED_APPS = [
     'django_htmx',
     'rest_framework',
     'django_eventstream',
-    'widget_tweaks',
     'heroicons',
     'django_tus',
     # created apps,

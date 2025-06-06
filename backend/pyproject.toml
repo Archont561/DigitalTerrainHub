@@ -25,7 +25,6 @@ dependencies = [
     "django-tailwind==4.0.1",
     "django-template-partials>=24.4",
     "django-tus>=0.5.0",
-    "django-widget-tweaks==1.5.0",
     "djangorestframework>=3.16.0",
     "dotenv==0.9.9",
     "drf-nested-routers>=0.94.2",
