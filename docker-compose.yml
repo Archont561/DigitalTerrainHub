@@ -1,7 +1,7 @@
 services:
   backend:
     build:
-      context: .
+      context: ./backend
     image: digitalterrainhub:v1.0
     ports:
       - "8000:8000"
