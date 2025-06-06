@@ -1,57 +1,43 @@
-# Base image: Python + uv + Debian for easier GDAL install
-FROM python:3.11-slim
+FROM ghcr.io/osgeo/gdal:ubuntu-small-3.11.0
 
-# Set workdir
-WORKDIR /app
+# Install curl, bash, file in one step and clean up apt cache
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl bash file && \
+    rm -rf /var/lib/apt/lists/*
 
-# Install system dependencies for GDAL, GEOS, etc.
-RUN apt-get update && apt-get install -y \
-    gdal-bin \
-    libgdal-dev \
-    libgeos-dev \
-    python3-dev \
-    build-essential \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+# Install uv tool (Astral's universal version manager)
+RUN curl -Ls https://astral.sh/uv/install.sh | bash
 
-# Install uv
-RUN curl -Ls https://astral.sh/uv/install.sh | bash && \
-    echo "uv installed in /root/.local/bin" && \
-    ls -l /root/.local/bin
-
-ENV PATH="/root/.local/bin:/root/.cargo/bin:$PATH" \
+ENV PATH="/root/.local/bin:${PATH}" \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-COPY pyproject.toml uv.lock ./
+# Install Python 3.11 via uv, create venv, and copy app files in one go
+WORKDIR /app
 
-RUN if grep -q "python-magic-bin" pyproject.toml; then \
-        uv remove python-magic-bin && \
-        uv add python-magic && \
-        apt-get update && apt-get install -y libmagic1 libmagic-dev; \
-    fi
-
-# Sync dependencies using uv
-RUN uv sync --frozen --no-install-project --no-dev
-
-# Copy backend project
 COPY . /app
 
+RUN uv python install 3.11 && \
+    uv venv && \
+    # Handle python-magic-bin swap if present
+    if grep -q "python-magic-bin" pyproject.toml; then \
+      uv remove python-magic-bin && \
+      uv add python-magic && \
+      uv lock --check && \
+      echo "python-magic-bin replaced with python-magic"; \
+    else \
+      echo "python-magic-bin not found, skipping replacement"; \
+    fi && \
+    uv sync --frozen --no-install-project --no-dev
 
-RUN cat <<EOF > /app/.venv/lib/python3.11/site-packages/django_tus/signals.py
+# Patch django_tus signals.py to remove deprecated argument
+RUN cat <<EOF > .venv/lib/python3.11/site-packages/django_tus/signals.py
 import django.dispatch
 
 # Patched to remove deprecated providing_args argument
 tus_upload_finished_signal = django.dispatch.Signal()
 EOF
 
-# Ensure GDAL bindings know where the lib is
-ENV CPLUS_INCLUDE_PATH=/usr/include/gdal \
-    C_INCLUDE_PATH=/usr/include/gdal \
-    GDAL_VERSION=3.5.3 \
-    GDAL_LIBRARY_PATH=/usr/lib/libgdal.so
-
 EXPOSE 8000
 
-ENTRYPOINT ["sh", "-c", "uv run python manage.py makemigrations && uv run python manage.py migrate"]
 CMD ["uv", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]
