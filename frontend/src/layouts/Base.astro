@@ -43,7 +43,7 @@ const { title } = Astro.props;
 			});
 		</script>
 	</head>
-	<body hx-headers={`{"X-CSRFToken": ${Astro.request.headers.get("X-CRSFToken")}`}>
+	<body hx-headers={`{"X-CSRFToken": ${Astro.request.headers.get("X-CRSFToken")}`} hx-ext="form-json">
 		<slot />
 		<div id="notification-stack" class="stack toast"></div>
 		<input id="CSRFTokenInput" type="hidden" value={Astro.request.headers.get("X-CRSFToken")}>
