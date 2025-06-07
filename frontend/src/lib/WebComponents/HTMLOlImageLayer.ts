@@ -1,4 +1,3 @@
-import { LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { Image as ImageLayer } from 'ol/layer';
 import { ImageStatic as ImageStaticSource } from 'ol/source';

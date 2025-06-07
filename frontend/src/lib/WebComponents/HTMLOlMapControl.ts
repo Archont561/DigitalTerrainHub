@@ -1,10 +1,10 @@
-import { LitElement, css, html } from 'lit';
+import { LitElement, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { Control } from 'ol/control';
 import type HTMLOlMap from './HTMLOlMap';
 
 @customElement('ol-map-control')
-export class HTMLOlMapControl extends LitElement {
+export default class HTMLOlMapControl extends LitElement {
   static styles = css`
     :host {
       position: absolute;

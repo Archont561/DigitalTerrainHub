@@ -59,7 +59,7 @@ export default class HTMLOlVectorLayer extends HTMLOlLayer {
                 }
                 !append && this.source.clear();
 
-                lines.slice(startIndex).forEach((line, i) => {
+                lines.slice(startIndex).forEach((line) => {
                     const coords = line.split(" ").map(Number);
                     const feature = new Feature({
                         geometry: new Point(fromLonLat(coords)),
