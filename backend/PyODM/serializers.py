@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from rest_framework_gis.serializers import GeoFeatureModelSerializer
 from .models import Workspace, NodeODMTask, OptionsPreset, GCPPoint
 from django.contrib.auth import get_user_model
 
@@ -94,14 +93,31 @@ class AvailablePresetSerializer(OptionsPresetSerializer):
     class Meta(OptionsPresetSerializer.Meta):
         fields = ['id', 'name', 'preset_type']
         read_only_fields = fields
-from rest_framework_gis.serializers import GeoFeatureModelSerializer
-from rest_framework import serializers
-from .models import GCPPoint
 
 
-class GCPPointSerializer(GeoFeatureModelSerializer):
+class GCPPointSerializer(serializers.ModelSerializer):
+    location = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
+
+    def get_location(self, obj):
+        return {
+            'lat': obj.location.y,
+            'long': obj.location.x,
+            'alt': obj.altitude
+        }
+
+    def get_image(self, obj):
+        return {
+            'name': obj.image_name,
+            'x': obj.image_coords.x,
+            'y': obj.image_coords.y
+        }
+
     class Meta:
         model = GCPPoint
-        geo_field = 'location'
-        fields = ('id', 'label', 'altitude', 'image_name', 'image_coords')
-
+        fields = [
+            "id",
+            'label', 
+            'location',
+            'image',
+        ]
