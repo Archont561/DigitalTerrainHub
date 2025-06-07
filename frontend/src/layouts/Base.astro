@@ -13,18 +13,14 @@ const { title } = Astro.props;
 		<title>{title}</title>
 		<link rel="stylesheet" href={globalStyleURL}>
 		<script>
-			import { 
-				UtilsManager, 
-				AlpineManager,
-			} from "../lib";
+			import Utils from "../lib/utils";
 			import { DateTime } from "luxon";
 
 			(() => {
 				window.addEventListener("DOMContentLoaded", () => {
 					// @ts-ignore
 					window.luxon = { DateTime };
-					UtilsManager.init();
-					AlpineManager.init();
+					window.utils = Utils;
 				});
 
 				const setThemeBasedOnPreference = (preference: boolean) => {
