@@ -1,20 +1,33 @@
+import { LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 import { Layer } from "ol/layer";
 import type HTMLOlMap from "./HTMLOlMap";
 
-export default abstract class HTMLOlLayer extends HTMLElement {
-    protected layer: Layer;
+@customElement('ol-layer')
+export default class HTMLOlLayer extends LitElement {
+  private _layer: Layer;
 
-    getLayer() { return this.layer }
-    getMap() { return this.layer.getMapInternal(); }
-
-    constructor(layer: Layer) {
-        super();
-        this.layer = layer;
-        this.setMap();
+  constructor(layer: Layer) {
+    super();
+    if (!layer) {
+      throw new Error("Layer must be provided during initialization.");
     }
+    this._layer = layer;
+    this.setMap();  // Immediately set the map after initialization
+  }
 
-    protected setMap() {
-        const mapContainer = this.closest('ol-map') as HTMLOlMap;
-        mapContainer && mapContainer.getMap().addLayer(this.layer);
-    }
+  get layer(): Layer {
+    return this._layer;
+  }
+
+  get map() {
+    return this._layer.getMapInternal();
+  }
+
+  // Add the layer to the map
+  protected setMap() {
+    const mapContainer = this.closest('ol-map') as HTMLOlMap;
+    mapContainer && mapContainer.map.addLayer(this._layer);
+  }
+
 }

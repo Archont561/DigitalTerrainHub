@@ -1,70 +1,86 @@
-import { Map as OlMap, View } from "ol";
-import { type ProjectionLike, transform } from "ol/proj";
-import type { Coordinate } from "ol/coordinate";
+import { LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { Map as OlMap, View } from 'ol';
+import { type ProjectionLike, transform } from 'ol/proj';
+import type { Coordinate } from 'ol/coordinate';
 
+@customElement('ol-map')
+export default class HTMLOlMap extends LitElement {
 
-export default class HTMLOlMap extends HTMLElement {
-    static get observedAttributes() {
-        return ["crs", "crs.epsg", "center", "zoom", "zoom.min", "zoom.max"];
+  // Reactive properties for attributes
+  @property({ type: String, attribute: 'crs' }) crs: string = 'EPSG:3857';
+  @property({ type: String, attribute: 'crs.epsg' }) crsEpsg: string | null = null;
+  @property({ type: String, attribute: 'center' }) center: string | null = null;
+  @property({ type: Number, attribute: 'zoom' }) zoom: number | null = null;
+  @property({ type: Number, attribute: 'zoom.min' }) zoomMin: number | null = null;
+  @property({ type: Number, attribute: 'zoom.max' }) zoomMax: number | null = null;
+
+  // Private state for OpenLayers map and view
+  private _map: OlMap = new OlMap();
+  private _projection: ProjectionLike = 'EPSG:3857';
+  private _view: View = new View({ projection: this.projection });
+
+  get map() {
+    return this._map;
+  }
+
+  get view() {
+    return this._view;
+  }
+
+  get projection() {
+    return this._projection;
+  }
+
+  constructor() {
+    super();
+    this.loadStyles();
+    this.map.setView(this.view);
+    this.map.setTarget(this);
+  }
+
+  // Load external stylesheet
+  private loadStyles() {
+    window.utils.loadStylesheet('/src/css/openlayers.css');
+  }
+
+  // Handle updates to reactive properties
+  updated(changedProperties: Map<string, unknown>) {
+    super.updated(changedProperties);
+
+    // Handle crs.epsg changes
+    if (changedProperties.has('crsEpsg') && this.crsEpsg) {
+      this._projection = `EPSG:${this.crsEpsg}`;
+      this._view = new View({ projection: this.projection });
+      this.map.setView(this.view);
     }
 
-    private map: OlMap = new OlMap();
-    private projection: ProjectionLike = "EPSG:3857";
-    private view: View = new View({ projection: this.projection });
-
-    getMap() { return this.map; }
-    getView() { return this.view; }
-    getProjection() { return this.projection; }
-
-    constructor() {
-        super();
-        this.loadStyles();
-        this.map.setView(this.view);
-        this.map.setTarget(this);
+    // Handle center changes
+    if (changedProperties.has('center') && this.center) {
+      const [lon, lat] = this.center.split(' ').map(Number);
+      if (!isNaN(lon) && !isNaN(lat)) {
+        this.view.setCenter(transform([lon, lat] as Coordinate, 'EPSG:4326', this.projection));
+      }
     }
 
-    private loadStyles() {
-        this.style.display = "inline-block";
-        const styleUrl = new URL("/src/css/openlayers.css", import.meta.url).href;
-        window.utils.loadStylesheet(styleUrl);
-        return this;
+    // Handle zoom changes
+    if (changedProperties.has('zoom') && this.zoom !== null && !isNaN(this.zoom)) {
+      this.view.setZoom(this.zoom);
     }
 
-    attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-        if (!newValue || newValue === oldValue) return;
-        switch (name) {
-            case 'center':
-                if (!newValue) return;
-                const [lon, lat] = newValue.split(' ').map(Number);
-                if (!isNaN(lon) && !isNaN(lat)) {
-                    this.view.setCenter(transform([lon, lat] as Coordinate, "EPSG:4326", this.projection));
-                }
-                break;
-            case 'zoom':
-            case 'zoom.min':
-            case 'zoom.max':
-                if (!newValue) return;
-                const zoom = Number(newValue);
-                if (!isNaN(zoom)) {
-                    const modifier = name.split(".").pop() || "";
-                    switch (modifier) {
-                        case "zoom": this.view.setZoom(zoom);
-                            break;
-                        case "max": this.view.setMaxZoom(zoom);
-                            break;
-                        case "min": this.view.setMinZoom(zoom);
-                            break;
-                    }
-                }
-                break;
-            case 'crs':
-                break;
-            case 'crs.epsg':
-                if (newValue) this.projection = `EPSG:${newValue}`;
-                break;
-            default:
-                console.log(`Callback for attribute ${name} not implemented.`);
-        }
+    // Handle zoom.min changes
+    if (changedProperties.has('zoomMin') && this.zoomMin !== null && !isNaN(this.zoomMin)) {
+      this.view.setMinZoom(this.zoomMin);
     }
 
+    // Handle zoom.max changes
+    if (changedProperties.has('zoomMax') && this.zoomMax !== null && !isNaN(this.zoomMax)) {
+      this.view.setMaxZoom(this.zoomMax);
+    }
+
+    // Note: 'crs' attribute is not handled as in the original code
+    if (changedProperties.has('crs') && this.crs) {
+      console.log(`Attribute crs changed to ${this.crs}, but no callback implemented.`);
+    }
+  }
 }

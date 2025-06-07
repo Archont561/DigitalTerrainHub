@@ -6,6 +6,7 @@ import { fromLonLat } from "ol/proj";
 import VectorSource from "ol/source/Vector";
 import { Circle, Fill, Stroke, Style, Text } from "ol/style";
 import HTMLOlLayer from './HTMLOlLayer';
+import type { Coordinate } from "ol/coordinate";
 
 
 export default class HTMLOlVectorLayer extends HTMLOlLayer {
@@ -36,8 +37,7 @@ export default class HTMLOlVectorLayer extends HTMLOlLayer {
     setInteraction(name: string, interaction: Interaction) {
         this.interactions.set(name, interaction);
 
-        const map = this.getMap();
-        map && map.addInteraction(interaction);
+        this.map && this.map.addInteraction(interaction);
 
         return this;
     }
@@ -74,11 +74,35 @@ export default class HTMLOlVectorLayer extends HTMLOlLayer {
         });
     }
 
-    createMarkerAtViewCenter() {
-        const center = this.getMap()?.getView()?.getCenter();
+    createMarkerAtViewCenter(transform = true) {
+        const center = this.map?.getView()?.getCenter();
         if (!center) return null;
-        const feature = new Feature({ geometry: new Point(center)});
-        this.source.addFeature(feature);
-        return feature;
+        return this.createPoint({
+            coords: center,
+            transform
+        });
     }
+
+    createPoint({
+        coords,
+        transform = true,
+        properties = {},
+        id = undefined,
+    }: PointOptions) {
+        const applyTransformation = transform ? fromLonLat : (_: Coordinate) => _
+        const pointFeature = new Feature({
+            geometry: new Point(applyTransformation(coords)),
+            ...properties
+        });
+        pointFeature.setId(id);
+        this.source.addFeature(pointFeature);
+        return pointFeature;
+    }
+}
+
+interface PointOptions {
+    coords: Coordinate;
+    transform?: boolean;
+    properties?: Record<string, any>; 
+    id?: number;
 }

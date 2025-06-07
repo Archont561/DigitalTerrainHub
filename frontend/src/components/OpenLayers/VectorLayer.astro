@@ -5,6 +5,5 @@ const props = Astro.props;
 <ol-vector-layer {...props} ><slot /></ol-vector-layer>
 
 <script>
-    import { HTMLOlVectorLayer } from "../../lib/WebComponents";
-    customElements.define("ol-vector-layer", HTMLOlVectorLayer);
+    import "../../lib/WebComponents/HTMLOlVectorLayer";
 </script>
