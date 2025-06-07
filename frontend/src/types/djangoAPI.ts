@@ -63,5 +63,20 @@ declare global {
             last_name: string;
             profile: UserProfile;
         }
+
+        interface GCPointBinding {
+            id: number,
+            label: string;
+            location: {
+                lat: number;
+                long: number;
+                alt: number;
+            },
+            image: {
+                name: string;
+                x: number;
+                y: number;
+            }
+        }
     }
 }
