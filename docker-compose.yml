@@ -13,11 +13,14 @@ services:
       - ./backend/PyODM:/app/PyODM
       - ./backend/User:/app/User
     depends_on:
-      - nodeodm
       - postgres
-      - frontend
+      # - nodeodm
+      # - frontend
     env_file:
       - ./backend/.env
+    networks:
+      - backend-fronted-network
+      - backend-network
 
   frontend:
     build:
@@ -28,14 +31,17 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
-
     env_file:
       - ./frontend/.env
+    networks:
+      - backend-fronted-network
 
   nodeodm:
     image: opendronemap/nodeodm
     ports:
       - "3000:3000"
+    networks:
+      - backend-network
 
   postgres:
     image: postgis/postgis:15-3.5
@@ -45,6 +51,14 @@ services:
       - ./backend/.env
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - backend-network
 
 volumes:
   pgdata:
+
+networks:
+  backend-network:
+    driver: bridge
+  backend-fronted-network:
+    driver: bridge
