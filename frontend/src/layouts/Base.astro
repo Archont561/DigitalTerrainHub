@@ -1,5 +1,4 @@
 ---
-import { getUrlWithBase} from "../utils";
 import globalStyleURL from "../styles/global.css?url";
 const { title } = Astro.props;
 ---
@@ -12,7 +11,7 @@ const { title } = Astro.props;
 		<link rel="icon" type="image/svg+xml" href=/favicon.svg' />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
-		<link rel="stylesheet" href={getUrlWithBase(globalStyleURL)}>
+		<link rel="stylesheet" href={globalStyleURL}>
 		<script>
 			import { 
 				UtilsManager, 
