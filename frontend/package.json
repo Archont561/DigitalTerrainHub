@@ -7,7 +7,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "start": "node ./dist/server/entry.mjs"
+    "start": "node ./dist/server/entry.mjs",
+    "test": "vitest"
   },
   "dependencies": {
     "@astrojs/node": "^9.2.2",
@@ -46,6 +47,7 @@
     "daisyui": "^5.0.43",
     "dotenv": "^16.5.0",
     "tailwindcss": "^4.1.8",
-    "tailwindcss-animated": "^2.0.0"
+    "tailwindcss-animated": "^2.0.0",
+    "vitest": "^3.2.2"
   }
 }
