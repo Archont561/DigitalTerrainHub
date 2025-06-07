@@ -1,0 +1,90 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "id": 17,
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [80.7857112931791, 50.6418607617536]
+        },
+        "properties": {
+          "label": "GCP_Point_0",
+          "altitude": 906.939044206238,
+          "image_name": "image_9.jpg",
+          "image_coords": {
+            "type": "Point",
+            "coordinates": [138.340604010942, 268.689192861046]
+          }
+        }
+      },
+      {
+        "id": 18,
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [114.594500189148, -42.5209309668094]
+        },
+        "properties": {
+          "label": "GCP_Point_1",
+          "altitude": 3940.99544794635,
+          "image_name": "image_5.jpg",
+          "image_coords": {
+            "type": "Point",
+            "coordinates": [268.829100472888, 856.268952288984]
+          }
+        }
+      },
+      {
+        "id": 19,
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [51.0551419013099, 24.933487125678]
+        },
+        "properties": {
+          "label": "GCP_Point_2",
+          "altitude": 2395.40554518135,
+          "image_name": "image_3.jpg",
+          "image_coords": {
+            "type": "Point",
+            "coordinates": [399.519944753142, 246.426552254222]
+          }
+        }
+      },
+      {
+        "id": 20,
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [-41.8178404677305, 74.6091970982528]
+        },
+        "properties": {
+          "label": "GCP_Point_3",
+          "altitude": 2120.95926250404,
+          "image_name": "image_10.jpg",
+          "image_coords": {
+            "type": "Point",
+            "coordinates": [215.75498045695, 54.1667013969586]
+          }
+        }
+      },
+      {
+        "id": 21,
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [16.4897510911408, -7.11569437371658]
+        },
+        "properties": {
+          "label": "GCP_Point_4",
+          "altitude": 3222.23109230188,
+          "image_name": "image_5.jpg",
+          "image_coords": {
+            "type": "Point",
+            "coordinates": [238.304412775161, 992.688258426235]
+          }
+        }
+      }
+    ]
+  }
