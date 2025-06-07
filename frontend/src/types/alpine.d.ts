@@ -1,9 +1,12 @@
+import type Alpine, { AlpineComponent } from "alpinejs";
+
 export {};
 
 declare global {
-    namespace alpine {
-        import type { AlpineComponent } from "alpinejs";
-        
+    namespace alpine {        
+        type Component<T> = AlpineComponent<T>;
+        type Alpine = Alpine.Alpine;
+
         interface GlobalIntervalStore {
             interval: number;
             flag: boolean;
@@ -18,7 +21,7 @@ declare global {
 
         interface AlpineManager {
             init(): void;
-            findComponent(name: string): AlpineComponent<any>;
+            findComponent(name: string): Object | null;
             loadAlpineGlobalState(): void;
         }
 
@@ -27,5 +30,6 @@ declare global {
             type OptionsForm = import("./alpineComponents/OptionsForm").FormComponent;
             type UppyWidget = import("./alpineComponents/UppyWidgets").UppyWidgetComponent;
         }
+
     }
 }
