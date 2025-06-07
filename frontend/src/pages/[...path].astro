@@ -9,7 +9,6 @@ Astro.response.status = 404;
 await (async () => {
     type AstroRenderFn = (props: any) => {};
 
-    const crsfToken = Astro.request.headers.get("X-CRSFToken");
     if (Astro.request.method === "POST") {
         try {
             props = await Astro.request.json();
@@ -17,7 +16,6 @@ await (async () => {
             console.error("Failed to parse request body:", err);
         }
     }
-    props = { ...props, crsfToken };
     const path = (Astro.params.path || "")
         .toLowerCase()
         .split("/")
