@@ -92,12 +92,12 @@ def create_dummy_data(sender, **kwargs):
 
 
     for _ in range(5):
-        workspace = Workspace.objects.create(
+        workspace = Workspace.objects.get_or_create(
             user=user,
         )
 
         # Step 4: Create NodeODM Tasks for each workspace
-        task = NodeODMTask.objects.create(
+        task = NodeODMTask.objects.get_or_create(
             workspace=workspace,
             status=random.choice([
                 TaskStatus.QUEUED, 
@@ -111,7 +111,7 @@ def create_dummy_data(sender, **kwargs):
 
         # Step 5: Create GCPPoints
         for i in range(5):
-            gcp_point = GCPPoint.objects.create(
+            gcp_point = GCPPoint.objects.get_or_create(
                 workspace=workspace,
                 label=f"GCP_Point_{i}",
                 location=Point(
