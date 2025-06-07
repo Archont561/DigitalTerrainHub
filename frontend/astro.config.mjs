@@ -22,7 +22,7 @@ export default defineConfig({
   },
 
   integrations: [
-    alpinejs(), 
+    alpinejs({ entrypoint: "./src/lib/Alpine/index.ts" }),
     icon({
       include: {
         "ooui": ["article-not-found-ltr", "upload"],
