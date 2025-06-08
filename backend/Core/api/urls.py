@@ -1,14 +1,14 @@
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from rest_framework.routers import DefaultRouter
-from django.urls import path, include
-from django.shortcuts import redirect, reverse
+from django.urls import path, include, reverse_lazy
+from django.shortcuts import redirect
 from .views import NotificationViewSet
 
 notificationsRouter = DefaultRouter()
 notificationsRouter.register("", NotificationViewSet, basename='notification')
 
 urlpatterns = [
-    path("", lambda request: redirect(reverse("swagger-ui"))),
+    path("", lambda request: redirect(reverse_lazy("swagger-ui"))),
     path("notifications/", include(notificationsRouter.urls)),
     path('user/', include('User.urls', namespace="user")),
     path('payment/', include('Payment.urls', namespace="payment")),
