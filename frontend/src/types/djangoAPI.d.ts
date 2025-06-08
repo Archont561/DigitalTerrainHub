@@ -38,13 +38,20 @@ declare global {
             status: string;
             created_at_epoch: number;
         }
+        type NotificatonStatus = 
+            "debug" |
+            "info" |
+            "succes" |
+            "warning" |
+            "error";
 
-        type NotificationStatus = "INFO" | "WARNING" | "ERROR" | string;
-        
-        interface Notification {
+        interface SSENotification {
             id: number;
             message: string;
             status: NotificationStatus;
+        }
+
+        interface Notification extends SSENotification {
             read: boolean;
             created_at_epoch: number;
             related_object_id: number;
