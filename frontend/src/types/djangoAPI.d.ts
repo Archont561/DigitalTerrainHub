@@ -48,7 +48,10 @@ declare global {
         interface SSENotification {
             id: number;
             message: string;
-            status: NotificationStatus;
+            status: {
+                code: number;
+                name: NotificationStatus;
+            };
         }
 
         interface Notification extends SSENotification {
