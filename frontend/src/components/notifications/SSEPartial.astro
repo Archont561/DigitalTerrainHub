@@ -23,6 +23,6 @@ const markNotificationReadURL = `/api/notifications/${notification.id}/read`;
     hx-patch={markNotificationReadURL}
     hx-swap="none"
     hx-trigger="load"
-    type={notification.status}
+    type={notification.status.name}
     message={notification.message}
 ></Utils.Alert>
