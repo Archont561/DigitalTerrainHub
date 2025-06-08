@@ -1,0 +1,51 @@
+---
+export const partial = true;
+import * as Component from "../../components";
+
+type AstroRenderFn = (_props: any) => {};
+let props = {};
+
+if (Astro.request.method === "POST") {``
+    try {
+        props = await Astro.request.json();
+    } catch (err) {
+        console.error("Failed to parse request body:", err);
+    }
+}
+
+const componentTree = {
+    workspace: {
+        list: Component.Workspace.List,
+        partial: Component.Workspace.Partial,
+        imagecountpartial: Component.Workspace.ImageCountPartial,
+        thumbnailgallery: Component.Workspace.ThumbnailGallery,
+    },
+    task: {
+        list: Component.Task.List,
+        partial: Component.Task.Partial,
+    },
+    preset: {
+        list: Component.Preset.List,
+        partial: Component.Preset.Partial,
+    },
+    getComponent(path: string): AstroRenderFn | null {
+        const pathArray = path.split('/');
+        let currentNode = this as any;
+
+        for (const key of pathArray) {
+            currentNode = currentNode[key] as any;
+            if (!currentNode) return null
+        }
+
+        return currentNode as AstroRenderFn;
+    }
+};
+
+const ComponentToRender = componentTree.getComponent(Astro.params.path || "");
+
+if (!ComponentToRender) {
+    return Astro.rewrite("/astro/404");
+}
+---
+
+<ComponentToRender {...props} />
