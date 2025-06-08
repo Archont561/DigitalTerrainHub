@@ -4,6 +4,8 @@ declare global {
     type UUID = `${string}-${string}-${string}-${string}-${string}`;
     type ISODateString = `${number}-${number}-${number}`;
     type EmailString = `${string}@${string}.${string}`;
+    type TokenString = string;
+    type URLString = string;
     
     namespace DjangoAPI {
         interface Workspace {
@@ -51,7 +53,7 @@ declare global {
 
         interface UserProfile {
             bio: string;
-            avatar: string;
+            avatar: URLString;
             birth_date: ISODateString;
         }
 
@@ -62,6 +64,11 @@ declare global {
             first_name: string;
             last_name: string;
             profile: UserProfile;
+            tokens: {
+                acces: TokenString,
+                refresh: TokenString;
+            };
+            role: "admin" | null;
         }
 
         interface GCPointBinding {
