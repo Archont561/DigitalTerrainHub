@@ -28,7 +28,9 @@ const taskStatusUrl = `${taskPartialUrl}/status`;
             <div hx-get={taskStatusUrl}
                 hx-trigger={`sse:task-${task.uuid}-status`}
             >{task.status}</div>
-            <div x-text="relativeTime">{DateTime.fromSeconds(task.created_at_epoch || 0).toRelative()}</div>
+            <div x-text="relativeTime">{
+                task.created_at_epoch && DateTime.fromSeconds(task.created_at_epoch).toRelative()
+            }</div>
         </div>
     </div>
 </div>
