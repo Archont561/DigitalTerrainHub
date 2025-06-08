@@ -46,8 +46,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     ####
     'django_htmx.middleware.HtmxMiddleware',
-    ####
-    "Core.middleware.SpacelessMiddleware",
 ]
 
 ROOT_URLCONF = 'Core.urls'
