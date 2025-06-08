@@ -1,0 +1,23 @@
+---
+interface Props {
+    notification: DjangoAPI.SSENotification;
+}
+
+const {
+    notification = {} as DjangoAPI.SSENotification,
+    ...props
+} = Astro.props as Props;
+
+if (!Object.keys(notification).length) {
+    Object.assign(notification, (await import("../../assets/dummy/notification.json")).default);
+}
+const markNotificationReadURL = `/api/notifications/${notification.id}/read`;
+---
+
+<div x-init="$nextTick(() => { setTimeout(() => { $el.remove() }, 3000) })"
+    hx-patch={markNotificationReadURL}
+    hx-swap="none"
+    hx-trigger="load"
+    class:list=["alert"]>
+    <span>{notification.message}</span>
+</div>

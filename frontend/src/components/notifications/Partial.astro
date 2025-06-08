@@ -1,0 +1,23 @@
+---
+interface Props {
+    notification: DjangoAPI.Notification;
+}
+
+const {
+    notification = {} as DjangoAPI.Notification,
+    ...props
+} = Astro.props as Props;
+
+if (!Object.keys(notification).length) {
+    Object.assign(notification, (await import("../../assets/dummy/notification.json")).default);
+}
+---
+
+<div>
+    <div>{notification.id}</div>
+    <div>{notification.message}</div>
+    <div>{notification.read}</div>
+    <div>{notification.related_object_id}</div>
+    <div>{notification.related_object_uuid}</div>
+    <div>{notification.status}</div>
+</div>

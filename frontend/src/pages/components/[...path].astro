@@ -28,6 +28,12 @@ const componentTree = {
         list: Component.Preset.List,
         partial: Component.Preset.Partial,
     },
+    notifications: {
+        list: Component.Notifications.List,
+        partial: Component.Notifications.Partial,
+        ssepartial: Component.Notifications.SSEPartial,
+        toast: Component.Notifications.Toast,
+    },
     getComponent(path: string): AstroRenderFn | null {
         const pathArray = path.split('/');
         let currentNode = this as any;
