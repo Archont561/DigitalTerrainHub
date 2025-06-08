@@ -7,6 +7,8 @@ DATA_DIR = BASE_DIR / "data"
 APP_NAME = "Digital Terrain Hub"
 DEBUG = env.bool("DJANGO_DEBUG", default=True)
 SECRET_KEY = env("DJANGO_SECRET_KEY", default="DUMMY_SECRET_KEY")
+SITE_DOMAIN = env("DJANGO_SITE_DOMAIN")
+SITE_SCHEME = env("DJANGO_SITE_SCHEME", default="http")
 
 INSTALLED_APPS = [
     'daphne',

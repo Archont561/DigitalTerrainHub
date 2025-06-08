@@ -1,12 +1,10 @@
 from django.contrib.auth import get_user_model, authenticate, login, logout
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.tokens import default_token_generator
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_decode
 from django.conf import settings
 from django.apps import apps
 from django.template.loader import render_to_string
-from django.core.mail import send_mail
 
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
@@ -100,36 +98,17 @@ class CredentialsViewSet(viewsets.ViewSet):
         except (User.DoesNotExist, ValueError, TypeError, OverflowError):
             return Response({'detail': 'Invalid user.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if default_token_generator.check_token(user, token):
-            user.set_password(new_password)
-            user.save()
-            return Response({'detail': 'Password reset successful.'})
-        else:
-            return Response({'detail': 'Invalid or expired token.'}, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=False, methods=['post'], permission_classes=[AllowAny], url_path="verify-email")
-    def request_email_verification(self, request):
+    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated], url_path="update-email")
+    def update_email(self, request):
         user = request.user
-        if not user.is_authenticated:
-            return Response({'detail': 'Authentication required.'}, status=status.HTTP_401_UNAUTHORIZED)
+        serializer = UserSerializer(user, data=request.data, partial=True)
 
-        if not user.email:
-            return Response({'detail': 'User has no email address.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        token = default_token_generator.make_token(user)
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
-        
-        verify_url_path = reverse('credentials-confirm-email-verification')
-        verify_url = f"{request.scheme}://{request.get_host()}{verify_url_path}?uidb64={uid}&token={token}"
-
-        subject = 'Verify your email address'
-        message = render_to_string('emails/email_verification_body.html', {
-            'user': user,
-            'verify_url': verify_url,
-        })
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
-
-        return Response({'detail': 'Verification email sent.'})
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"detail": "Email updated successfully. Verification email sent."}, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
     @action(detail=False, methods=['post'], permission_classes=[AllowAny], url_path="confirm-email-verification")
     def confirm_email_verification(self, request):
