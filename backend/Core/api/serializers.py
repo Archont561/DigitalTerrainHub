@@ -3,6 +3,13 @@ from Core.models import Notification
 
 
 class NotificationSerializer(serializers.ModelSerializer):
+
+    def get_status(self, obj):
+        return {
+            "code": obj.status,
+            "name": str(obj.get_status_display()).lower()
+        }
+
     class Meta:
         model = Notification
         fields = [
