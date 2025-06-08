@@ -1,18 +1,18 @@
-from django.apps import apps
 from django.contrib.gis.db import models
 from django.contrib.auth import get_user_model
-from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
-from django.template.loader import render_to_string
+from django.http import HttpRequest
+from django_eventstream import send_event
+from .utils.http import AstroTemplateResponse
+from .api.serializers import NotificationSerializer
 import uuid
 
 User = get_user_model()
-app_config = apps.get_app_config("Core")
 
 
 class NotificationManager(models.Manager):
-    def add(self, user, message, status=messages.INFO, extra_tags='', related_object=None):
+    def add(self, user, message, status=messages.INFO, related_object=None):
         content_type = None
         related_object_id = None
         related_object_uuid = None
@@ -32,13 +32,17 @@ class NotificationManager(models.Manager):
             related_object_id=related_object_id,
             related_object_uuid=related_object_uuid,
         )
-
-        extra_tags = f"{extra_tags} notification_pk:{notification.pk}".strip()
-        messages.add_message(request, status, message, extra_tags=extra_tags)
         
         send_event(
             channel="notifications",
-            data=render_to_string(app_config.templates.notification)
+            data=AstroTemplateResponse(
+                request=HttpRequest(), 
+                template="/components/notifications/ssepartial",
+                context={
+                    "notification": NotificationSerializer(notification).data
+                },
+            ).render().content,
+            json_encode=False
         )
         return notification
 
