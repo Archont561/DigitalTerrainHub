@@ -1,11 +1,11 @@
 from django.contrib.gis.db import models
 from django.contrib.auth import get_user_model
+from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.http import HttpRequest
 from django_eventstream import send_event
 from .utils.http import AstroTemplateResponse
-from .api.serializers import NotificationSerializer
 import uuid
 
 User = get_user_model()
@@ -33,6 +33,8 @@ class NotificationManager(models.Manager):
             related_object_uuid=related_object_uuid,
         )
         
+        
+        from .api.serializers import NotificationSerializer
         send_event(
             channel="notifications",
             data=AstroTemplateResponse(
