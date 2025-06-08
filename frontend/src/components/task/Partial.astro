@@ -6,15 +6,14 @@ interface Props {
     task: DjangoAPI.Task;
 }
 
-let {
+const {
     task = {} as DjangoAPI.Task,
     ...props
 } = Astro.props as Props;
 
-if (!task) Object.assign(task, (await import("../../assets/dummy/task.json")).default);
+if (!Object.keys(task).length) Object.assign(task, (await import("../../assets/dummy/task.json")).default);
 const taskPartialUrl = `workspaces/${task.workspace_uuid}/tasks/${task.uuid}`;
 const taskStatusUrl = `${taskPartialUrl}/status`;
-
 ---
 
 <div class="p-5 border border-neutral rounded-xl shadow-theme-sm">
@@ -29,7 +28,7 @@ const taskStatusUrl = `${taskPartialUrl}/status`;
             <div hx-get={taskStatusUrl}
                 hx-trigger={`sse:task-${task.uuid}-status`}
             >{task.status}</div>
-            <div x-text="relativeTime">{DateTime.fromSeconds(task.created_at_epoch).toRelative()}</div>
+            <div x-text="relativeTime">{DateTime.fromSeconds(task.created_at_epoch || 0).toRelative()}</div>
         </div>
     </div>
 </div>
