@@ -4,12 +4,12 @@ from django.urls import path, include
 from django.shortcuts import redirect, reverse
 from .views import NotificationViewSet
 
-router = DefaultRouter()
-router.register(r'notifications', NotificationViewSet, basename='notification')
+notificationsRouter = DefaultRouter()
+notificationsRouter.register("", NotificationViewSet, basename='notification')
 
 urlpatterns = [
     path("", lambda request: redirect(reverse("swagger-ui"))),
-    *router.urls,
+    path("notifications/", include(notificationsRouter.urls)),
     path('user/', include('User.urls', namespace="user")),
     path('payment/', include('Payment.urls', namespace="payment")),
     path('pyodm/', include('PyODM.urls', namespace="pyodm")),
