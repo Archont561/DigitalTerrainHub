@@ -1,3 +1,4 @@
+import Alert from "./Alert.astro";
 import Dialog from "./Dialog.astro";
 import Dropdown from "./Dropdown.astro";
 import FileDropzone from "./FileDropzone.astro";
@@ -8,4 +9,5 @@ export {
     Dropdown,
     FileDropzone,
     Popover,
+    Alert,
 }

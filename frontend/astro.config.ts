@@ -25,10 +25,22 @@ export default defineConfig({
     alpinejs({ entrypoint: "./src/lib/Alpine/index.ts" }),
     icon({
       include: {
-        "ooui": ["article-not-found-ltr", "upload"],
+        "ooui": [
+          "article-not-found-ltr", 
+          "upload",
+          "error",
+          "success",
+        ],
         "mage": ["edit"],
-        "mdi": ["arrow-up-circle"],
-        "heroicons": ["x-mark", "bars-4-16-solid"],
+        "mdi": [
+          "arrow-up-circle",
+          "warning",
+        ],
+        "heroicons": [
+          "x-mark", 
+          "bars-4-16-solid",
+          "information-circle-20-solid",
+        ],
         "iconoir": ["plus-circle"],
         "ion": ["*"],
         "tabler": ["trash"],

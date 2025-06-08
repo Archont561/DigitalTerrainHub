@@ -1,0 +1,54 @@
+---
+import { Icon } from 'astro-icon/components';
+
+type AlertType = "default" | "info" | "warning" | "error" | "succes";
+type AlertStyle = "default" | "soft" | "outline" | "dash";
+
+interface Props {
+    type?: AlertType;
+    style?: AlertStyle;
+    class?: string;
+    message: string;
+    [key: string]: any;
+}
+
+const {
+    type = "default",
+    style = "default",
+    message = "",
+    class: className =  "",
+    ...props
+} = Astro.props as Props;
+
+const alertTypeClass = {
+    default: "",
+    info: "alert-info",
+    warning: "alert-wawrning",
+    error: "alert-error",
+    succes: "alert-succes",
+}[type];
+
+const alertStyleClass = {
+    default: "",
+    soft: "alert-soft",
+    outline: "alert-outline",
+    dash: "alert-dash",
+}[style];
+
+const svgIconName = {
+    default: "",
+    info: "heroicons:information-circle-20-solid",
+    warning: "mid:warni",
+    error: "ooui:error",
+    succes: "ooui:success",
+}[type];
+---
+
+<div role="alert"
+    class:list={["alert", alertTypeClass, alertStyleClass, className].map(Boolean)}
+    {...props}>
+    <slot>
+        {svgIconName && <Icon name={svgIconName} />}
+        <span>{message}</span>
+    </slot>
+</div>
