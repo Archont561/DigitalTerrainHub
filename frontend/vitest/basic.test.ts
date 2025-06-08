@@ -1,3 +1,4 @@
+import { experimental_AstroContainer as AstroContainer } from 'astro/container';	
 import { assert, expect, test } from 'vitest';
 
 test('Math.sqrt()', () => {
