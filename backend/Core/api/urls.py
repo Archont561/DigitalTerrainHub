@@ -1,3 +1,4 @@
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from rest_framework.routers import DefaultRouter
 from django.urls import path, include
 from .views import NotificationViewSet
@@ -12,4 +13,9 @@ urlpatterns = [
     path('pyodm/', include('PyODM.urls', namespace="pyodm")),
     path('map/', include('MapViewer.urls', namespace="map")),
     path('auth/', include('rest_framework.urls', namespace='rest_framework')),
-]
+    path("schema/", include([
+        path('', SpectacularAPIView.as_view(), name='schema'),
+        path('swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+        path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    ])),
+] 

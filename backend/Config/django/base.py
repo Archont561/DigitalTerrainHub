@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'django.contrib.gis',
     # django extensions
+    'drf_spectacular',
     'django_htmx',
     'rest_framework',
     'rest_framework_gis',
@@ -133,6 +134,18 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024**2
 TUS_MAX_FILE_SIZE = DATA_UPLOAD_MAX_MEMORY_SIZE
 
 EVENTSTREAM_CHANNELMANAGER_CLASS = 'Core.sse.DelegatingChannelManager'
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'DIGITAL TERRAIN HUB API',
+    'DESCRIPTION': 'Not yet implemented!',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
+
 
 from Config.settings.NodeODM import *
 from Config.settings.Stripe import *
