@@ -13,7 +13,13 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.serializers import Serializer, CharField, EmailField, ValidationError
+from User.serializers import (
+    UserSerializer, 
+    UserProfileSerializer, 
+    PasswordResetConfirmSerializer, 
+    EmailVerificationConfirmSerializer,
+)
+
 
 User = get_user_model()
 app_config = apps.get_app_config("User")
