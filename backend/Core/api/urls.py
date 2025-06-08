@@ -9,7 +9,9 @@ notificationsRouter.register("", NotificationViewSet, basename='notification')
 
 urlpatterns = [
     path("", lambda request: redirect(reverse_lazy("swagger-ui"))),
-    path("notifications/", include(notificationsRouter.urls)),
+    path("core/", include([
+        path("notifications/", include(notificationsRouter.urls)),
+    ])),
     path('user/', include('User.urls', namespace="user")),
     path('payment/', include('Payment.urls', namespace="payment")),
     path('pyodm/', include('PyODM.urls', namespace="pyodm")),
