@@ -1,12 +1,10 @@
 ---
-import { Icon } from "astro-icon/components";
-
 interface Props {
     options: DjangoAPI.TaskOption[];
 }
 
 const {
-    options,
+    options = [],
 } = Astro.props as Props;
 ---
 
