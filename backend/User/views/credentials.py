@@ -44,7 +44,7 @@ class CredentialsViewSet(viewsets.ViewSet):
         logout(request)
         return Response({'detail': 'Logged out successfully.'})
 
-    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated], url_path="change-password")
     def change_password(self, request):
         user = request.user
         old_password = request.data.get('old_password')
@@ -60,7 +60,7 @@ class CredentialsViewSet(viewsets.ViewSet):
         user.save()
         return Response({'detail': 'Password changed successfully.'})
 
-    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny], url_path="reset-password")
     def request_password_reset(self, request):
         email = request.data.get('email')
         if not email:
@@ -79,7 +79,7 @@ class CredentialsViewSet(viewsets.ViewSet):
         else:
             return Response({'detail': 'Invalid email address.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny], url_path="confirm-password-reset")
     def confirm_password_reset(self, request):
         serializer = PasswordResetConfirmSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -101,7 +101,7 @@ class CredentialsViewSet(viewsets.ViewSet):
         else:
             return Response({'detail': 'Invalid or expired token.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny], url_path="verify-email")
     def request_email_verification(self, request):
         user = request.user
         if not user.is_authenticated:
@@ -125,7 +125,7 @@ class CredentialsViewSet(viewsets.ViewSet):
 
         return Response({'detail': 'Verification email sent.'})
 
-    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny], url_path="confirm-email-verification")
     def confirm_email_verification(self, request):
         serializer = EmailVerificationConfirmSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
