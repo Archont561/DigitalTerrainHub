@@ -1,6 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
-import { Ol, Utils, Workspace } from "../index";
+import { Ol, Utils, Workspace } from "@components";
 
 interface Props {
     id: string;
@@ -92,8 +92,8 @@ const {
 
 
 <script>
-    import type { OlPoint } from "../../types/alpineComponents/GCPEditor";
-    import type { HTMLOlVectorLayer } from "../../lib/WebComponents";
+    import type { OlPoint } from "@src/types/alpineComponents/GCPEditor";
+    import type { HTMLOlVectorLayer } from "@lib/WebComponents";
     import type { Vector as VectorLayer } from "ol/layer";
     import type { Coordinate } from "ol/coordinate";
     import { Select, Translate } from "ol/interaction";

@@ -1,6 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
-import { Forms, Utils, Workspace } from "../index";
+import { Forms, Utils, Workspace } from "@components";
 
 const workspaceURL = `${import.meta.env.PUBLIC_DJANGO_URL}/pyodm/workspaces/?format=astro`;
 
@@ -18,7 +18,7 @@ const {
 } = Astro.props as Props;
 
 if (!workspaces.length) {
-    const workspace = (await import("../../assets/dummy/workspace.json")).default as DjangoAPI.Workspace;
+    const workspace = (await import("@assets/dummy/workspace.json")).default as DjangoAPI.Workspace;
     for (let i = 0; i < 10; i++) workspaces.push(workspace);
 }
 ---

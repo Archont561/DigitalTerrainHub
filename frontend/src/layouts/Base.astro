@@ -1,6 +1,6 @@
 ---
-import { Notifications } from "../components";
-import globalStyleURL from "../styles/global.css?url";
+import { Notifications } from "@components";
+import globalStyleURL from "@styles/global.css?url";
 
 const { title } = Astro.props;
 ---
@@ -15,7 +15,7 @@ const { title } = Astro.props;
 		<title>{title}</title>
 		<link rel="stylesheet" href={globalStyleURL}>
 		<script>
-			import Utils from "../lib/utils";
+			import Utils from "@lib/utils";
 			import { DateTime } from "luxon";
 			import htmx from "htmx.org"; 
 			import "htmx-ext-sse"; 

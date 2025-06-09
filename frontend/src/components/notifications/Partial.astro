@@ -9,7 +9,7 @@ const {
 } = Astro.props as Props;
 
 if (!Object.keys(notification).length) {
-    Object.assign(notification, (await import("../../assets/dummy/notification.json")).default);
+    Object.assign(notification, (await import("@assets/dummy/notification.json")).default);
 }
 ---
 

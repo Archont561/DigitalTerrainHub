@@ -1,6 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
-import { Task } from "../index";
+import { Task } from "@components";
 
 interface Props {
     id: string;
@@ -14,7 +14,7 @@ const {
 } = Astro.props;
 
 if (!tasks.length) {
-    const dummyTask = (await import("../../assets/dummy/task.json")).default as DjangoAPI.Task;
+    const dummyTask = (await import("@assets/dummy/task.json")).default as DjangoAPI.Task;
     for (let i = 0; i < 10; i++) tasks.push(dummyTask);
 }
 

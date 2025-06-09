@@ -11,7 +11,7 @@ const {
     ...props
 } = Astro.props as Props;
 
-if (!Object.keys(task).length) Object.assign(task, (await import("../../assets/dummy/task.json")).default);
+if (!Object.keys(task).length) Object.assign(task, (await import("@assets/dummy/task.json")).default);
 const taskPartialUrl = `workspaces/${task.workspace_uuid}/tasks/${task.uuid}`;
 const taskStatusUrl = `${taskPartialUrl}/status`;
 ---
