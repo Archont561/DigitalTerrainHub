@@ -2,6 +2,11 @@ export const URLs = {
   root: {
     name: "DjangoURLs",
     endpoints: ["", "profile", "login", "register", "help"] as const,
+
+    sseEventChannel: {
+      pk: "channel",
+    },
+
     api: {
       core: {
         notifications: {
