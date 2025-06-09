@@ -5,11 +5,11 @@ from .views.account import UserViewSet, UserProfileViewSet
 
 router = DefaultRouter()
 router.register(r'auth', CredentialsViewSet, basename='credentials')
-router.register(r'users', UserViewSet, basename='user')
-router.register(r'profiles', UserProfileViewSet, basename='profile')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path("", UserViewSet.as_view({"get": "retrieve", "patch": "partial_update"}), name="user-detail"),
+    path("profile/", UserProfileViewSet.as_view({"get": "retrieve", "patch": "partial_update"}), name="user-profile"),
 ]
 
 app_name = "user"

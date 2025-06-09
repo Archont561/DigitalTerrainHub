@@ -5,23 +5,32 @@ from User.serializers import UserSerializer, UserProfileSerializer
 
 User = get_user_model()
 
-class UserViewSet(viewsets.ModelViewSet):
-    serializer_class = UserSerializer
+class UserViewSet(viewsets.GenericViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self):
-        if self.request.user.is_staff:
-            return User.objects.all()
-        return User.objects.filter(id=self.request.user.id)
+    def retrieve(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
 
-class UserProfileViewSet(viewsets.ModelViewSet):
-    serializer_class = UserProfileSerializer
+    def partial_update(self, request):
+        serializer = UserSerializer(request.user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+
+class UserProfileViewSet(viewsets.GenericViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self):
-        if self.request.user.is_staff:
-            return UserProfile.objects.all()
-        return UserProfile.objects.filter(user=self.request.user)
+    def retrieve(self, request):
+        profile = request.user.profile
+        serializer = UserProfileSerializer(profile)
+        return Response(serializer.data)
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+    def partial_update(self, request):
+        profile = request.user.profile
+        serializer = UserProfileSerializer(profile, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
