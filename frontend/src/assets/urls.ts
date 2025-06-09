@@ -1,7 +1,7 @@
 export const URLs = {
   root: {
     name: "DjangoURLs",
-    endpoints: ["", "profile"] as const,
+    endpoints: ["", "profile", "login", "register", "help"] as const,
     api: {
       core: {
         notifications: {
