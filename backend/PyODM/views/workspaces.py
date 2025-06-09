@@ -66,12 +66,19 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-    @action(detail=True, methods=["post", "patch", "head", "options"], url_path="upload(?:/(?P<resource_id>[^/]+))?")
-    def tus_upload(self, request, uuid=None, resource_id=None):
+    def _tus_upload(self, request, resource_id=None):
         workspace_tus_upload_view = WorkspaceTusUploadView()
         workspace_tus_upload_view.request = request
         workspace_tus_upload_view.workspace = self.get_object()
         return workspace_tus_upload_view.dispatch(resource_id=resource_id)
+
+    @action(detail=True, methods=["post", "options"], url_path="upload")
+    def tus_upload(self, request, uuid=None):
+        return self._tus_upload(request)
+
+    @action(detail=True, methods=["patch", "head", "options"], url_path="upload/(?P<resource_id>[^/.]+)")
+    def tus_upload_with_resource(self, request, uuid=None, resource_id=None):
+        return self._tus_upload(request, resource_id)
 
     @method_decorator(cache_control(public=True, max_age=3600))
     @action(detail=True, methods=["get"], url_path="images/(?P<filename>.+)")
