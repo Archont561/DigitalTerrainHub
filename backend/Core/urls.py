@@ -11,6 +11,7 @@ debugpatterns = []
 
 if settings.DEBUG:
     from django.http import HttpResponseRedirect
+    from django.urls import re_path
     
     redirect_to_astro = lambda request: HttpResponseRedirect(f'{settings.ASTRO_URL}{request.path}')
     debugpatterns += [
@@ -25,10 +26,10 @@ urlpatterns = [
         path("register/", register, name="register"),
         path("profile/", profile, name="profile"),
     ], "core"))),
-    path("", include(debugpatterns)),
     path('admin/', admin.site.urls),
     path('events/<channel>/', events, name='events'),
-    path('api/', include((apipatterns, "api")))
+    path('api/', include((apipatterns, "api"))),
+    path("", include(debugpatterns)),
 ]
 
 handler404 = custom_404
