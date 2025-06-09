@@ -1,11 +1,12 @@
 import Anon from "./anonymus.svg?url";
 import Astro from "./astro.svg?url";
-import AvailablePrests from "./dummy/availablePresets.json?url";
-import GCPoints from "./dummy/gcppoints.json?url";
-import Notification from "./dummy/notification.json?url";
-import Task from "./dummy/task.json?url";
-import User from "./dummy/user.json?url";
-import Workspace from "./dummy/workspace.json?url";
+
+import AvailablePrests from "./dummy/availablePresets.json";
+import GCPoints from "./dummy/gcppoints.json";
+import Notification from "./dummy/notification.json";
+import Task from "./dummy/task.json";
+import User from "./dummy/user.json";
+import Workspace from "./dummy/workspace.json";
 
 
 export const SVGURLs = {
@@ -13,7 +14,7 @@ export const SVGURLs = {
     Astro,
 };
 
-export const DummyDataURLs = {
+export const DummyData = {
     AvailablePrests,
     GCPoints,
     Notification,
