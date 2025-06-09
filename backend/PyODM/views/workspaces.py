@@ -34,6 +34,8 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
     serializer_class = WorkspaceSerializer
     parser_classes = [JSONParser, MultiPartParser]
     permission_classes = [IsAuthenticated]
+    lookup_field = "uuid"
+    lookup_url_kwarg = "uuid"
 
     def get_queryset(self):
         return Workspace.objects.filter(user=self.request.user)

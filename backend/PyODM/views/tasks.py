@@ -22,6 +22,8 @@ from PyODM.signals import odm_task_download
 class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = NodeODMTaskSerializer
     permission_classes = [IsAuthenticated]
+    lookup_field = "uuid"
+    lookup_url_kwarg = "uuid"
 
     def get_task_workspace(self):
         return get_object_or_404(Workspace, uuid=self.kwargs.get("workspace_pk"), user=self.request.user)
