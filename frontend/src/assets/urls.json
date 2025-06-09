@@ -1,0 +1,84 @@
+{
+  "root": {
+    "name": "DjangoURLs",
+    "endpoints": [
+      "",
+      "profile"
+    ],
+    "api": {
+      "core": {
+        "notifications": {
+          "pk": "id",
+          "endpoints": [
+            "read"
+          ]
+        }
+      },
+      "payment": {
+        "endpoints": [
+          "webhook"
+        ],
+        "stripe": {
+          "pk": "id",
+          "endpoints": [
+            "cancel",
+            "createSession",
+            "success"
+          ]
+        }
+      },
+      "pyodm": {
+        "endpoints": [
+          "taskWebhook"
+        ],
+        "presets": {
+          "pk": "id",
+          "endpoints": [
+            "available"
+          ]
+        },
+        "workspaces": {
+          "endpoints": [
+            "images"
+          ],
+          "pk": "workspaceUUID",
+          "images": {
+            "pk": "filename"
+          },
+          "upload": {
+            "pk": "resourceID"
+          },
+          "gcpoints": {
+            "pk": "id"
+          },
+          "tasks": {
+            "pk": "taskUUID",
+            "endpoints": [
+              "cancel",
+              "output",
+              "restart",
+              "status"
+            ]
+          }
+        }
+      },
+      "user": {
+        "endpoints": [
+          "profile"
+        ],
+        "auth": {
+          "endpoints": [
+            "changePassword",
+            "confirmEmailVerification",
+            "confirmPasswordReset",
+            "login",
+            "logout",
+            "register",
+            "resetPassword",
+            "updateEmail"
+          ]
+        }
+      }
+    }
+  }
+}
