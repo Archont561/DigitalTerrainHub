@@ -11,7 +11,7 @@ urlpatterns = [
     path("", HomeView.as_view(), name="home"),
     path('admin/', admin.site.urls),
     path('events/<channel>/', events, name='events'),
-    path('api/', include(apipatterns))
+    path('api/', include(apipatterns, namespace="api"))
 ]
 
 handler404 = Custom404View.as_view()
