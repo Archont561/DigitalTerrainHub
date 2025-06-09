@@ -38,7 +38,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(
             data=request.data,
             context={
-                'workspace': workspace,
+                'workspace': self.get_task_workspace(),
                 'webhook': request.build_absolute_uri(reverse("task-webhook")),
             }
         )
