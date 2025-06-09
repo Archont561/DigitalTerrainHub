@@ -1,5 +1,4 @@
 ---
-
 export interface Props extends Astro.HTMLComponentProps<"div"> {
     notification: DjangoAPI.Notification;
 }
@@ -10,7 +9,7 @@ const {
 } = Astro.props;
 
 if (!Object.keys(notification).length) {
-    Object.assign(notification, (await import("@assets/dummy/notification.json")).default);
+    Object.assign(notification, (await import("@assets")).DummyData.Notification);
 }
 ---
 

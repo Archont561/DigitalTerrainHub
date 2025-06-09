@@ -14,7 +14,7 @@ const {
     ...props
 } = Astro.props;
 
-if (!Object.keys(workspace).length) Object.assign(workspace, (await import("@assets/dummy/workspace.json")).default);
+if (!Object.keys(workspace).length) Object.assign(workspace, (await import("@assets")).DummyData.Workspace);
 ---
 
 <li

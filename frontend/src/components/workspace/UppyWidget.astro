@@ -8,7 +8,7 @@ const {
 
 <div {...props} 
     x-data="UppyWidget" 
-    :data-endpoint={DjangoURLs.api.pyodm.workspaces("${$store.currentWorkspaceUUID}").upload}
+    :data-endpoint={DjangoURLs.api.pyodm.workspaces("${$store.currentWorkspaceUUID}")}
 ></div>
 
 <script>

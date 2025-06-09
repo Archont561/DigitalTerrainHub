@@ -10,9 +10,8 @@ const {
 } = Astro.props as Props;
 
 if (!notifications.length) {
-    for (let i=0; i < 10; i++) {
-        notifications.push((await import("@assets/dummy/notification.json")).default);
-    }
+    const notificaton = (await import("@assets")).DummyData.Notification;
+    for (let i=0; i < 10; i++) notifications.push(notificaton);
 }
 ---
 

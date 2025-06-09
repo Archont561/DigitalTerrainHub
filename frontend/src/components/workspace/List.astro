@@ -19,7 +19,7 @@ const {
 } = Astro.props as Props;
 
 if (!workspaces.length) {
-    const workspace = (await import("@assets/dummy/workspace.json")).default as DjangoAPI.Workspace;
+    const workspace = (await import("@assets")).DummyData.Workspace as DjangoAPI.Workspace;
     for (let i = 0; i < 10; i++) workspaces.push(workspace);
 }
 ---
