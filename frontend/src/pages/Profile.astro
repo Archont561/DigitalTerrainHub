@@ -1,15 +1,8 @@
 ---
+import { DjangoURLs } from "@assets";
 import { Icon } from "astro-icon/components";
 import Layouts from "@layouts";
 import { Utils } from "@components";
-
-const urls = {
-    home: "/",
-    logout: "/credentials/logout",
-    register: "/credentials/register",
-    help: "/help",
-    passwordReset: "/credentials/password-reset",
-};
 ---
 
 <Layouts.Base title="Profile">
@@ -79,7 +72,7 @@ const urls = {
                         </slot>
                         <menu class="menu menu-compact gap-1 w-30 border-1 rounded-box bg-base-100">
                             <li><a>Set Theme</a></li>
-                            <li><form method="POST" action={urls.logout}>
+                            <li><form method="POST" action={DjangoURLs.api.user.auth.logout()}>
                                 <input type="submit" value="Logout">
                             </form></li>
                         </menu>

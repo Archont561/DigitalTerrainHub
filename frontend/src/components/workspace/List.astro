@@ -1,8 +1,9 @@
 ---
+import { DjangoURLs } from "@assets";
 import { Icon } from "astro-icon/components";
 import { Forms, Utils, Workspace } from "@components";
 
-const workspaceURL = `${import.meta.env.PUBLIC_DJANGO_URL}/pyodm/workspaces/?format=astro`;
+const workspaceURL = `${DjangoURLs.api.pyodm.workspaces("")}?format=astro`;
 
 interface Props extends Astro.HTMLComponentProps<"section"> {
     id?: string;

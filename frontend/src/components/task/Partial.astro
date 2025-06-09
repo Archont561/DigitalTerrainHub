@@ -1,4 +1,5 @@
 ---
+import { DjangoURLs } from "@assets";
 import { Icon } from "astro-icon/components";
 import { DateTime } from "luxon";
 
@@ -12,8 +13,6 @@ const {
 } = Astro.props as Props;
 
 if (!Object.keys(task).length) Object.assign(task, (await import("@assets/dummy/task.json")).default);
-const taskPartialUrl = `workspaces/${task.workspace_uuid}/tasks/${task.uuid}`;
-const taskStatusUrl = `${taskPartialUrl}/status`;
 ---
 
 <div class="p-5 border border-neutral rounded-xl shadow-theme-sm">
@@ -25,7 +24,7 @@ const taskStatusUrl = `${taskPartialUrl}/status`;
             <div>{task.uuid}</div>
             <div>{task.name}</div>
             <div>{task.workspace_uuid}</div>
-            <div hx-get={taskStatusUrl}
+            <div hx-get={DjangoURLs.api.pyodm.workspaces(task.workspace_uuid).tasks(task.uuid).status()}
                 hx-trigger={`sse:task-${task.uuid}-status`}
             >{task.status}</div>
             <div x-text="relativeTime">{

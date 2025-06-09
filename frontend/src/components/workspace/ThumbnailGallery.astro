@@ -1,9 +1,10 @@
 ---
+import { DjangoURLs } from "@assets";
+
 export interface Props extends Astro.HTMLComponentProps<"li"> {
     workspace: DjangoAPI.Workspace;
     thumbnails?: string[];
 }
-
 
 const { 
     thumbnails = [] as string[], 
@@ -11,7 +12,8 @@ const {
     ...props
 } = Astro.props as Props;
 
-const getThumbnailUrl = (filename: string) => `/workspace/${workspace?.uuid}/serve-thumbnail/${filename}`;
+const getThumbnailUrl = (filename: string) => 
+    `${DjangoURLs.api.pyodm.workspaces(workspace?.uuid).images(filename)}?thumbnails`;
 ---
 
 <div

@@ -1,10 +1,15 @@
 ---
+import { DjangoURLs } from "@assets";
+
 const {
     ...props
 } = Astro.props;
 ---
 
-<div {...props} x-data="UppyWidget" :data-endpoint="`/pyodm/workspaces/${$store.currentWorkspaceUUID}/upload/`"></div>
+<div {...props} 
+    x-data="UppyWidget" 
+    :data-endpoint={DjangoURLs.api.pyodm.workspaces("${$store.currentWorkspaceUUID}").upload}
+></div>
 
 <script>
     import Uppy from "@uppy/core";
