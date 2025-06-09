@@ -28,6 +28,7 @@
     "@iconify-json/ooui": "^1.2.8",
     "@iconify-json/tabler": "^1.2.18",
     "@iconify-json/tdesign": "^1.2.8",
+    "@types/alpinejs__persist": "^3.13.4",
     "@uppy/core": "^4.4.6",
     "@uppy/dashboard": "^4.3.4",
     "@uppy/tus": "^4.2.2",
