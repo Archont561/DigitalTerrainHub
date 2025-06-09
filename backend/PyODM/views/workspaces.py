@@ -80,17 +80,32 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
     def tus_upload_with_resource(self, request, uuid=None, resource_id=None):
         return self._tus_upload(request, resource_id)
 
+    @action(detail=True, methods=["get"], url_path="images")
+    def workspace_images(self, request, uuid=None):
+        workspace = self.get_object()
+        image_paths = workspace.get_images_paths(thumbnails=False)
+        image_names = [p.name for p in image_paths]
+        return Response({
+            "workspace_uuid": workspace.uuid,
+            "images": image_names,
+        })
+
+    @action(detail=False, methods=["get"], url_path="images")
+    def all_workspaces_images(self, request):
+        all_data = []
+        for workspace in self.get_queryset():
+            image_paths = workspace.get_images_paths(thumbnails=False)
+            image_names = [p.name for p in image_paths]
+            all_data.append({
+                "workspace_uuid": workspace.uuid,
+                "images": image_names,
+            })
+        return Response(all_data)
+
     @method_decorator(cache_control(public=True, max_age=3600))
-    @action(detail=True, methods=["get"], url_path="images/(?P<filename>.+)")
+    @action(detail=True, methods=["get"], url_path="images/(?P<filename>[^/.]+(?:\.[^/.]+)?)")
     def serve_image(self, request, uuid=None, filename=None):
-        return self._serve_file(request, uuid, filename, is_thumbnail=False)
-
-    @method_decorator(cache_control(public=True, max_age=3600))
-    @action(detail=True, methods=["get"], url_path="thumbnails/(?P<filename>.+)")
-    def serve_thumbnail(self, request, uuid=None, filename=None):
-        return self._serve_file(request, uuid, filename, is_thumbnail=True)
-
-    def _serve_file(self, request, uuid, filename, is_thumbnail):
+        is_thumbnail = 'thumbnail' in request.path
         workspace = self.get_object()
         base_dir = workspace.get_dir()
         subdir = settings.THUMBNAIL_DIR_NAME if is_thumbnail else settings.IMAGES_DIR_NAME
@@ -98,5 +113,8 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
 
         if not file_path.exists() or not file_path.is_file():
             raise Http404("File not found")
+
         mime_type, _ = mimetypes.guess_type(str(file_path))
-        return FileResponse(file_path.open("rb"), content_type=mime_type)
+        response = FileResponse(file_path.open("rb"), content_type=mime_type)
+        response['Content-Disposition'] = f'inline; filename="{filename}"'
+        return response
