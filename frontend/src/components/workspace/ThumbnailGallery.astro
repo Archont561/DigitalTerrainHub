@@ -13,7 +13,7 @@ const {
 } = Astro.props as Props;
 
 const getThumbnailUrl = (filename: string) => 
-    `${DjangoURLs.api.pyodm.workspaces(workspace?.uuid).images(filename)}?thumbnails`;
+    `${DjangoURLs.api.pyodm.workspaces(workspace?.uuid).images(filename).self()}?thumbnails`;
 ---
 
 <div
