@@ -13,11 +13,11 @@ export const URLs = {
         endpoints: ["webhook"] as const,
         stripe: {
           pk: "id",
-          endpoints: ["cancel", "createSession", "success"] as const,
+          endpoints: ["cancel", "create-session", "success"] as const,
         },
       },
       pyodm: {
-        endpoints: ["taskWebhook"] as const,
+        endpoints: ["task-webhook"] as const,
         presets: {
           pk: "id",
           endpoints: ["available"] as const,
@@ -44,14 +44,14 @@ export const URLs = {
         endpoints: ["profile"] as const,
         auth: {
           endpoints: [
-            "changePassword",
-            "confirmEmailVerification",
-            "confirmPasswordReset",
+            "change-password",
+            "confirm-email-verification",
+            "confirm-password-reset",
             "login",
             "logout",
             "register",
-            "resetPassword",
-            "updateEmail",
+            "reset-password",
+            "update-email",
           ] as const,
         },
       },

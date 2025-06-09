@@ -21,10 +21,15 @@ export function resolveURLWithBase(strings: TemplateStringsArray, ...expressions
     return buildPathname(import.meta.env.BASE_URL, resolveURL(strings, ...expressions));
 }
 
+type KebabToCamel<S extends string> =
+    S extends `${infer Head}-${infer Tail}`
+    ? `${Head}${Capitalize<KebabToCamel<Tail>>}`
+    : S;
+
 type EndpointFunction = () => string;
 
 type EndpointMap<T extends readonly string[]> = {
-    [K in T[number]as K extends "" ? "home" : K]: EndpointFunction;
+    [K in T[number]as K extends "" ? "home" : KebabToCamel<K>]: EndpointFunction;
 };
 
 type URLObject<T> =
@@ -43,16 +48,20 @@ type URLObject<T> =
         )
     );
 
+import { kebabToCamel } from "@utils";
+
 export function resolveURLTree<T>(config: T, basePath = ""): URLObject<T> {
     const obj: any = {};
 
     if (Array.isArray((config as any).endpoints)) {
         for (const ep of (config as any).endpoints) {
+            // Convert kebab-case endpoint key to camelCase for object keys and URLs
+            const key = ep === "" ? "home" : kebabToCamel(ep);
             if (ep === "") {
                 obj["home"] = () => resolveURL`${basePath}`;
             } else {
-                const url = basePath.length > 1 ? resolveURL`${basePath}/${ep}` : resolveURL`${ep}`;
-                obj[ep] = () => url;
+                const url = basePath.length > 1 ? resolveURL`${basePath}/${key}` : resolveURL`${key}`;
+                obj[key] = () => url;
             }
         }
     }
