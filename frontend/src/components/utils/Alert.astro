@@ -1,54 +1,31 @@
 ---
 import { Icon } from 'astro-icon/components';
+import { Alert as DaisyUIAlert } from '@codemint/astro-ui';
 
-type AlertType = "default" | "info" | "warning" | "error" | "succes";
-type AlertStyle = "default" | "soft" | "outline" | "dash";
+type AlertProps = Parameters<typeof DaisyUIAlert>[0] & Astro.HTMLComponentProps<"div">;
 
-interface Props {
-    type?: AlertType;
-    style?: AlertStyle;
-    class?: string;
+interface Props extends AlertProps {
     message: string;
-    [key: string]: any;
 }
 
 const {
-    type = "default",
-    style = "default",
     message = "",
-    class: className =  "",
+    type,
     ...props
-} = Astro.props as Props;
-
-const alertTypeClass = {
-    default: "",
-    info: "alert-info",
-    warning: "alert-wawrning",
-    error: "alert-error",
-    succes: "alert-succes",
-}[type];
-
-const alertStyleClass = {
-    default: "",
-    soft: "alert-soft",
-    outline: "alert-outline",
-    dash: "alert-dash",
-}[style];
+} = Astro.props;
 
 const svgIconName = {
     default: "",
     info: "heroicons:information-circle-20-solid",
     warning: "mid:warni",
     error: "ooui:error",
-    succes: "ooui:success",
-}[type];
+    success: "ooui:success",
+}[type || "default"];
 ---
 
-<div role="alert"
-    class:list={["alert", alertTypeClass, alertStyleClass, className].map(Boolean)}
-    {...props}>
+<DaisyUIAlert {...props}>
     <slot>
         {svgIconName && <Icon name={svgIconName} />}
         <span>{message}</span>
     </slot>
-</div>
+</DaisyUIAlert>
