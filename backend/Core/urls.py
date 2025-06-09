@@ -8,7 +8,9 @@ from .api import apipatterns
 
 
 urlpatterns = [
-    path("", HomeView.as_view(), name="home"),
+    path("", include([
+        path("", HomeView.as_view(), name="home"),
+    ], namespace="core")),
     path('admin/', admin.site.urls),
     path('events/<channel>/', events, name='events'),
     path('api/', include(apipatterns, namespace="api"))
