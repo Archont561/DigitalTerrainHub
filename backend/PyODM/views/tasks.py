@@ -26,7 +26,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     lookup_url_kwarg = "uuid"
 
     def get_task_workspace(self):
-        return get_object_or_404(Workspace, uuid=self.kwargs.get("workspace_pk"), user=self.request.user)
+        return get_object_or_404(Workspace, uuid=self.kwargs.get("workspace_uuid"), user=self.request.user)
 
     def get_queryset(self):
         return NodeODMTask.objects.filter(workspace=self.get_task_workspace())
