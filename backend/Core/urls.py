@@ -11,15 +11,10 @@ debugpatterns = []
 
 if settings.DEBUG:
     from django.http import HttpResponseRedirect
-    from django.urls import re_path
     
     redirect_to_astro = lambda request: HttpResponseRedirect(f'{settings.ASTRO_URL}{request.path}')
     debugpatterns += [
-        re_path(r'^astro', redirect_to_astro),
-        re_path(r'\.astro$', redirect_to_astro),
-        re_path(r'^src', redirect_to_astro),
-        re_path(r'^@id', redirect_to_astro),
-        re_path(r'^@vite', redirect_to_astro),
+        re_path("", redirect_to_astro),
     ]
 
 
