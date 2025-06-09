@@ -1,13 +1,12 @@
 ---
 import { Notifications } from "@components";
 
-interface Props {
+interface Props extends Astro.ComponentProps {
     notifications: DjangoAPI.Notification[];
 }
 
 const {
     notifications = [] as DjangoAPI.Notification[],
-    ...props
 } = Astro.props as Props;
 
 if (!notifications.length) {

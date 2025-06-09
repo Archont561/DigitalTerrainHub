@@ -3,7 +3,7 @@ import { Icon } from "astro-icon/components";
 import { Workspace } from "@components";
 import { DateTime } from "luxon";
 
-interface Props {
+export interface Props extends Astro.HTMLComponentProps<"li"> {
     workspace?: DjangoAPI.Workspace;
     presets?: DjangoAPI.Preset[];
 }
@@ -12,7 +12,7 @@ const {
     workspace = {} as DjangoAPI.Workspace,
     presets = [] as DjangoAPI.Preset[],
     ...props
-} = Astro.props as Props;
+} = Astro.props;
 
 if (!Object.keys(workspace).length) Object.assign(workspace, (await import("@assets/dummy/workspace.json")).default);
 ---
@@ -24,6 +24,7 @@ if (!Object.keys(workspace).length) Object.assign(workspace, (await import("@ass
     data-uuid={workspace.uuid}
     x-effect="(window.Alpine.store('globalInterval').flag).toString() && (relativeTime = window.luxon.DateTime.fromSeconds(createdEpoch).toRelative())"
     @click.capture="$store.currentWorkspaceUUID = $el.dataset.uuid"
+    {...props}
 >
     <Workspace.ImageCountPartial workspace={workspace} />
 

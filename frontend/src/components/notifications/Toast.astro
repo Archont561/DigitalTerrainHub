@@ -1,4 +1,12 @@
 ---
+
+export interface Props extends Astro.HTMLComponentProps<"div"> {
+}
+
+const {
+    ...props
+} = Astro.props;
+
 const notificationChannelURL = "/events/notifications"
 ---
 
@@ -7,4 +15,5 @@ const notificationChannelURL = "/events/notifications"
     sse-connect={notificationChannelURL} 
     sse-swap="message"
     class:list=["toast", "toast-end"]
+    {...props}
 ></div>

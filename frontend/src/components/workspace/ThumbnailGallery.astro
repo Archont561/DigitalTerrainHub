@@ -1,9 +1,9 @@
 ---
-
-interface Props {
+export interface Props extends Astro.HTMLComponentProps<"li"> {
+    workspace: DjangoAPI.Workspace;
     thumbnails?: string[];
-    workspace?: DjangoAPI.Workspace;
 }
+
 
 const { 
     thumbnails = [] as string[], 
@@ -16,6 +16,7 @@ const getThumbnailUrl = (filename: string) => `/workspace/${workspace?.uuid}/ser
 
 <div
     class="grid grid-flow-row grid-cols-3 place-items-center gap-4 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
+    {...props}
 >
     {
         !workspace || thumbnails.length === 0 ? (

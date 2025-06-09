@@ -4,10 +4,10 @@ import { Forms, Utils, Workspace } from "@components";
 
 const workspaceURL = `${import.meta.env.PUBLIC_DJANGO_URL}/pyodm/workspaces/?format=astro`;
 
-interface Props {
-    id: string;
-    workspaces: DjangoAPI.Workspace[];
-    options: DjangoAPI.TaskOption[];
+interface Props extends Astro.HTMLComponentProps<"section"> {
+    id?: string;
+    workspaces?: DjangoAPI.Workspace[];
+    options?: DjangoAPI.TaskOption[];
 }
 
 const {

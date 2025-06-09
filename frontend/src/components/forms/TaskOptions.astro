@@ -1,11 +1,12 @@
 ---
-interface Props {
+export interface Props extends Astro.HTMLComponentProps<"form"> {
     options: DjangoAPI.TaskOption[];
 }
 
 const {
     options = [],
-} = Astro.props as Props;
+    ...props
+} = Astro.props;
 ---
 
 <form
@@ -16,6 +17,7 @@ const {
     hx-swap="none"
     hx-ext="form-json"
     hx-trigger="submit"
+    {...props}
 >
     <h2 class="text-2xl font-bold mb-4">Processing Options</h2>
     {options.map(option => 

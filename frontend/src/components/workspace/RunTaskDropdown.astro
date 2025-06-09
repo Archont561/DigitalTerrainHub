@@ -1,16 +1,16 @@
 ---
 import { Utils } from "@components";
 
-interface Props {
-  presets: DjangoAPI.Preset[];
-  workspace: DjangoAPI.Workspace;
+export interface Props extends Astro.HTMLComponentProps<"div"> {
+    workspace?: DjangoAPI.Workspace;
+    presets?: DjangoAPI.Preset[];
 }
 
 const { 
     workspace = {} as DjangoAPI.Workspace,
     presets = [] as DjangoAPI.Preset[],
     ...props
-} = Astro.props as Props;
+} = Astro.props;
 
 const { globalPresets, userPresets } = presets.reduce<{
   globalPresets: DjangoAPI.Preset[];
@@ -31,6 +31,7 @@ const toTitle = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
     x-data="{ locked: false, selectedPreset: '', handleDialogClose() { const dialog = window.htmx.find('#options-dialog'); $data.locked = true; const dialogCloseHandler = () => { $data.locked = false; dialog.removeEventListener('close', dialogCloseHandler); }; dialog.showModal(); dialog.addEventListener('close', dialogCloseHandler); } }"
     x-bind:class="{ 'dropdown-open': locked }"
     x-on:submit="$store.optionsData=null"
+    {...props}
 >
     <form 
         hx-post={`/workspaces/${workspace.uuid}/tasks`}

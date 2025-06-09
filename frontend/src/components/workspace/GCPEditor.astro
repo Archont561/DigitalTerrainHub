@@ -2,20 +2,22 @@
 import { Icon } from "astro-icon/components";
 import { Ol, Utils, Workspace } from "@components";
 
-interface Props {
-    id: string;
+export interface Props extends Astro.HTMLComponentProps<"div"> {
+    id?: string;
 }
 
 const {
     id = "workspace-edit-dialog",
-} = Astro.props as Props;
+    ...props
+} = Astro.props;
 ---
 
 <Utils.Dialog type="button"
     id={id}
     x-data="{ currentImage: null, open: false }"
     x-effect="open ? $el.showModal() : $el.close()"
-    class="w-full h-full max-w-[calc(100%-10rem)] max-h-[calc(100%-10rem)] p-0 flex flex-col border-2">
+    class="w-full h-full max-w-[calc(100%-10rem)] max-h-[calc(100%-10rem)] p-0 flex flex-col border-2"
+    {...props}>
 
     <slot name="trigger">
         <div class="size-10 z-100" 

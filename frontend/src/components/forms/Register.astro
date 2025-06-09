@@ -1,7 +1,14 @@
 ---
+
+export interface Props extends Astro.HTMLComponentProps<"form"> {
+    registerURL: URLString;
+    fields: any[];
+}
+
 const {
     registerURL,
     fields,
+    ...props
 } = Astro.props;
 ---
 
@@ -9,6 +16,7 @@ const {
     hx-post={registerURL}
     hx-swap="outerHTML"
     class="space-y-6"
+    {...props}
 >
     <input type="submit" class="btn btn-primary w-full" value="Create an account" />
 </form>
