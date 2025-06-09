@@ -4,6 +4,8 @@
 @import "./utils.css";
 
 @source "../../src/**/*.{astro,ts,css}";
+@source "../../node_modules/@codemint/astro-ui/";
+
 @plugin "daisyui" {
   exclude: rootscrollgutter;
   themes: bumblebee --default, night --prefersDark;
