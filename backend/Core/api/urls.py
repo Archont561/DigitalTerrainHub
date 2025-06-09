@@ -8,7 +8,7 @@ notificationsRouter = DefaultRouter()
 notificationsRouter.register("", NotificationViewSet, basename='notification')
 
 urlpatterns = [
-    path("", lambda request: redirect(reverse_lazy("swagger-ui"))),
+    path("", lambda request: redirect("api:swagger-ui")),
     path("core/", include([
         path("notifications/", include(notificationsRouter.urls)),
     ])),
@@ -19,7 +19,7 @@ urlpatterns = [
     path('auth/', include('rest_framework.urls', namespace='rest_framework')),
     path("schema/", include([
         path('', SpectacularAPIView.as_view(), name='schema'),
-        path('swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-        path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+        path('swagger-ui/', SpectacularSwaggerView.as_view(url_name='api:schema'), name='swagger-ui'),
+        path('redoc/', SpectacularRedocView.as_view(url_name='api:schema'), name='redoc'),
     ])),
 ] 
