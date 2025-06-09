@@ -24,13 +24,13 @@ if settings.DEBUG:
 
 
 urlpatterns = [
-    path("", include([
+    path("", include(([
         path("", HomeView.as_view(), name="home"),
-    ], namespace="core")),
+    ], "core"))),
     path("", include(debugpatterns)),
     path('admin/', admin.site.urls),
     path('events/<channel>/', events, name='events'),
-    path('api/', include(apipatterns, namespace="api"))
+    path('api/', include((apipatterns, "api")))
 ]
 
 handler404 = Custom404View.as_view()
