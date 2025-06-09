@@ -12,7 +12,7 @@ router.register(r'presets', OptionsPresetViewSet, basename='presets')
 
 workspaces_router = NestedDefaultRouter(router, r'workspaces', lookup='workspace')
 workspaces_router.register(r'tasks', TaskViewSet, basename='workspace-tasks')
-workspaces_router.register(r'gcppoints', GCPPointViewSet, basename='workspace-gcps')
+workspaces_router.register(r'gcpoints', GCPPointViewSet, basename='workspace-gcps')
 
 urlpatterns = [
     path("", include(router.urls)),
