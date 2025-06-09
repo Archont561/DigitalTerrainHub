@@ -1,11 +1,11 @@
 import List from "./List.astro"
 import Partial from "./Partial.astro"
 import SSEPartial from "./SSEPartial.astro"
-import Toast from "./Toast.astro"
+import ToastContainer from "./ToastContainer.astro"
 
 export {
     List,
     Partial,
     SSEPartial,    
-    Toast,
+    ToastContainer,
 }
