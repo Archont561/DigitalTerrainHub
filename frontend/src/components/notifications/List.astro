@@ -16,4 +16,6 @@ if (!notifications.length) {
 }
 ---
 
-{notifications.map(notification => <Notifications.Partial notification={notification}>)}
+{notifications.map(notification => (
+    <Notifications.Partial notification={notification} />
+))}
