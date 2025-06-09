@@ -33,20 +33,16 @@ type EndpointMap<T extends readonly string[]> = {
 };
 
 type URLObject<T> =
-    T extends { pk: string }
+  T extends { pk: string }
     ? (pkValue: string | number) => URLObject<Omit<T, "pk">>
-    : (
-        // Exclude keys that are 'pk' | 'endpoints' | 'name'
-        & {
-            [K in keyof T as K extends "pk" | "endpoints" | "name" ? never : K]:
-            T[K] extends object ? URLObject<T[K]> : never
-        }
-        & (
-            T extends { endpoints: readonly string[] }
-            ? EndpointMap<T["endpoints"]>
-            : {}
-        )
-    );
+    : {
+        self: EndpointFunction;
+      } & {
+        [K in keyof T as K extends "pk" | "endpoints" | "name" ? never : K]:
+          T[K] extends object ? URLObject<T[K]> : never;
+      } & (T extends { endpoints: readonly string[] }
+        ? EndpointMap<T["endpoints"]>
+        : {});
 
 import { kebabToCamel } from "@utils";
 
@@ -69,7 +65,11 @@ export function resolveURLTree<T>(config: T, basePath = ""): URLObject<T> {
     if (typeof (config as any).pk === "string") {
         return ((pkValue: string | number) => {
             const newBase = resolveURL`${basePath}/${pkValue}`;
-            return resolveURLTree({ ...(config as any), pk: undefined }, newBase);
+            const resolved = resolveURLTree({ ...(config as any), pk: undefined }, newBase);
+            return {
+                ...resolved,
+                self: () => newBase,
+            };
         }) as any;
     }
 
