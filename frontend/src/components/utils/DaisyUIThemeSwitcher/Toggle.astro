@@ -1,0 +1,137 @@
+---
+import {
+    DaisyUIDarkThemes,
+    DaisyUILightThemes,
+    type DaisyUIDarkTheme,
+    type DaisyUILightTheme,
+} from "./daisyUIThemes";
+
+type ThemeSwitcherType =
+    | "toggle"
+    | "checkbox"
+    | "swap"
+    | "text toggle"
+    | "icon toggle"
+    | "toggle icons inside";
+
+interface Props extends Astro.HTMLComponentProps<"div"> {
+    id?: string;
+    type?: ThemeSwitcherType;
+    darkTheme: DaisyUIDarkTheme;
+    lightTheme: DaisyUILightTheme;
+}
+
+const {
+    id = "daisyui-theme-controller",
+    type = "toggle",
+    lightTheme,
+    darkTheme,
+    ...props
+} = Astro.props;
+
+if (!lightTheme || !DaisyUILightThemes.includes(lightTheme)) {
+    throw new Error(`No such light theme ${lightTheme}!`);
+}
+if (!darkTheme || !DaisyUIDarkThemes.includes(darkTheme)) {
+    throw new Error(`No such dark theme ${darkTheme}!`);
+}
+---
+
+<div
+    id={id}
+    {...props}
+    data-light-theme={lightTheme}
+    data-dark-theme={darkTheme}
+    x-data={`{
+        theme: $persist("${lightTheme}").as("daisyUITheme").using(sessionStorage),
+        init() {
+            const themeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            themeMediaQuery.addEventListener('change', e => setThemeBasedOnPreference(e.matches));
+            this._setThemeBasedOnPreference(themeMediaQuery.matches);
+        },
+        _setThemeBasedOnPreference(preference) {
+            theme = preference ? $el.dataset.darkTheme : $el.dataset.lightTheme;
+        },			
+    }`}
+>
+    {
+        type === "toggle" && (
+            <input
+                type="checkbox"
+                value={lightTheme}
+                x-model="theme"
+                class="toggle theme-controller"
+            />
+        )
+    }
+    {
+        type === "checkbox" && (
+            <input
+                type="checkbox"
+                value={lightTheme}
+                x-model="theme"
+                class="checkbox theme-controller"
+            />
+        )
+    }
+    {
+        type === "swap" && (
+            <div class="swap">
+                <input
+                    type="checkbox"
+                    value={lightTheme}
+                    x-model="theme"
+                    class="toggle theme-controller"
+                />
+                <slot name="light-icon" />
+                <slot name="dark-icon" />
+            </div>
+        )
+    }
+    {
+        type === "text toggle" && (
+            <label class="flex cursor-pointer gap-2">
+                <span class="label-text">
+                    <slot name="light-text" />
+                </span>
+                <input
+                    type="checkbox"
+                    value={lightTheme}
+                    x-model="theme"
+                    class="toggle theme-controller"
+                />
+                <span class="label-text">
+                    <slot name="dark-text" />
+                </span>
+            </label>
+        )
+    }
+    {
+        type === "icon toggle" && (
+            <label class="flex cursor-pointer gap-2">
+                <slot name="light-icon" />
+                <input
+                    type="checkbox"
+                    value={lightTheme}
+                    x-model="theme"
+                    class="toggle theme-controller"
+                />
+                <slot name="dark-icon" />
+            </label>
+        )
+    }
+    {
+        type === "toggle icons inside" && (
+            <label class="toggle text-base-content">
+                <input
+                    type="checkbox"
+                    value={lightTheme}
+                    x-model="theme"
+                    class="theme-controller"
+                />
+                <slot name="light-icon" />
+                <slot name="dark-icon" />
+            </label>
+        )
+    }
+</div>
