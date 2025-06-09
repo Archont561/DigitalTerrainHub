@@ -32,7 +32,7 @@ const componentTree = {
         list: Component.Notifications.List,
         partial: Component.Notifications.Partial,
         ssepartial: Component.Notifications.SSEPartial,
-        toast: Component.Notifications.Toast,
+        toast: Component.Notifications.ToastContainer,
     },
     getComponent(path: string): AstroRenderFn | null {
         const pathArray = path.split('/');
