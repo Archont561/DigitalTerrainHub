@@ -1,4 +1,5 @@
 ---
+import * as Flow from "@astropub/flow";
 const { } = Astro.props;
 const urls = {
     account: {
@@ -14,14 +15,14 @@ const urls = {
     class="flex grow gap-6 bg-base-100 p-6 rounded-lg shadow-lg">
     <aside class="w-36">
         <menu class="size-full menu menu-compact flex flex-col gap-1 border-r-1">
-            {["Profile", "Security", "Notifications", "Payment"].map(tab => 
+            <Flow.For of={["Profile", "Security", "Notifications", "Payment"]}>{tab => 
                 <li>
                     <a data-tab="{tab}"
                         x-on:click="currentSettingsTab = $el.dataset.tab"
                         x-bind:class="isCurrentTab($el, currentSettingsTab) && 'menu-active font-semibold'"
                     >{tab}</a>
                 </li>
-            )}
+            }</Flow.For>
             <li>
                 <a @click="currentSettingsTab = ''; window.htmx.find('#accountDeletionConfirmModal').showModal();"
                     :class="isCurrentTab($el, currentSettingsTab) && 'menu-active font-semibold'"

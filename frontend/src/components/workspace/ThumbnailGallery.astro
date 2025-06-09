@@ -1,4 +1,5 @@
 ---
+import * as Flow from "@astropub/flow";
 import { DjangoURLs } from "@assets";
 
 export interface Props extends Astro.HTMLComponentProps<"li"> {
@@ -20,15 +21,13 @@ const getThumbnailUrl = (filename: string) =>
     class="grid grid-flow-row grid-cols-3 place-items-center gap-4 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
     {...props}
 >
-    {
-        !workspace || thumbnails.length === 0 ? (
-            <div class="text-center text-base-content">NO IMAGES</div>
-        ) : (
-            thumbnails.map((thumbnail) => (
+    <Flow.When test={!workspace || thumbnails.length === 0}>
+        <div class="text-center text-base-content">NO IMAGES</div>
+        <Fragment slot="else">
+            <Flow.For of={thumbnails}>{thumbnail =>
                 <div
                     class="card size-full bg-base-100 shadow-md hover:scale-102 transition-transform duration-300 cursor-pointer"
-                    x-on:click="currentImage = $el.querySelector('img').src"
-                >
+                    x-on:click="currentImage = $el.querySelector('img').src">
                     <figure class="overflow-hidden rounded-t-lg">
                         <img
                             src={getThumbnailUrl(thumbnail)}
@@ -42,7 +41,7 @@ const getThumbnailUrl = (filename: string) =>
                         </p>
                     </div>
                 </div>
-            ))
-        )
-    }
+            }</Flow.For>
+        </Fragment>
+    </Flow.When>
 </div>

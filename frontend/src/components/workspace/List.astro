@@ -1,4 +1,5 @@
 ---
+import * as Flow from "@astropub/flow";
 import { DjangoURLs } from "@assets";
 import { Icon } from "astro-icon/components";
 import { Forms, Utils, Workspace } from "@components";
@@ -47,7 +48,11 @@ if (!workspaces.length) {
                         <h2 class="text-lg">No workspaces created yet!</h2>
                     </div>
                 </template>
-                {workspaces.map(workspace => <Workspace.Partial workspace={workspace} />)}
+                
+                <Flow.For of={workspaces}>{workspace => 
+                    <Workspace.Partial workspace={workspace} />
+                }</Flow.For>
+                
             </ul>
         </div>
     </div>

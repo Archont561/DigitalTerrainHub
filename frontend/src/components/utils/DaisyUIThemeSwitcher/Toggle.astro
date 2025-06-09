@@ -1,4 +1,5 @@
 ---
+import * as Flow from "@astropub/flow";
 import {
     DaisyUIDarkThemes,
     DaisyUILightThemes,
@@ -52,30 +53,25 @@ if (!darkTheme || !DaisyUIDarkThemes.includes(darkTheme)) {
         _setThemeBasedOnPreference(preference) {
             theme = preference ? $el.dataset.darkTheme : $el.dataset.lightTheme;
         },			
-    }`}
->
-    {
-        type === "toggle" && (
+    }`}>
+    <Flow.Switch of={type}>
+        <Flow.Case of={"toggle"}>
             <input
                 type="checkbox"
                 value={lightTheme}
                 x-model="theme"
                 class="toggle theme-controller"
             />
-        )
-    }
-    {
-        type === "checkbox" && (
+        </Flow.Case>
+        <Flow.Case of={"checkbox"}>
             <input
                 type="checkbox"
                 value={lightTheme}
                 x-model="theme"
                 class="checkbox theme-controller"
             />
-        )
-    }
-    {
-        type === "swap" && (
+        </Flow.Case>
+        <Flow.Case of={"swap"}>
             <div class="swap">
                 <input
                     type="checkbox"
@@ -86,10 +82,8 @@ if (!darkTheme || !DaisyUIDarkThemes.includes(darkTheme)) {
                 <slot name="light-icon" />
                 <slot name="dark-icon" />
             </div>
-        )
-    }
-    {
-        type === "text toggle" && (
+        </Flow.Case>
+        <Flow.Case of={"text toggle"}>
             <label class="flex cursor-pointer gap-2">
                 <span class="label-text">
                     <slot name="light-text" />
@@ -104,10 +98,8 @@ if (!darkTheme || !DaisyUIDarkThemes.includes(darkTheme)) {
                     <slot name="dark-text" />
                 </span>
             </label>
-        )
-    }
-    {
-        type === "icon toggle" && (
+        </Flow.Case>
+        <Flow.Case of={"icon toggle"}>
             <label class="flex cursor-pointer gap-2">
                 <slot name="light-icon" />
                 <input
@@ -118,10 +110,8 @@ if (!darkTheme || !DaisyUIDarkThemes.includes(darkTheme)) {
                 />
                 <slot name="dark-icon" />
             </label>
-        )
-    }
-    {
-        type === "toggle icons inside" && (
+        </Flow.Case>
+        <Flow.Case of={"toggle icons inside"}>
             <label class="toggle text-base-content">
                 <input
                     type="checkbox"
@@ -132,6 +122,6 @@ if (!darkTheme || !DaisyUIDarkThemes.includes(darkTheme)) {
                 <slot name="light-icon" />
                 <slot name="dark-icon" />
             </label>
-        )
-    }
+        </Flow.Case>
+    </Flow.Switch>
 </div>

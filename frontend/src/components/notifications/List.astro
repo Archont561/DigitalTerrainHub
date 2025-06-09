@@ -1,4 +1,5 @@
 ---
+import * as Flow from "@astropub/flow";
 import { Notifications } from "@components";
 
 interface Props extends Astro.ComponentProps {
@@ -15,6 +16,6 @@ if (!notifications.length) {
 }
 ---
 
-{notifications.map(notification => (
+<Flow.For of={notifications}>{notification => 
     <Notifications.Partial notification={notification} />
-))}
+}</Flow.For>

@@ -1,4 +1,5 @@
 ---
+import * as Flow from "@astropub/flow";
 import { DjangoURLs } from "@assets";
 import { Utils } from "@components";
 
@@ -53,18 +54,19 @@ const toTitle = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
                     <option selected value="Default">Default</option>
                   
                     <optgroup label="Global Presets">
-                      {globalPresets.map((preset) => (
-                        <option value={preset.name}>{toTitle(preset.name)}</option>
-                      ))}
+                      <Flow.For of={globalPresets}>
+                        {preset => <option value={preset.name}>{toTitle(preset.name)}</option>}
+                      </Flow.For>
                     </optgroup>
                     <optgroup label="User Presets">
-                      {userPresets.length > 0 ? (
-                        userPresets.map((preset) => (
-                          <option value={preset.name}>{toTitle(preset.name)}</option>
-                        ))
-                      ) : (
-                        <option disabled>No user presets available</option>
-                      )}
+                      <Flow.When test={userPresets.length > 0}>
+                        <Flow.For of={userPresets}>
+                          {preset => <option value={preset.name}>{toTitle(preset.name)}</option>}
+                        </Flow.For>
+                        <Fragment slot="else">
+                          <option disabled>No user presets available</option>
+                        </Fragment>
+                      </Flow.When>
                     </optgroup>
                   
                     <option value="custom">Custom</option>
