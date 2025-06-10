@@ -18,7 +18,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('events/<channel>/', events, name='events'),
     path('api/', include((apipatterns, "api"))),
-    re_path(r"^_astro/.*", proxy_to_astro),
+    re_path(rf"^{settings.ASTRO_URL_BASE}", proxy_to_astro),
 ]
 
 handler404 = custom_404

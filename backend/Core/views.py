@@ -53,10 +53,9 @@ def custom_500(request: HttpRequest):
     })
 
 def proxy_to_astro(request: HttpRequest):
-    astro_url = urljoin(settings.ASTRO_URL, request.path)
     try:
         response = requests.get(
-            astro_url,
+            urljoin(settings.ASTRO_URL, request.path),
             params=request.GET,
             stream=True,
             headers=request.headers,
