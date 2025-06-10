@@ -1,5 +1,7 @@
+import requests
+from urllib.parse import urljoin
 from django.shortcuts import render, redirect
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponseServerError, HttpResponse
 from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
@@ -49,3 +51,23 @@ def custom_500(request: HttpRequest):
         "app_name": settings.APP_NAME,
         "is_logged": request.user.is_authenticated
     })
+
+def proxy_to_astro(request: HttpRequest):
+    astro_url = urljoin(settings.ASTRO_URL, request.path)
+    try:
+        response = requests.get(
+            astro_url,
+            params=request.GET,
+            stream=True,
+            headers=request.headers,
+            timeout=5
+        )
+        response.raise_for_status()
+        content_type = response.headers.get('content-type', 'application/octet-stream')
+        return HttpResponse(
+            content=response.content,
+            status=response.status_code,
+            content_type=content_type
+        )
+    except requests.RequestException as e:
+        return HttpResponseServerError(f"Error proxying to Astro: {str(e)}")
