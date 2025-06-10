@@ -1,5 +1,6 @@
 ---
 import { DjangoURLs } from "@assets";
+import { StylesURLs } from '@styles'; 
 
 const {
     ...props
@@ -7,8 +8,9 @@ const {
 ---
 
 <div {...props} 
-    x-data="UppyWidget" 
-    :data-endpoint={DjangoURLs.api.pyodm.workspaces("${$store.currentWorkspaceUUID}").upload("").self()}
+    x-data="UppyWidget"
+    data-style={StylesURLs.Uppy}
+    x-bind:data-endpoint={DjangoURLs.api.pyodm.workspaces("${$store.currentWorkspaceUUID}").upload("").self()}
 ></div>
 
 <script>
@@ -62,13 +64,13 @@ const {
             },
 
             setCustomStyle() {
-                if (!document.getElementById("uppyWidgetModifications")) {
-                    const style = document.createElement('style');
-                    style.type = 'text/css';
-                    style.id = "uppyWidgetModifications";
-                    style.innerHTML = `.uppy-Root, .uppy-Dashboard { height: 100%; width: 100%; }`;
-                    document.head.appendChild(style);
-                }
+                const stylesheetURL = this.$el.dataset.style;
+                stylesheetURL && window.utils.loadStylesheet(stylesheetURL);
+                window.htmx
+                    .findAll(".uppy-Root, .uppy-Dashboard")
+                    .forEach((el) => {
+                    (el as HTMLElement).classList.add("size-full");
+                });
             },
 
             setTusProtocol() {
