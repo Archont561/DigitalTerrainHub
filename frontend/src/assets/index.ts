@@ -9,6 +9,9 @@ import Task from "./dummy/task.json";
 import User from "./dummy/user.json";
 import Workspace from "./dummy/workspace.json";
 
+import Global from "./styles/global.css?url";
+import OpenLayers from "./styles/openlayers.css?url";
+import Uppy from "./styles/uppy.css?url";
 
 export const SVGURLs = {
     Anon,
@@ -25,7 +28,14 @@ export const DummyData = {
     Workspace,
 };
 
+export const StylesURLs = {
+    Global,
+    OpenLayers,
+    Uppy,
+}
+
 import { resolveURLTree } from "@utils";
 import { URLs } from "./urls.ts";
 
 export const DjangoURLs = resolveURLTree(URLs.root);
+

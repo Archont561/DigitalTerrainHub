@@ -3,8 +3,9 @@
 @import "./animations.css";
 @import "./utils.css";
 
-@source "../../src/**/*.{astro,ts,css}";
-@source "../../node_modules/@codemint/astro-ui/";
+@source "../../**/*.{astro,ts,css}";
+@source "../../../../backend/Core/templates/**/*.html";
+@source "../../../node_modules/@codemint/astro-ui/**/*.{astro,ts,css}";
 
 @plugin "daisyui" {
   exclude: rootscrollgutter;
