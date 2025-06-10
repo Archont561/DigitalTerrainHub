@@ -18,7 +18,7 @@ import { Forms } from "@components";
                     <h1 class="card-title text-2xl justify-center">
                         Log in
                     </h1>
-                    <Forms.Login loginURL={DjangoURLs.api.user.auth.login()} />
+                    <Forms.Login loginURL={DjangoURLs.api.user.auth.login()} fields={[]} />
                     <div class="divider my-4">Don’t have an account?</div>
                     <a href={DjangoURLs.register()} class="btn btn-outline btn-block">
                         Register

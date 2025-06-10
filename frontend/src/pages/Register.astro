@@ -17,7 +17,7 @@ import { Forms } from "@components";
                     Register
                 </h1>
                 <div class="card-body p-0">
-                    <Forms.Register registerURL={DjangoURLs.api.user.auth.register()} fields=[] />
+                    <Forms.Register registerURL={DjangoURLs.api.user.auth.register()} fields={[]} />
                     <p class="text-sm text-base-content/70 text-center">
                         Already have an account? 
                         <a href={DjangoURLs.login()} class="text-primary hover:underline">
