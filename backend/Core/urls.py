@@ -1,23 +1,11 @@
 from django.conf import settings
 from django.contrib import admin
 from django.conf.urls import handler404, handler500
-from django.urls import path, include
-from .views import home, login, register, profile, custom_404, custom_500
+from django.urls import path, include, re_path
+from django.http import HttpResponseRedirect
+from .views import home, login, register, profile, custom_404, custom_500, proxy_to_astro
 from django_eventstream.views import events
 from .api import apipatterns
-
-
-debugpatterns = []
-
-if settings.DEBUG:
-    from django.http import HttpResponseRedirect
-    from django.urls import re_path
-    from urllib.parse import urljoin
-    
-    redirect_to_astro = lambda request: HttpResponseRedirect(urljoin("http://localhost:4321", request.path))
-    debugpatterns += [
-        re_path("", redirect_to_astro),
-    ]
 
 
 urlpatterns = [
@@ -30,7 +18,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('events/<channel>/', events, name='events'),
     path('api/', include((apipatterns, "api"))),
-    path("", include(debugpatterns)),
+    re_path(r"^_astro/.*", proxy_to_astro),
 ]
 
 handler404 = custom_404
