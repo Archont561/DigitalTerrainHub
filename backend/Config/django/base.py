@@ -140,6 +140,8 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
+APPEND_SLASH = False
+
 SPECTACULAR_SETTINGS = {
     'TITLE': 'DIGITAL TERRAIN HUB API',
     'DESCRIPTION': 'Not yet implemented!',
