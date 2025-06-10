@@ -26,4 +26,4 @@ export const DummyData = {
 import { resolveURLTree } from "@utils";
 import { URLs } from "./urls.ts";
 
-export const DjangoURLs = resolveURLTree(URLs).root;
+export const DjangoURLs = resolveURLTree(URLs.root);
