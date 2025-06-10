@@ -1,8 +1,10 @@
 ---
 import { Notifications } from "@components";
-import { globalStylesURL } from "@styles";
+import { StylesURLs } from "@styles";
+import { DjangoURLs, SVGURLs } from "@assets";
 
 const { title } = Astro.props;
+const crsfToken = Astro.cookies.get("crsftoken")?.value;
 ---
 
 <!doctype html>
@@ -10,10 +12,10 @@ const { title } = Astro.props;
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href=/favicon.svg' />
+		<link rel="icon" type="image/svg+xml" href={SVGURLs.Favicon} />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
-		<link rel="stylesheet" href={globalStylesURL}>
+		<link rel="stylesheet" href={StylesURLs.Global}>
 		<script>
 			import Utils from "@lib/utils";
 			import { DateTime } from "luxon";
@@ -31,9 +33,9 @@ const { title } = Astro.props;
 			})();
 		</script>
 	</head>
-	<body hx-headers={`{"X-CSRFToken": ${Astro.request.headers.get("X-CRSFToken")}`} hx-ext="form-json">
+	<body hx-headers={`{"X-CSRFToken": ${crsfToken}`} hx-ext="form-json">
 		<slot />
-		<Notifications.ToastContainer notificationChannelURL="/events/notifications" />
-		<input id="CSRFTokenInput" type="hidden" value={Astro.request.headers.get("X-CRSFToken")}>
+		<Notifications.ToastContainer 
+			notificationChannelURL={DjangoURLs.sseEventChannel("notifications").self()} />
 	</body>
 </html>
