@@ -8,7 +8,6 @@ dotenv.config();
 
 // https://astro.build/config
 export default defineConfig({
-  base: "/astro/",
   output: "server",
 
   vite: {
