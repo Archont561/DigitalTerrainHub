@@ -1,5 +1,6 @@
 import Anon from "./anonymus.svg?url";
 import Astro from "./astro.svg?url";
+import Favicon from "./favicon.svg?url";
 
 import AvailablePrests from "./dummy/availablePresets.json";
 import GCPoints from "./dummy/gcppoints.json";
@@ -12,6 +13,7 @@ import Workspace from "./dummy/workspace.json";
 export const SVGURLs = {
     Anon,
     Astro,
+    Favicon,
 };
 
 export const DummyData = {
