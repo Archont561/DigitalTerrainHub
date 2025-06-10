@@ -1,4 +1,4 @@
-export const URLs = {
+const URLs = {
   root: {
     name: "DjangoURLs",
     endpoints: ["", "profile", "login", "register", "help"] as const,
@@ -63,3 +63,7 @@ export const URLs = {
     },
   },
 } as const;
+
+import { resolveURLTree } from "@utils";
+
+export const DjangoURLs = resolveURLTree(URLs.root);
