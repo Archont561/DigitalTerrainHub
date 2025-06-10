@@ -107,7 +107,8 @@ USE_TZ = True
 LOGIN_URL = "/user/credentials/login/"
 LOGIN_REDIRECT_URL = "/user/profile/"
 
-STATIC_URL = "/static/"
+STATIC_URL = '/static/'
+STATICFILES_DIRS = []
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 AUTH_USER_MODEL = 'User.CustomUser'
