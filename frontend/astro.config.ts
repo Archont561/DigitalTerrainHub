@@ -17,6 +17,7 @@ export default defineConfig({
       allowedHosts: [
         "frontend",
         "localhost",
+        "host.docker.internal"
       ]
     }
   },
