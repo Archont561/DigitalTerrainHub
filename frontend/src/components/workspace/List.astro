@@ -15,7 +15,7 @@ interface Props extends Astro.HTMLComponentProps<"section"> {
 const {
     id = "workspace-management-board",
     workspaces = [] as DjangoAPI.Workspace[],
-    options = {} as DjangoAPI.TaskOption[],
+    options = [] as DjangoAPI.TaskOption[],
     ...props
 } = Astro.props as Props;
 
