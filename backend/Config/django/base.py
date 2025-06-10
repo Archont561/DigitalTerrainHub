@@ -104,8 +104,8 @@ USE_I18N = True
 
 USE_TZ = True
 
-LOGIN_URL = "/user/credentials/login/"
-LOGIN_REDIRECT_URL = "/user/profile/"
+LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = "/profile/"
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = []
