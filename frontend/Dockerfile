@@ -10,4 +10,4 @@ COPY . /app/
 
 EXPOSE 4321
 
-CMD ["npm", "run", "start"]
+CMD ["sh", "-c", "${DOCKER_CMD:-npm run start}"]

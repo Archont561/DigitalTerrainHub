@@ -40,4 +40,5 @@ EOF
 
 EXPOSE 8000
 
-CMD [ "uv", "run", "python", "-m" "daphne", "-b", "0.0.0.0", "-p", "8000", "Config.asgi:application" ]
+
+CMD ["sh", "-c", "${DOCKER_CMD:-uv run python -m daphne -b 0.0.0.0 -p 8000 Config.asgi:application}"]
