@@ -1,37 +1,44 @@
+import { type PropertyValues } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { Image as ImageLayer } from 'ol/layer';
 import { ImageStatic as ImageStaticSource } from 'ol/source';
 import { Projection } from 'ol/proj';
 import { View } from 'ol';
 import { getCenter } from 'ol/extent';
-import HTMLOlLayer from './HTMLOlLayer';
+import { HTMLOlLayer } from './HTMLOlLayer.web';
+
+export interface HTMLOlImageLayerProps {
+  src?: string,
+}
 
 @customElement('ol-image-layer')
-export default class HTMLOlImageLayer extends HTMLOlLayer {
-  @property({ type: String }) src: string | null = null;
+export class HTMLOlImageLayer
+  extends HTMLOlLayer<ImageLayer<ImageStaticSource>, ImageStaticSource>
+  implements HTMLOlImageLayerProps {
+
+  declare readonly layer: ImageLayer<ImageStaticSource>;
+  declare readonly source: ImageStaticSource;
+
+  @property({ type: String, reflect: true }) src: URLString = "";
 
   constructor() {
-    super(new ImageLayer());
+    super(new ImageLayer(), new ImageStaticSource({ url: "", imageExtent: [] }));
   }
 
-  // Lifecycle hook to run when `src` changes
-  updated(changedProperties: Map<string | number | symbol, unknown>): void {
+  updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
     if (changedProperties.has('src')) {
       this.loadImage(this.src);
     }
   }
 
-  // Load the image and set the OpenLayers layer source
-  private loadImage(src: string | null) {
-    const map = this.layer.getMapInternal();
-    if (!map) return;
-    
+  private loadImage(src: string) {
     if (!src) {
-      this.layer.setSource(null); // Remove image if no `src`
+      this.layer.setSource(null);
       return;
     }
 
+    const map = this.map;
     const img = new Image();
     img.src = src;
     img.onload = () => {
@@ -50,7 +57,6 @@ export default class HTMLOlImageLayer extends HTMLOlLayer {
 
       this.layer.setSource(imageStaticSource);
 
-      // Add padding and adjust the view for the image
       const padding = {
         horizontal: img.width / 3,
         vertical: img.height / 3,
@@ -68,7 +74,7 @@ export default class HTMLOlImageLayer extends HTMLOlLayer {
           img.height + padding.vertical,
         ],
       });
-      
+
       map.setView(view);
     };
   }

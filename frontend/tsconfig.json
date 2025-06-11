@@ -20,6 +20,7 @@
       "@lib": ["./src/lib/index.ts"],
       "@utils/*": ["./src/utils/*"],
       "@utils": ["./src/utils/index.ts"],
-    }
+    },
+    "useDefineForClassFields": false,
   }
 }

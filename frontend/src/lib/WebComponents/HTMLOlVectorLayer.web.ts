@@ -1,30 +1,43 @@
+import { type PropertyValues } from 'lit';
 import { Vector as VectorLayer } from "ol/layer";
 import { type Interaction } from "ol/interaction";
 import Feature from "ol/Feature";
 import { Point } from "ol/geom";
-import { fromLonLat } from "ol/proj";
+import { fromLonLat, transform, type ProjectionLike } from "ol/proj";
 import VectorSource from "ol/source/Vector";
 import { Circle, Fill, Stroke, Style, Text } from "ol/style";
-import HTMLOlLayer from './HTMLOlLayer';
+import { HTMLOlLayer } from './HTMLOlLayer.web';
 import type { Coordinate } from "ol/coordinate";
 
 
-export default class HTMLOlVectorLayer extends HTMLOlLayer {
+interface PointOptions {
+    coords: Coordinate;
+    sourceProjection?: ProjectionLike;
+    properties?: Record<string, any>;
+    id?: number | string;
+}
 
-    private interactions = new Map<string, Interaction>();
-    private source = new VectorSource();
+export interface HTMLOlVectorLayerProps {
+    readonly interactions: Map<string, Interaction>;
+}
 
-    getSource() { return this.source; }
-    getLayerInteractions() { return this.interactions; }
+
+export class HTMLOlVectorLayer 
+    extends HTMLOlLayer<VectorLayer, VectorSource>
+    implements HTMLOlVectorLayerProps {
+
+    declare readonly layer: VectorLayer;
+    declare readonly source: VectorSource;
+    readonly interactions = new Map<string, Interaction>();
 
     constructor() {
-        super(new VectorLayer());
+        super(new VectorLayer(), new VectorSource());
         this.layer.setSource(this.source);
         this.setStyle();
     }
 
     private setStyle() {
-        (this.layer as VectorLayer).setStyle(new Style({
+        this.layer.setStyle(new Style({
             image: new Circle({
                 radius: 3,
                 fill: new Fill({ color: 'blue' }),
@@ -36,9 +49,7 @@ export default class HTMLOlVectorLayer extends HTMLOlLayer {
 
     setInteraction(name: string, interaction: Interaction) {
         this.interactions.set(name, interaction);
-
-        this.map && this.map.addInteraction(interaction);
-
+        this.map.addInteraction(interaction);
         return this;
     }
 
@@ -74,35 +85,27 @@ export default class HTMLOlVectorLayer extends HTMLOlLayer {
         });
     }
 
-    createMarkerAtViewCenter(transform = true) {
-        const center = this.map?.getView()?.getCenter();
+    createMarkerAtViewCenter() {
+        const center = this.map.getView()?.getCenter();
         if (!center) return null;
-        return this.createPoint({
-            coords: center,
-            transform
-        });
+        return this.createPoint({ coords: center });
     }
 
     createPoint({
         coords,
-        transform = true,
+        sourceProjection = "EPSG:3857",
         properties = {},
         id = undefined,
     }: PointOptions) {
-        const applyTransformation = transform ? fromLonLat : (_: Coordinate) => _
-        const pointFeature = new Feature({
-            geometry: new Point(applyTransformation(coords)),
-            ...properties
-        });
+        const reprojectCoords =  (_: Coordinate) => 
+            (sourceProjection == this.projection)
+            ? _ : transform(_, sourceProjection, this.projection);
+
+        const pointFeature = new Feature();
+        pointFeature.setGeometry(new Point(reprojectCoords(coords)));
+        pointFeature.setProperties(properties);
         pointFeature.setId(id);
         this.source.addFeature(pointFeature);
         return pointFeature;
     }
-}
-
-interface PointOptions {
-    coords: Coordinate;
-    transform?: boolean;
-    properties?: Record<string, any>; 
-    id?: number;
 }

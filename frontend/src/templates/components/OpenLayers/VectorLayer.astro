@@ -1,9 +1,15 @@
 ---
-const props = Astro.props;
+export interface Props extends Omit<Astro.WebComponentsProps.OlVectorLayer, "interactions"> {};
 ---
 
-<ol-vector-layer {...props} ><slot /></ol-vector-layer>
+<ol-vector-layer {...Astro.props} ><slot /></ol-vector-layer>
 
 <script>
-    import "@lib/WebComponents/HTMLOlVectorLayer";
+    import { HTMLOlVectorLayer } from "@lib/WebComponents";
+    (() => {
+        const tag = "ol-vector-layer";
+        customElements.whenDefined(tag).then(() => {
+            console.log(`Defined ${tag}:${HTMLOlVectorLayer.name} web component!`);
+        });
+    })();
 </script>

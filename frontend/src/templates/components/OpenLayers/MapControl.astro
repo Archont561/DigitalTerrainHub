@@ -1,9 +1,15 @@
 ---
-const props = Astro.props;
+export interface Props extends Astro.WebComponentsProps.OLMapControl {};
 ---
 
-<ol-map-control {...props} ><slot /></ol-map-control>
+<ol-map-control {...Astro.props} ><slot /></ol-map-control>
 
 <script>
-    import "@lib/WebComponents/HTMLOlMapControl";
+    import { HTMLOlMapControl } from "@lib/WebComponents";
+    (() => {
+        const tag = "ol-map-control";
+        customElements.whenDefined(tag).then(() => {
+            console.log(`Defined ${tag}:${HTMLOlMapControl.name} web component!`);
+        });
+    })();
 </script>

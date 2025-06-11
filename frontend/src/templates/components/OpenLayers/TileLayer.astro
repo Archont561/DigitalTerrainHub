@@ -1,9 +1,15 @@
 ---
-const props = Astro.props;
+export interface Props extends Astro.WebComponentsProps.OlTileLayer {};
 ---
 
-<ol-tile-layer {...props} ><slot /></ol-tile-layer>
+<ol-tile-layer {...Astro.props} ><slot /></ol-tile-layer>
 
 <script>
-    import "@lib/WebComponents/HTMLOlTileLayer";
+    import { HTMLOlTileLayer } from "@lib/WebComponents";
+    (() => {
+        const tag = "ol-tile-layer";
+        customElements.whenDefined(tag).then(() => {
+            console.log(`Defined ${tag}:${HTMLOlTileLayer.name} web component!`);
+        });
+    })();
 </script>
