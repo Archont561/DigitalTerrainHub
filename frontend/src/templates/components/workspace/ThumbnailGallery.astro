@@ -3,15 +3,15 @@ import * as Flow from "@astropub/flow";
 import { DjangoURLs } from "@assets";
 
 export interface Props extends Astro.HTMLComponentProps<"li"> {
-    workspace: DjangoAPI.Workspace;
+    workspace?: DjangoAPI.Workspace;
     thumbnails?: string[];
 }
 
 const { 
     thumbnails = [] as string[], 
-    workspace,
+    workspace = {} as DjangoAPI.Workspace,
     ...props
-} = Astro.props as Props;
+} = Astro.props;
 
 const getThumbnailUrl = (filename: string) => 
     `${DjangoURLs.api.pyodm.workspaces(workspace?.uuid).images(filename).self()}?thumbnails`;
