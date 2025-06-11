@@ -1,13 +1,13 @@
-FROM node:lts AS dev
+FROM oven/bun:slim AS dev
 
 WORKDIR /app
 
-COPY package.json package-lock.json /app/
+COPY bun.lock package.json /app/
 
-RUN npm install
+RUN bun install
 
 COPY . /app/
 
 EXPOSE 4321
 
-CMD ["sh", "-c", "${DOCKER_CMD:-npm run start}"]
+CMD ["sh", "-c", "${DOCKER_CMD:-bun run start}"]

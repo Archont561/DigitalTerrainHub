@@ -7,7 +7,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "start": "node ./dist/server/entry.mjs",
+    "start": "bun ./dist/server/entry.mjs",
     "test": "vitest",
     "test:e2e": "cypress run",
     "cypress": "cypress"
@@ -32,7 +32,7 @@
     "@iconify-json/mdi": "^1.2.3",
     "@iconify-json/mingcute": "^1.2.3",
     "@iconify-json/ooui": "^1.2.8",
-    "@iconify-json/tabler": "^1.2.18",
+    "@iconify-json/tabler": "^1.2.19",
     "@iconify-json/tdesign": "^1.2.8",
     "@tailwindcss/vite": "^4.1.8",
     "@testing-library/dom": "^10.4.0",
@@ -63,6 +63,6 @@
     "tailwindcss": "^4.1.8",
     "tailwindcss-animated": "^2.0.0",
     "typescript": "^5.8.3",
-    "vitest": "^3.2.2"
+    "vitest": "^3.2.3"
   }
 }
