@@ -1,0 +1,18 @@
+---
+export interface Props extends Astro.HTMLComponentProps<"div"> {
+    preset: DjangoAPI.Preset;
+}
+
+const {
+    preset = {} as DjangoAPI.Preset,
+    ...props
+} = Astro.props;
+
+if (!Object.keys(preset).length) Object.assign(preset, (await import("@assets")).DummyData.AvailablePrests[0]);
+---
+
+<div {...props}>
+    <div>{preset.id}</div>
+    <div>{preset.name}</div>
+    <div>{preset.preset_type}</div>
+</div>
