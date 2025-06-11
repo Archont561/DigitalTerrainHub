@@ -182,8 +182,8 @@ const {
                     const markerFeature = this.currentImageMarkerFeature as OlPoint;
                     const GCPsLayerContainer = this.$refs.GCPsLayerContainer as HTMLOlVectorLayer;
                     const imageMarkersLayerContainer = this.$refs.imageMarkersLayerContainer as HTMLOlVectorLayer;
-                    const gcpShiftSelect =  GCPsLayerContainer.getLayerInteractions().get("shiftSelect") as Select | undefined;
-                    const imgSelect = imageMarkersLayerContainer.getLayerInteractions().get("select") as Select | undefined;
+                    const gcpShiftSelect =  GCPsLayerContainer.interactions.get("shiftSelect") as Select | undefined;
+                    const imgSelect = imageMarkersLayerContainer.interactions.get("select") as Select | undefined;
                     if (!gcpShiftSelect || !imgSelect) return;
 
                     db.createBinding(
@@ -219,8 +219,7 @@ const {
 
                 db.getGCPointsByWorkspace(workspaceUUID).then(gcpoints => {
                     const GCPsLayerContainer = this.$refs.GCPsLayerContainer as HTMLOlVectorLayer;
-                    const GCPsMarkersSource = GCPsLayerContainer.getSource();
-                    GCPsMarkersSource.clear();
+                    GCPsLayerContainer.source.clear();
 
                     gcpoints.forEach((gcpoint) => {
                         if (!gcpoint) return;
@@ -242,8 +241,7 @@ const {
                 db.getImagePointsByName(currentImgName).then(imgpoints => {
                     const imageMarkersLayerContainer = this.$refs.imageMarkersLayerContainer as HTMLOlVectorLayer;
                     this.$refs.imageLayerContainer.setAttribute('src', imageUrl);
-                    const imgMarkersSource = imageMarkersLayerContainer.getSource();
-                    imgMarkersSource.clear();
+                    imageMarkersLayerContainer.source.clear();
     
                     imgpoints.forEach((imgPoint) => {
                         if (!imgPoint) return;
@@ -251,7 +249,6 @@ const {
                         imageMarkersLayerContainer.createPoint({
                             coords: [imgPoint.x, imgPoint.y] as Coordinate,
                             properties: { imgName: imgPoint.name },
-                            transform: false,
                         });
                     });
                 });
@@ -293,7 +290,7 @@ const {
             async loadGCPsFromFile(file) {
                 const GCPLayerContainer = this.$refs.GCPsLayerContainer as HTMLOlVectorLayer;
                 await GCPLayerContainer.loadGroundControlPointsFile(file);
-                GCPLayerContainer.getSource().forEachFeature(feature => {
+                GCPLayerContainer.source.forEachFeature(feature => {
                     this.registerGCPMarker(feature as OlPoint);
                 });
             },
