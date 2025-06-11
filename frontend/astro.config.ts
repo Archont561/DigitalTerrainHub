@@ -6,8 +6,8 @@ import dotenv from 'dotenv';
 import node from '@astrojs/node';
 
 dotenv.config();
-const isDev = import.meta.env.DEV;
-const baseURL = process.env.ASTRO_BASE_URL ?? "/astro";
+export const isDev = import.meta.env.DEV;
+export const baseURL = process.env.ASTRO_BASE_URL ?? "/astro";
 
 export default defineConfig({
     base: isDev ? undefined : baseURL,
