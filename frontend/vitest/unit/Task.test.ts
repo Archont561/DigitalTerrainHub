@@ -1,7 +1,7 @@
 import { renderAstroComponent } from "../helpers";
 import { getByText } from "@testing-library/dom";
 import { describe, expect, test } from 'vitest';
-import Task from "../../src/components/task/Partial.astro";
+import Task from "../../src/templates/components/task/Partial.astro";
 
 describe("Task components tests", async () => {
 	const task = (await import("../../src/assets/dummy/task.json")).default as DjangoAPI.Task;

@@ -5,7 +5,7 @@ import * as Component from "@components";
 type AstroRenderFn = (_props: any) => {};
 let props = {};
 
-if (Astro.request.method === "POST") {``
+if (Astro.request.method === "POST") {
     try {
         props = await Astro.request.json();
     } catch (err) {
