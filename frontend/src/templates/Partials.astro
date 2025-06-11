@@ -1,8 +1,24 @@
 ---
 export const partial = true;
-import * as Component from "@components";
-
 type AstroRenderFn = (_props: any) => {};
+const modules: Record<string, AstroRenderFn> = import.meta.glob([
+  "@components/{workspace,task,preset,notifications}/**/*.astro",
+], { eager: true });
+
+const componentMap: Record<string, AstroRenderFn> = {};
+
+function normalizePath(filePath: string): string {
+    return filePath
+        .replace(/^.*\/components\//, '')
+        .replace(/\.astro$/, '')
+        .toLowerCase();
+}
+
+for (const path in modules) {
+    const key = normalizePath(path);
+    componentMap[key] = (modules[path] as any).default;
+}
+
 let props = {};
 
 if (Astro.request.method === "POST") {
@@ -13,43 +29,10 @@ if (Astro.request.method === "POST") {
     }
 }
 
-const componentTree = {
-    workspace: {
-        list: Component.Workspace.List,
-        partial: Component.Workspace.Partial,
-        imagecountpartial: Component.Workspace.ImageCountPartial,
-        thumbnailgallery: Component.Workspace.ThumbnailGallery,
-    },
-    task: {
-        list: Component.Task.List,
-        partial: Component.Task.Partial,
-    },
-    preset: {
-        list: Component.Preset.List,
-        partial: Component.Preset.Partial,
-    },
-    notifications: {
-        list: Component.Notifications.List,
-        partial: Component.Notifications.Partial,
-        ssepartial: Component.Notifications.SSEPartial,
-        toast: Component.Notifications.ToastContainer,
-    },
-    getComponent(path: string): AstroRenderFn | null {
-        const pathArray = path.split('/');
-        let currentNode = this as any;
+const path = Astro.params.path?.toLowerCase() || "";
 
-        for (const key of pathArray) {
-            currentNode = currentNode[key] as any;
-            if (!currentNode) return null
-        }
-
-        return currentNode as AstroRenderFn;
-    }
-};
-
-const ComponentToRender = componentTree.getComponent(Astro.params.path || "");
-
-if (!ComponentToRender) {
+const ComponentToRender = componentMap[path];
+if (!ComponentToRender){
     return Astro.rewrite("/astro/404");
 }
 ---
