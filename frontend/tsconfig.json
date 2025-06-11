@@ -12,7 +12,7 @@
       "@components": ["./src/components/index.ts"],
       "@layouts/*": ["./src/layouts/*"],
       "@layouts": ["./src/layouts/index.ts"],
-      "@routes/*": ["./src/routes/*"],
+      "@templates/*": ["./src/templates/*"],
       "@assets/*": ["./src/assets/*"],
       "@assets": ["./src/assets"],
       "@lib/*": ["./src/lib/*"],
