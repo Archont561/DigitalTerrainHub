@@ -6,7 +6,11 @@ export function buildPathname(...segments: (string | number | null | undefined)[
 }
 
 export function getURLWithBase(url: string): string {
-    return buildPathname(import.meta.env.BASE_URL, url);
+    return buildPathname(import.meta.env.ASTRO_BASE_URL, url);
+}
+
+export function getURLWithBaseIfDev(url: string): string {
+    return import.meta.env.DEV ? getURLWithBase(url) : url;
 }
 
 export function resolveURL(strings: TemplateStringsArray, ...expressions: any[]) {

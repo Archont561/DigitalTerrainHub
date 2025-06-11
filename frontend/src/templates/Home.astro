@@ -1,15 +1,16 @@
 ---
 import { DjangoURLs } from "@assets";
 import Layouts from "@layouts";
+import { getURLWithBaseIfDev } from "@utils";
 
 const { app_name: appName } = Astro.props;
 ---
 
 <Layouts.Base title="Home">
 	<div class="grid grid-flow-rows h-screen w-screen grid-cols-3 gap-4 bg-base-100">
-		<a class="btn btn-ghost size-full border-4 border-neutral-300" href={DjangoURLs.profile()}>Profile</a>
-		<a class="btn btn-ghost size-full border-4 border-neutral-300" href={DjangoURLs.login()}>Login</a>
-		<a class="btn btn-ghost size-full border-4 border-neutral-300" href={DjangoURLs.register()}>Register</a>
+		<a class="btn btn-ghost size-full border-4 border-neutral-300" href={getURLWithBaseIfDev(DjangoURLs.profile())}>Profile</a>
+		<a class="btn btn-ghost size-full border-4 border-neutral-300" href={getURLWithBaseIfDev(DjangoURLs.login())}>Login</a>
+		<a class="btn btn-ghost size-full border-4 border-neutral-300" href={getURLWithBaseIfDev(DjangoURLs.register())}>Register</a>
 		<form method="POST" action={DjangoURLs.api.user.auth.logout()}>
 			<input type="submit" class="btn btn-ghost size-full border-4 border-neutral-300" value="Logout">
 		</form>

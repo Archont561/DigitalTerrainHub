@@ -2,12 +2,13 @@
 import { DjangoURLs } from "@assets";
 import Layouts from "@layouts";
 import { Forms } from "@components";
+import { getURLWithBaseIfDev } from "@utils";
 ---
 
 <Layouts.Base title="Register">
     <div class="grid place-items-center h-screen bg-base-200">
         <section class="container sm:max-w-md flex flex-col gap-5">
-            <a href={DjangoURLs.home()}
+            <a href={getURLWithBaseIfDev(DjangoURLs.home())}
                 class="flex flex-col items-center text-3xl font-semibold text-base-content"
                 tabindex="-1">
                 <h1>Digital Terrain Hub</h1>  
@@ -20,7 +21,7 @@ import { Forms } from "@components";
                     <Forms.Register registerURL={DjangoURLs.api.user.auth.register()} fields={[]} />
                     <p class="text-sm text-base-content/70 text-center">
                         Already have an account? 
-                        <a href={DjangoURLs.login()} class="text-primary hover:underline">
+                        <a href={getURLWithBaseIfDev(DjangoURLs.login())} class="text-primary hover:underline">
                             Login here
                         </a>
                     </p>
