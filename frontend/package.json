@@ -15,9 +15,12 @@
   "dependencies": {
     "@astrojs/alpinejs": "^0.4.8",
     "@astrojs/node": "^9.2.2",
+    "@inox-tools/custom-routing": "^1.1.0",
     "astro": "^5.9.2"
   },
   "devDependencies": {
+    "@alpinejs/persist": "^3.14.9",
+    "@astrojs/check": "^0.9.4",
     "@astropub/flow": "^0.4.0",
     "@codemint/astro-ui": "^1.3.0",
     "@iconify-json/ep": "^1.2.2",
@@ -31,8 +34,6 @@
     "@iconify-json/ooui": "^1.2.8",
     "@iconify-json/tabler": "^1.2.18",
     "@iconify-json/tdesign": "^1.2.8",
-    "@alpinejs/persist": "^3.14.9",
-    "@astrojs/check": "^0.9.4",
     "@tailwindcss/vite": "^4.1.8",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",

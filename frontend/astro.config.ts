@@ -1,9 +1,15 @@
+import { fileURLToPath } from "url";
+import { join, dirname } from "path";
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import alpinejs from '@astrojs/alpinejs';
 import icon from 'astro-icon';
 import dotenv from 'dotenv';
 import node from '@astrojs/node';
+import { strictCustomRouting } from '@inox-tools/custom-routing';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const getView = (file: string) => join(__dirname, "src/templates", file);
 
 dotenv.config();
 export const isDev = import.meta.env.DEV;
@@ -22,7 +28,7 @@ export default defineConfig({
     },
 
     integrations: [
-      alpinejs({ entrypoint: './src/lib/Alpine/index.ts' }),
+      alpinejs({ entrypoint: './src/lib/Alpine/index.ts' }), 
       icon({
         include: {
           ooui: ['article-not-found-ltr', 'upload', 'error', 'success'],
@@ -38,6 +44,14 @@ export default defineConfig({
           mingcute: ['lock-line'],
         },
       }),
+      strictCustomRouting({
+        "/": getView("Home.astro"),
+        "/login": getView("Login.astro"),
+        "/register": getView("Register.astro"),
+        "/profile": getView("Profile.astro"),
+        "components/[...path]": getView("Partials.astro"),
+        "/[...path]": getView("404.astro"),
+      })
     ],
 
     adapter: node({

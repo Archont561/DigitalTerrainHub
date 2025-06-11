@@ -19,14 +19,14 @@ import { Forms } from "@components";
                         Log in
                     </h1>
                     <Forms.Login loginURL={DjangoURLs.api.user.auth.login()} fields={[]} />
-                    <div class="divider my-4">Don’t have an account?</div>
+                    <div class="divider my-4">{'Don’t have an account?'}</div>
                     <a href={DjangoURLs.register()} class="btn btn-outline btn-block">
                         Register
                     </a>
                     <div class="grid grid-cols-1 xs:grid-cols-2 mt-6 gap-2 justify-center">
                         <a href={DjangoURLs.api.user.auth.resetPassword()} class="btn btn-ghost flex gap-1 basis-1/2">
                             <Icon name="mingcute:lock-line" />
-                            <span>Forgot Password</span>
+                            <span>Forgot Password?</span>
                         </a>
                         <a href={DjangoURLs.help()} class="btn btn-ghost flex gap-1 basis-1/2">
                             <Icon name="fa-solid:hands-helping" />
