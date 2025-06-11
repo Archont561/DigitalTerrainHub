@@ -2,7 +2,7 @@ FROM node:lts AS dev
 
 WORKDIR /app
 
-COPY package.json package-lock.json* /app/
+COPY package.json package-lock.json /app/
 
 RUN npm install
 
