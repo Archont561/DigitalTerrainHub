@@ -32,7 +32,7 @@ const csrfToken = Astro.request.headers.get("x-csrftoken") || "";
 			})();
 		</script>
 	</head>
-	<body hx-headers={`{'X-CSRFToken': ${csrfToken}`} hx-ext="form-json">
+	<body hx-headers={`{"X-CSRFToken": "${csrfToken}"}`} hx-ext="form-json">
 		<slot />
 		<Notifications.ToastContainer 
 			notificationChannelURL={DjangoURLs.sseEventChannel("notifications").self()} />
