@@ -6,92 +6,110 @@ export interface Props extends Astro.HTMLComponentProps<"div"> {
     id?: string;
 }
 
-const {
-    id = "workspace-edit-dialog",
-    ...props
-} = Astro.props;
+const { id = "workspace-edit-dialog", ...props } = Astro.props;
 ---
 
-<Utils.Dialog type="button"
+<Utils.Dialog
+    type="button"
     id={id}
     x-data="{ currentImage: null, open: false }"
     x-effect="open ? $el.showModal() : $el.close()"
     class="w-full h-full max-w-[calc(100%-10rem)] max-h-[calc(100%-10rem)] p-0 flex flex-col border-2"
-    {...props}>
-
+    {...props}
+>
     <slot name="trigger">
-        <div class="size-10 z-100" 
-            @click.prevent="currentImage = null; open=false">
+        <div
+            class="size-10 z-100"
+            @click.prevent="currentImage = null; open=false"
+        >
         </div>
     </slot>
-    
 
     <div class="bg-secondary">
         <h2 class="text-secondary-content text-3xl p-2">Editing</h2>
     </div>
 
-    <div x-data="GCPEditor" 
+    <div
+        x-data="GCPEditor"
         x-effect="open ? $data.onReveal() : $data.saveChanges()"
-        class="flex flex-row h-full w-full overflow-hidden">
-
+        class="flex flex-row h-full w-full overflow-hidden"
+    >
         <div class="grow relative min-w-0 max-w-1/2 bg-base-100">
-
             <Workspace.ThumbnailGallery />
 
-            <div class="absolute inset-0 bg-inherit" x-bind:class="!currentImage && 'opacity-0 pointer-events-none'" >
-                <Ol.Map x-ref="imageMapContainer" class="size-full relative isolate">
-                    <Ol.ImageLayer x-ref="imageLayerContainer"
-                        x-effect="$data.changeImage(currentImage?.replace('thumbnails', 'images') || '')" />
-                    <Ol.VectorLayer x-ref="imageMarkersLayerContainer"></Ol.VectorLayer>
+            <div
+                class="absolute inset-0 bg-inherit"
+                x-bind:class="!currentImage && 'opacity-0 pointer-events-none'"
+            >
+                <Ol.Map
+                    x-ref="imageMapContainer"
+                    class="size-full block relative isolate"
+                >
+                    <Ol.ImageLayer
+                        x-ref="imageLayerContainer"
+                        x-effect="$data.changeImage(currentImage?.replace('thumbnails', 'images') || '')"
+                    />
+                    <Ol.VectorLayer x-ref="imageMarkersLayerContainer" />
                     <Ol.MapControl
                         position="top-right"
-                        class="size-10 btn btn-circle btn-primary" 
-                        x-on:click="currentImage = null; $refs.imageMarkersLayerContainer.getSource().clear(true);">
+                        class="size-10 btn btn-circle btn-primary"
+                        x-on:click="currentImage = null; $refs.imageMarkersLayerContainer.getSource().clear(true);"
+                    >
                         <Icon name="heroicons:x-mark" />
                     </Ol.MapControl>
                     <Ol.MapControl
                         position="bottom-center"
                         class="size-10 btn btn-circle btn-primary"
-                        x-on:click="(marker => $data.registerImageMarker(marker))($refs.imageMarkersLayerContainer.createMarkerAtViewCenter())">
+                        x-on:click="(marker => $data.registerImageMarker(marker))($refs.imageMarkersLayerContainer.createMarkerAtViewCenter())"
+                    >
                         <Icon name="iconoir:plus-circle" />
                     </Ol.MapControl>
                 </Ol.Map>
             </div>
         </div>
-        
+
         <div class="w-2 bg-gray-200 hover:bg-gray-300 relative">
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-10 bg-gray-600 rounded"></div>
+            <div
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-10 bg-gray-600 rounded"
+            >
+            </div>
         </div>
 
-        <Ol.Map x-ref="gcpMapContainer" center="0 0" zoom="2" class="grow" >
-            <Ol.TileLayer src.osm></Ol.TileLayer>
-            <Ol.VectorLayer x-ref="GCPsLayerContainer"></Ol.VectorLayer>
-            <Ol.MapControl position="center-left" class="btn btn-circle btn-ghost p-3 text-accent left-center size-16">
+        <Ol.Map class="size-full block" x-ref="gcpMapContainer" center="0 0" zoom="2" class="grow">
+            <Ol.TileLayer src.osm />
+            <Ol.VectorLayer x-ref="GCPsLayerContainer" />
+            <Ol.MapControl
+                position="center-left"
+                class="btn btn-circle btn-ghost p-3 text-accent left-center size-16"
+            >
                 <label class="size-full">
-                    <input type="file" 
-                        class="hidden" 
-                        accept=".txt" 
+                    <input
+                        type="file"
+                        class="hidden"
+                        accept=".txt"
                         x-ref="fileInput"
                         @change="$data.loadGCPsFromFile($event.target.files?.[0]);"
                     />
                     <Icon name="ep:upload-filled" />
                 </label>
             </Ol.MapControl>
-            <Ol.MapControl 
-                position="top-right" 
+            <Ol.MapControl
+                position="top-right"
                 class="btn btn-circle btn-ghost size-10 btn-info"
-                x-on:click="alert(JSON.stringify(await $data.getBindedFeatures(), null, 2))">
+                x-on:click="alert(JSON.stringify(await $data.getBindedFeatures(), null, 2))"
+            >
                 <Icon name="mdi:arrow-up-circle" />
             </Ol.MapControl>
-            <Ol.MapControl position="bottom-center"
+            <Ol.MapControl
+                position="bottom-center"
                 class="size-10 btn btn-circle btn-primary"
-                x-on:click="(marker => $data.registerGCPMarker(marker))($refs.GCPsLayerContainer.createMarkerAtViewCenter())">
+                x-on:click="(marker => $data.registerGCPMarker(marker))($refs.GCPsLayerContainer.createMarkerAtViewCenter())"
+            >
                 <Icon name="iconoir:plus-circle" />
             </Ol.MapControl>
         </Ol.Map>
     </div>
 </Utils.Dialog>
-
 
 <script>
     import type { OlPoint } from "@src/types/alpineComponents/GCPEditor";
@@ -103,213 +121,296 @@ const {
     import { Circle, Fill, Stroke, Style } from "ol/style";
     import { GCPPointsDB } from "@lib/db";
 
-    
-    window.Alpine.data("GCPEditor", () => {
-        const crsfToken = (window.htmx.find("#CSRFTokenInput") as HTMLInputElement).value;
-        const db = new GCPPointsDB(crsfToken);
-        let previousWorkspaceUUID: UUID | null = null;
-        const markerStyle = {
-            default: new Style({
-                image: new Circle({
-                    radius: 3,
-                    fill: new Fill({ color: 'black' }),
-                    stroke: new Stroke({ color: 'yellow', width: 2 }),
-                }),
-            }),
-            
-            select: new Style({
-                image: new Circle({
-                    radius: 8,
-                    fill: new Fill({ color: 'red' }),
-                    stroke: new Stroke({ color: 'black', width: 2 }),
-                }),
-            }),
-            
-            shiftSelect: new Style({
-                image: new Circle({
-                    radius: 8,
-                    fill: new Fill({ color: 'brown' }),
-                    stroke: new Stroke({ color: 'white', width: 4 }),
-                }),
-            }),
-        };
 
-        return {
-            currentGCPFeature: null,
-            currentImageMarkerFeature: null,
-
-            init() {
-                const imageMarkersLayerContainer = this.$refs.imageMarkersLayerContainer as HTMLOlVectorLayer;
-                const GCPsLayerContainer = this.$refs.GCPsLayerContainer as HTMLOlVectorLayer;
-                const GCPLayer = GCPsLayerContainer.layer as VectorLayer;
-                const imgMarkersLayer = imageMarkersLayerContainer.layer as VectorLayer;
-
-                GCPLayer.setStyle(markerStyle.default);
-                imgMarkersLayer.setStyle(markerStyle.select);
-
-                const gcpShiftSelect = new Select({
-                    condition: event => singleClick(event) && shiftKeyOnly(event),
-                    multi: false,
-                    layers: [GCPLayer],
-                    style: markerStyle.shiftSelect,
-                });
-
-                const imgSelect = new Select({
-                    condition: singleClick,
-                    multi: false,
-                    layers: [imgMarkersLayer],
-                    style: markerStyle.select,
-                });
-
-                const imgTranslate = new Translate({
-                    features: imgSelect.getFeatures(),
-                });
-
-                imgSelect.on("select", this.onImagePointSelection.bind(this));
-                gcpShiftSelect.on("select", this.onGCPointShiftSelection.bind(this));
-                GCPsLayerContainer.setInteraction("shiftSelect", gcpShiftSelect);
-                imageMarkersLayerContainer.setInteraction("select", imgSelect);
-                imageMarkersLayerContainer.setInteraction("translate", imgTranslate);
-            },
-
-            onGCPointShiftSelection(event) {
-                const { selected } = event;
-                const feature = selected?.at(0);
-                if (!feature) return;
-                this.currentGCPFeature = feature as OlPoint;
-                
-                if (this.currentImageMarkerFeature) {
-                    const markerFeature = this.currentImageMarkerFeature as OlPoint;
-                    const GCPsLayerContainer = this.$refs.GCPsLayerContainer as HTMLOlVectorLayer;
-                    const imageMarkersLayerContainer = this.$refs.imageMarkersLayerContainer as HTMLOlVectorLayer;
-                    const gcpShiftSelect =  GCPsLayerContainer.interactions.get("shiftSelect") as Select | undefined;
-                    const imgSelect = imageMarkersLayerContainer.interactions.get("select") as Select | undefined;
-                    if (!gcpShiftSelect || !imgSelect) return;
-
-                    db.createBinding(
-                        feature.getId() as number,
-                        markerFeature.getId() as number,
-                    ).then(() => {
-                        this.currentImageMarkerFeature = null;
-                        this.currentGCPFeature = null;
-                        feature.setStyle(markerStyle.default);
-                        markerFeature.setStyle(markerStyle.default);
-                        gcpShiftSelect.getFeatures().remove(feature);
-                        imgSelect.getFeatures().remove(markerFeature);
-                    });
-                }
-            },
-
-            onImagePointSelection(event) {
-                const { selected } = event;
-                const feature = selected?.at(0);
-                if (feature) this.currentImageMarkerFeature = feature as OlPoint;
-                else this.currentImageMarkerFeature = null;
-            },
-
-            onReveal() {
-                const workspaceUUID = window.Alpine.store("currentWorkspaceUUID") as UUID | null;
-                if (!workspaceUUID || workspaceUUID === previousWorkspaceUUID) return;
-                previousWorkspaceUUID = workspaceUUID;
-
-                window.htmx.ajax('GET',
-                    `/pyodm/workspace/${workspaceUUID}/?thumbnails`,
-                    this.$refs.thumbnailContainer,
-                );
-
-                db.getGCPointsByWorkspace(workspaceUUID).then(gcpoints => {
-                    const GCPsLayerContainer = this.$refs.GCPsLayerContainer as HTMLOlVectorLayer;
-                    GCPsLayerContainer.source.clear();
-
-                    gcpoints.forEach((gcpoint) => {
-                        if (!gcpoint) return;
-                        GCPsLayerContainer.createPoint({
-                            coords: [gcpoint.lat, gcpoint.long, gcpoint.alt] as Coordinate,
-                            properties: {
-                                label: gcpoint.label
-                            }
-                        });
-                    });
-                });
-
-            },
-
-            changeImage(imageUrl) {
-                const currentImgName = new URL(imageUrl).pathname.split('/').filter(part => part)?.at(-1)
-                if (!currentImgName) return;
-                
-                db.getImagePointsByName(currentImgName).then(imgpoints => {
-                    const imageMarkersLayerContainer = this.$refs.imageMarkersLayerContainer as HTMLOlVectorLayer;
-                    this.$refs.imageLayerContainer.setAttribute('src', imageUrl);
-                    imageMarkersLayerContainer.source.clear();
-    
-                    imgpoints.forEach((imgPoint) => {
-                        if (!imgPoint) return;
-
-                        imageMarkersLayerContainer.createPoint({
-                            coords: [imgPoint.x, imgPoint.y] as Coordinate,
-                            properties: { imgName: imgPoint.name },
-                        });
-                    });
-                });
-            },
-
-            registerImageMarker(marker) {
-                //@ts-ignore
-                const imageUrl = this.$data.currentImage as (string | null);
-                const imgName = new URL(imageUrl || '').pathname.split('/').filter(part => part)?.at(-1);
-                if (!imgName) return;
-
-                const coordinates = marker.getGeometry()?.getCoordinates() as [number, number];
-
-                db.createImagePoint({
-                    name: imgName,
-                    x: coordinates[0],
-                    y: coordinates[1],
-                } as any).then(id => {
-                    marker.setId(id);
-                });
-            },
-
-            registerGCPMarker(marker) {
-                const workspaceUUID = window.Alpine.store("currentWorkspaceUUID") as UUID | undefined;
-                if (!workspaceUUID) return;
-
-                const coordinates = marker.getGeometry()?.getCoordinates() as [number, number, number];
-                db.createGCPoint({
-                    label: marker.get("label"),
-                    lat: coordinates[0],
-                    long: coordinates[1],
-                    alt: coordinates[2],
-                    workspaceUUID,
-                } as any).then(id => {
-                    marker.setId(id);
-                });
-            },
-
-            async loadGCPsFromFile(file) {
-                const GCPLayerContainer = this.$refs.GCPsLayerContainer as HTMLOlVectorLayer;
-                await GCPLayerContainer.loadGroundControlPointsFile(file);
-                GCPLayerContainer.source.forEachFeature(feature => {
-                    this.registerGCPMarker(feature as OlPoint);
-                });
-            },
-
-            saveChanges() {
-                const workspaceUUID = window.Alpine.store("currentWorkspaceUUID") as UUID | null;
-                if (!workspaceUUID) return;
-                db.saveWorkspaceUpdatedBindings(workspaceUUID);
-            },
-
-            async getBindedFeatures() {
-                const workspaceUUID = window.Alpine.store("currentWorkspaceUUID") as UUID | null;
-                if (!workspaceUUID) return [];
-                const bindings = await db.getBindingsByWorkspace(workspaceUUID);
-                return await Promise.all(bindings.map(async binding => {
-                    return await db.serializeBinding(binding);
-                }))
+    document.addEventListener("alpine:init", (e) => {
+        window.Alpine.data("GCPEditor", () => {
+            const headers = document.body.getAttribute("hx-headers");
+            let csrfToken = "";
+            try {
+                csrfToken = (headers 
+                    ? JSON.parse(document.body.getAttribute("hx-headers") || "") 
+                    : {})["X-CSRFToken"] || "";
+            } catch (e) {
+                console.error("Failed to parse hx-headers:", e);
             }
+            const db = new GCPPointsDB(csrfToken);
+            let previousWorkspaceUUID: UUID | null = null;
+            const markerStyle = {
+                default: new Style({
+                    image: new Circle({
+                        radius: 3,
+                        fill: new Fill({ color: "black" }),
+                        stroke: new Stroke({ color: "yellow", width: 2 }),
+                    }),
+                }),
 
-        } as alpine.Components.GCPEditor;
-    })
+                select: new Style({
+                    image: new Circle({
+                        radius: 8,
+                        fill: new Fill({ color: "red" }),
+                        stroke: new Stroke({ color: "black", width: 2 }),
+                    }),
+                }),
+
+                shiftSelect: new Style({
+                    image: new Circle({
+                        radius: 8,
+                        fill: new Fill({ color: "brown" }),
+                        stroke: new Stroke({ color: "white", width: 4 }),
+                    }),
+                }),
+            };
+
+            return {
+                currentGCPFeature: null,
+                currentImageMarkerFeature: null,
+
+                init() {
+                    const imageMarkersLayerContainer = this.$refs
+                        .imageMarkersLayerContainer as HTMLOlVectorLayer;
+                    const GCPsLayerContainer = this.$refs
+                        .GCPsLayerContainer as HTMLOlVectorLayer;
+
+                    document.addEventListener("DOMContentLoaded", () => {
+                        const GCPLayer = GCPsLayerContainer.layer as VectorLayer;
+                        const imgMarkersLayer = imageMarkersLayerContainer.layer as VectorLayer;
+                    
+                        GCPLayer.setStyle(markerStyle.default);
+                        imgMarkersLayer.setStyle(markerStyle.select);
+    
+                        const gcpShiftSelect = new Select({
+                            condition: (event) =>
+                                singleClick(event) && shiftKeyOnly(event),
+                            multi: false,
+                            layers: [GCPLayer],
+                            style: markerStyle.shiftSelect,
+                        });
+    
+                        const imgSelect = new Select({
+                            condition: singleClick,
+                            multi: false,
+                            layers: [imgMarkersLayer],
+                            style: markerStyle.select,
+                        });
+    
+                        const imgTranslate = new Translate({
+                            features: imgSelect.getFeatures(),
+                        });
+    
+                        imgSelect.on(
+                            "select",
+                            this.onImagePointSelection.bind(this),
+                        );
+                        gcpShiftSelect.on(
+                            "select",
+                            this.onGCPointShiftSelection.bind(this),
+                        );
+                        GCPsLayerContainer.setInteraction(
+                            "shiftSelect",
+                            gcpShiftSelect,
+                        );
+                        imageMarkersLayerContainer.setInteraction(
+                            "select",
+                            imgSelect,
+                        );
+                        imageMarkersLayerContainer.setInteraction(
+                            "translate",
+                            imgTranslate,
+                        );
+                    });
+                },
+
+                onGCPointShiftSelection(event) {
+                    const { selected } = event;
+                    const feature = selected?.at(0);
+                    if (!feature) return;
+                    this.currentGCPFeature = feature as OlPoint;
+
+                    if (this.currentImageMarkerFeature) {
+                        const markerFeature = this
+                            .currentImageMarkerFeature as OlPoint;
+                        const GCPsLayerContainer = this.$refs
+                            .GCPsLayerContainer as HTMLOlVectorLayer;
+                        const imageMarkersLayerContainer = this.$refs
+                            .imageMarkersLayerContainer as HTMLOlVectorLayer;
+                        const gcpShiftSelect =
+                            GCPsLayerContainer.interactions.get(
+                                "shiftSelect",
+                            ) as Select | undefined;
+                        const imgSelect =
+                            imageMarkersLayerContainer.interactions.get(
+                                "select",
+                            ) as Select | undefined;
+                        if (!gcpShiftSelect || !imgSelect) return;
+
+                        db.createBinding(
+                            feature.getId() as number,
+                            markerFeature.getId() as number,
+                        ).then(() => {
+                            this.currentImageMarkerFeature = null;
+                            this.currentGCPFeature = null;
+                            feature.setStyle(markerStyle.default);
+                            markerFeature.setStyle(markerStyle.default);
+                            gcpShiftSelect.getFeatures().remove(feature);
+                            imgSelect.getFeatures().remove(markerFeature);
+                        });
+                    }
+                },
+
+                onImagePointSelection(event) {
+                    const { selected } = event;
+                    const feature = selected?.at(0);
+                    if (feature)
+                        this.currentImageMarkerFeature = feature as OlPoint;
+                    else this.currentImageMarkerFeature = null;
+                },
+
+                onReveal() {
+                    const workspaceUUID = window.Alpine.store(
+                        "currentWorkspaceUUID",
+                    ) as UUID | null;
+                    if (
+                        !workspaceUUID ||
+                        workspaceUUID === previousWorkspaceUUID
+                    )
+                        return;
+                    previousWorkspaceUUID = workspaceUUID;
+
+                    window.htmx.ajax(
+                        "GET",
+                        `/pyodm/workspace/${workspaceUUID}/?thumbnails`,
+                        this.$refs.thumbnailContainer,
+                    );
+
+                    db.getGCPointsByWorkspace(workspaceUUID).then(
+                        (gcpoints) => {
+                            const GCPsLayerContainer = this.$refs
+                                .GCPsLayerContainer as HTMLOlVectorLayer;
+                            GCPsLayerContainer.source.clear();
+
+                            gcpoints.forEach((gcpoint) => {
+                                if (!gcpoint) return;
+                                GCPsLayerContainer.createPoint({
+                                    coords: [
+                                        gcpoint.lat,
+                                        gcpoint.long,
+                                        gcpoint.alt,
+                                    ] as Coordinate,
+                                    properties: {
+                                        label: gcpoint.label,
+                                    },
+                                });
+                            });
+                        },
+                    );
+                },
+
+                changeImage(imageUrl) {
+                    if (!imageUrl) return;
+                    const currentImgName = new URL(imageUrl || "").pathname
+                        .split("/")
+                        .filter((part) => part)
+                        ?.at(-1);
+                    if (!currentImgName) return;
+
+                    db.getImagePointsByName(currentImgName).then(
+                        (imgpoints) => {
+                            const imageMarkersLayerContainer = this.$refs
+                                .imageMarkersLayerContainer as HTMLOlVectorLayer;
+                            this.$refs.imageLayerContainer.setAttribute(
+                                "src",
+                                imageUrl,
+                            );
+                            imageMarkersLayerContainer.source.clear();
+
+                            imgpoints.forEach((imgPoint) => {
+                                if (!imgPoint) return;
+
+                                imageMarkersLayerContainer.createPoint({
+                                    coords: [
+                                        imgPoint.x,
+                                        imgPoint.y,
+                                    ] as Coordinate,
+                                    properties: { imgName: imgPoint.name },
+                                });
+                            });
+                        },
+                    );
+                },
+
+                registerImageMarker(marker) {
+                    //@ts-ignore
+                    const imageUrl = this.$data.currentImage as string | null;
+                    const imgName = new URL(imageUrl || "").pathname
+                        .split("/")
+                        .filter((part) => part)
+                        ?.at(-1);
+                    if (!imgName) return;
+
+                    const coordinates = marker
+                        .getGeometry()
+                        ?.getCoordinates() as [number, number];
+
+                    db.createImagePoint({
+                        name: imgName,
+                        x: coordinates[0],
+                        y: coordinates[1],
+                    } as any).then((id) => {
+                        marker.setId(id);
+                    });
+                },
+
+                registerGCPMarker(marker) {
+                    const workspaceUUID = window.Alpine.store(
+                        "currentWorkspaceUUID",
+                    ) as UUID | undefined;
+                    if (!workspaceUUID) return;
+
+                    const coordinates = marker
+                        .getGeometry()
+                        ?.getCoordinates() as [number, number, number];
+                    db.createGCPoint({
+                        label: marker.get("label"),
+                        lat: coordinates[0],
+                        long: coordinates[1],
+                        alt: coordinates[2],
+                        workspaceUUID,
+                    } as any).then((id) => {
+                        marker.setId(id);
+                    });
+                },
+
+                async loadGCPsFromFile(file) {
+                    const GCPLayerContainer = this.$refs
+                        .GCPsLayerContainer as HTMLOlVectorLayer;
+                    await GCPLayerContainer.loadGroundControlPointsFile(file);
+                    GCPLayerContainer.source.forEachFeature((feature) => {
+                        this.registerGCPMarker(feature as OlPoint);
+                    });
+                },
+
+                saveChanges() {
+                    const workspaceUUID = window.Alpine.store(
+                        "currentWorkspaceUUID",
+                    ) as UUID | null;
+                    if (!workspaceUUID) return;
+                    db.saveWorkspaceUpdatedBindings(workspaceUUID);
+                },
+
+                async getBindedFeatures() {
+                    const workspaceUUID = window.Alpine.store(
+                        "currentWorkspaceUUID",
+                    ) as UUID | null;
+                    if (!workspaceUUID) return [];
+                    const bindings =
+                        await db.getBindingsByWorkspace(workspaceUUID);
+                    return await Promise.all(
+                        bindings.map(async (binding) => {
+                            return await db.serializeBinding(binding);
+                        }),
+                    );
+                },
+            } as alpine.Components.GCPEditor;
+        });
+    });
 </script>
