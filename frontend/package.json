@@ -17,7 +17,8 @@
     "@astrojs/node": "^9.2.2",
     "@inox-tools/custom-routing": "^1.1.0",
     "@inox-tools/runtime-logger": "^0.5.1",
-    "astro": "^5.9.2"
+    "astro": "^5.9.2",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@alpinejs/persist": "^3.14.9",
@@ -40,6 +41,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@types/alpinejs": "^3.13.11",
     "@types/alpinejs__persist": "^3.13.4",
+    "@types/lodash": "^4.17.17",
     "@types/luxon": "^3.6.2",
     "@types/proj4": "^2.5.6",
     "@uppy/core": "^4.4.6",
