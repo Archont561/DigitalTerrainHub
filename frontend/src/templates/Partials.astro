@@ -1,9 +1,16 @@
 ---
-export const partial = true;
+import * as Flow from "@astropub/flow";
+import Layout from "@layouts";
+
+export const partial = import.meta.env.PROD;
 type AstroRenderFn = (_props: any) => {};
-const modules: Record<string, AstroRenderFn> = import.meta.glob([
-  "@components/{workspace,task,preset,notifications}/**/*.astro",
-], { eager: true });
+
+let modules: Record<string, AstroRenderFn> = {};
+if (import.meta.env.DEV) {
+    modules = import.meta.glob("@components/**/*.astro", { eager: true });
+} else {
+    modules = import.meta.glob("@components/{workspace,task,preset,notifications}/**/*.astro", { eager: true });
+}
 
 const componentMap: Record<string, AstroRenderFn> = {};
 
@@ -37,4 +44,11 @@ if (!ComponentToRender){
 }
 ---
 
-<ComponentToRender {...props} />
+<Flow.When test={partial}>
+    <ComponentToRender {...props} />
+    <Fragment slot="else">
+        <Layout.Base title="test">
+            <ComponentToRender {...props} />
+        </Layout.Base>
+    </Fragment>
+</Flow.When>
