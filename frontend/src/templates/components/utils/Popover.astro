@@ -1,15 +1,110 @@
 ---
+import * as Flow from "@astropub/flow";
+import { clsx as cn } from "clsx";
+
+type PopoverType = "default" | "focus" | "anchor";
+type PopoverPlacement = Exclude<
+    `${"top" | "start" | "center" | "end" | "bottom"} ${"left" | "start" | "center" | "end" | "right"}`, 
+    "center center">;
+
+export interface Props extends Astro.HTMLComponentProps<"details" | "div"> {
+    placement?: PopoverPlacement;
+    forceOpen?: boolean;
+    openOnHover?: boolean;
+    type?: PopoverType;
+}
+
 const {
-    horizontal,
-    vertical,
+    placement = "bottom center",
+    forceOpen = false,
+    openOnHover = true,
+    type = "default",
+    class: className,
+    ...props
 } = Astro.props;
+
+function getDropdownClasses(placement: PopoverPlacement): string {
+    const vertical: Record<string, string> = {
+        top: "dropdown-top",
+        bottom: "dropdown-bottom",
+        start: "dropdown-start",
+        end: "dropdown-end",
+        center: "dropdown-center",
+    };
+
+    const horizontal: Record<string, string> = {
+        start: "dropdown-start",
+        end: "dropdown-end",
+        center: "dropdown-center",
+        top: "dropdown-top",
+        bottom: "dropdown-bottom",
+    };
+
+    const [vPlacement, hPlacement] = placement.split(" ");
+    return [vertical[vPlacement], horizontal[hPlacement]].join(" ");
+}
+
+Object.assign(props, {
+    class: cn(
+        "dropdown",
+        getDropdownClasses(placement),
+        { "dropdown-open": forceOpen },
+        { "dropdown-hover": openOnHover },
+        className,
+    ),
+});
+const anchorRandId = crypto.randomUUID(); 
+
+const div = document.createElement("div");
+
+div.innerHTML = await Astro.slots.render("popover-trigger");
+const popoverTriggerAttributes = div.children?.[0].attributes;
+const popoverTriggerClass = div.children?.[0].className;
+popoverTriggerAttributes.removeNamedItem("class");
+const popoverTriggerInnerHTML = div.children?.[0].innerHTML;
+
+div.innerHTML = await Astro.slots.render("popover-content");
+const popoverContentAttributes = div.children?.[0].attributes;
+const popoverContentClass = div.children?.[0].className;
+popoverContentAttributes.removeNamedItem("class");
+const popoverContentInnerHTML = div.children?.[0].innerHTML;
 ---
 
-<div class={`dropdown ${horizontal} ${vertical}`}>
-    <button tabindex="0" role="button" class="{{ class }}">
-        <slot name="trigger" />
-    </button>
-    <div tabindex="0" class="dropdown-content">
-        <slot />
-    </div>
-</div>
+<Flow.Switch of={type}>
+    <Flow.Case of="anchor">
+        <button
+            class={cn("btn", popoverTriggerClass)}
+            popovertarget={`popover-${anchorRandId}`}
+            style={`anchor-name:--anchor-${anchorRandId}`}
+            set:html={popoverTriggerInnerHTML}
+            {...popoverTriggerAttributes}>
+        </button>
+        <div {...props}
+            popover
+            id={`popover-${anchorRandId}`}
+            style={`position-anchor:--anchor-${anchorRandId}`}
+            class={cn("dropdown-content", popoverContentClass)}
+            set:html={popoverContentInnerHTML}
+            {...popoverContentAttributes}></div>
+    </Flow.Case>
+    <Flow.Case of="focus">
+        <div {...props}>
+            <div tabindex="0" role="button" class={cn("btn", popoverTriggerClass)}
+                set:html={popoverTriggerInnerHTML}
+                {...popoverTriggerAttributes}></div>
+            <div tabindex="0" class={cn('dropdown-content', popoverContentClass)}
+                set:html={popoverContentInnerHTML}
+                {...popoverContentAttributes}></div>
+        </div>
+    </Flow.Case>
+    <Flow.Case default>
+        <details {...props}>
+            <summary class={cn("apperance-none block", popoverTriggerClass)}
+                set:html={popoverTriggerInnerHTML}
+                {...popoverTriggerAttributes}></summary>
+            <div class={cn('dropdown-content', popoverContentClass)}
+                set:html={popoverContentInnerHTML}
+                {...popoverContentAttributes}></div>
+        </details>
+    </Flow.Case>
+</Flow.Switch>
