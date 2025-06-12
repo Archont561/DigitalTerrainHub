@@ -2,13 +2,34 @@
 import { DjangoURLs } from "@assets";
 import { Icon } from "astro-icon/components";
 import Layouts from "@layouts";
-import { Utils } from "@components";
+import { Utils, Tabs } from "@components";
 import * as Flow from "@astropub/flow";
+import { zip } from "lodash";
+
+type AstroRenderFn = (_props: any) => {};
+
+const defaultTab = "Home"; 
+const tabs = zip<string, AstroRenderFn, string>(
+    ["Home", "Workspaces", "Tasks", "Results", "Settings"],
+    [Tabs.Home, Tabs.Workspaces, Tabs.Tasks, Tabs.Results, Tabs.Settings],
+    [
+        "heroicons:home",
+        "tabler:briefcase",
+        "heroicons:wrench-screwdriver",
+        "heroicons:archive-box",
+        "heroicons:cog-8-tooth"
+    ],
+).filter(
+    (tuple): tuple is [string, AstroRenderFn, string] =>
+      tuple[0] !== undefined && tuple[1] !== undefined && tuple[2] !== undefined
+).map(([name, Component, icon]) => ({ name, Component, icon }));
+
 ---
 
 <Layouts.Base title="Profile">
     <div x-data="{ currentMainTab: 'Home', isCurrentTab(el, tab) { return tab === el.dataset.tab; } }" 
         class="bg-base-100 text-base-content min-h-screen flex">
+
         <aside class="w-64 flex flex-col p-6 border-none">
             <div class="flex items-center justify-start gap-3 mb-6 ">
                 <div class="btn btn-circle btn-ghost">
@@ -17,6 +38,7 @@ import * as Flow from "@astropub/flow";
                 <img class="w-20 h-10" src="https://picsum.photos/100/200" alt="Logo" />
                 <h1 class="text-xl font-bold">DTH</h1>
             </div>
+
             <div class="flex items-center justify-start gap-3 mb-6 -mx-2 p-2 border-1 rounded-box">
                 <div class="avatar">
                     <div class="w-12 rounded-full">
@@ -31,22 +53,16 @@ import * as Flow from "@astropub/flow";
                     <Icon name="mdi:chevron-up"/>
                 </label>
             </div>
-            <h3 class="uppercase text-xs font-semibold text-gray-500 mb-2">Menu</h3>
+
+            <h2 class="uppercase text-xs font-semibold text-gray-500 mb-2">Menu</h2>
             <menu class="menu w-full flex flex-col gap-1">
-                <Flow.For of={[
-                    {"name": "Home", "icon": "heroicons:home"},
-                    {"name": "Workspaces", "icon": "tabler:briefcase"},
-                    {"name": "Tasks", "icon": "heroicons:wrench-screwdriver"},
-                    {"name": "Results", "icon": "heroicons:archive-box"},
-                    {"name": "Presets", "icon": "heroicons:queue-list"},
-                    {"name": "Settings", "icon": "heroicons:cog-8-tooth"}
-                ]}>{item => 
-                    <li><a data-tab={item.name}
+                <Flow.For of={tabs}>{tab => 
+                    <li><a data-tab={tab.name}
                         class="flex items-center gap-2"
                         x-bind:class="isCurrentTab($el, currentMainTab) && 'menu-active'"
                         x-on:click="currentMainTab = $el.dataset.tab">
-                        <Icon class="size-8" name={item.icon}/>
-                        <span>{item.name}</span>
+                        <Icon class="size-8" name={tab.icon}/>
+                        <span>{tab.name}</span>
                     </a></li>
                 }</Flow.For>
             </menu>
@@ -57,15 +73,15 @@ import * as Flow from "@astropub/flow";
                 <input type="text" 
                     placeholder="Search here..." 
                     class="input input-bordered max-w-x" />
+                    
                 <div class="flex items-center gap-2">
                     <Utils.DaisyUIThemeSwitcher.Toggle 
                         darkTheme="night" 
                         lightTheme="bumblebee"
-
                     />
-                    <button class="btn btn-circle btn-ghost">
-                        <Icon name="mdi:bell"/>
-                    </button>
+
+                    <Icon role="button" class="btn btn-circle btn-ghost size-8" name="mdi:bell"/>
+                    
                     <Utils.Popover placement="bottom end">
                         <label class="avatar online" slot="popover-trigger">
                             <div class="w-10 rounded-full">
@@ -81,18 +97,18 @@ import * as Flow from "@astropub/flow";
                     </Utils.Popover>
                 </div>
             </header>
+
             <div class="bg-base-300 rounded-tl-3xl p-6 grow flex">
-                <Flow.For of={[
-                    "Home", "Workspaces", "Tasks", "Results", "Notifications", "Settings"
-                ]}>{tab => 
-                    <section data-tab={tab} 
+                <Flow.For of={tabs}>{tab => 
+                    <tab.Component data-tab={tab.name} 
                         x-show="isCurrentTab($el, currentMainTab)"
-                        class="flex flex-col grow">
-                        <h1 class="text-2xl font-bold mb-6">{tab}</h1>
-                    </section>
+                        class="flex flex-col grow"
+                        x-cloak={tab.name !== defaultTab ? true : undefined}>
+                    </tab.Component>
                 }</Flow.For>
             </div>
         </main>
+
         <Utils.Modal id="accountDeletionConfirmModal" type="btn trigger">
             <button class="btn" slot="trigger-btn"><Icon name="heroicons:x-mark-16-solid"/></button>
             <div>TO IMPLEMENT</div>
