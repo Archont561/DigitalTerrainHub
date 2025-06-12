@@ -45,7 +45,7 @@ import * as Flow from "@astropub/flow";
                         class="flex items-center gap-2"
                         x-bind:class="isCurrentTab($el, currentMainTab) && 'menu-active'"
                         x-on:click="currentMainTab = $el.dataset.tab">
-                        <Icon name={item.name} />
+                        <Icon class="size-8" name={item.icon}/>
                         <span>{item.name}</span>
                     </a></li>
                 }</Flow.For>
@@ -58,18 +58,21 @@ import * as Flow from "@astropub/flow";
                     placeholder="Search here..." 
                     class="input input-bordered max-w-x" />
                 <div class="flex items-center gap-2">
+                    <Utils.DaisyUIThemeSwitcher.Toggle 
+                        darkTheme="night" 
+                        lightTheme="bumblebee"
+
+                    />
                     <button class="btn btn-circle btn-ghost">
                         <Icon name="mdi:bell"/>
                     </button>
-                    <Utils.Popover horizontal="dropdown-end">
-                        <slot name="trigger">
-                            <label class="avatar online">
-                                <div class="w-10 rounded-full">
-                                    <img src="https://picsum.photos/200" alt="User Avatar" />
-                                </div>
-                            </label>
-                        </slot>
-                        <menu class="menu menu-compact gap-1 w-30 border-1 rounded-box bg-base-100">
+                    <Utils.Popover placement="bottom end">
+                        <label class="avatar online" slot="popover-trigger">
+                            <div class="w-10 rounded-full">
+                                <img src="https://picsum.photos/200" alt="User Avatar" />
+                            </div>
+                        </label>
+                        <menu slot="popover-content" class="menu menu-compact gap-1 w-30 border-1 rounded-box bg-base-100">
                             <li><a>Set Theme</a></li>
                             <li><form method="POST" action={DjangoURLs.api.user.auth.logout()}>
                                 <input type="submit" value="Logout">
@@ -90,11 +93,9 @@ import * as Flow from "@astropub/flow";
                 }</Flow.For>
             </div>
         </main>
-        <Utils.Dialog id="accountDeletionConfirmModal" type="button">
-            <slot name="trigger">
-                <Icon name="heroicons:x-mark-16-solid"/>
-            </slot>
+        <Utils.Modal id="accountDeletionConfirmModal" type="btn trigger">
+            <button class="btn" slot="trigger-btn"><Icon name="heroicons:x-mark-16-solid"/></button>
             <div>TO IMPLEMENT</div>
-        </Utils.Dialog>
+        </Utils.Modal>
     </div>
 </Layouts.Base>
