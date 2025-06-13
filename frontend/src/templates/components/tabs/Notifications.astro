@@ -1,10 +1,17 @@
 ---
-import * as Flow from "@astropub/flow";
+// Apparently it breaks without aliasing
+import { Notifications as N } from "@components";
 
 export interface Props extends Astro.HTMLComponentProps<"section"> {
+    notifications?: DjangoAPI.Notification[];
 }
 
-const { ...props } = Astro.props;
+const { 
+    notifications = [],
+    ...props
+} = Astro.props;
 ---
 
-<section {...props}></section>
+<section {...props}>
+    <N.List notifications={notifications}></N.List>
+</section>

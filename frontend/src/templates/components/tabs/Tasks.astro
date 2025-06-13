@@ -1,10 +1,16 @@
 ---
-import * as Flow from "@astropub/flow";
+import { Task } from "@components";
 
 export interface Props extends Astro.HTMLComponentProps<"section"> {
+    tasks: DjangoAPI.Task[];
 }
 
-const { ...props } = Astro.props;
+const { 
+    tasks = [],
+    ...props
+} = Astro.props;
 ---
 
-<section {...props}></section>
+<section {...props}>
+    <Task.List tasks={tasks}></Task.List>
+</section>

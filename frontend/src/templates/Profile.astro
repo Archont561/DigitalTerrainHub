@@ -4,26 +4,47 @@ import { Icon } from "astro-icon/components";
 import Layouts from "@layouts";
 import { Utils, Tabs } from "@components";
 import * as Flow from "@astropub/flow";
-import { zip } from "lodash";
 
-type AstroRenderFn = (_props: any) => {};
+type TabType = {
+    name: string;
+    Component: (_props: any) => {};
+    icon: string;
+    props: Object;
+};
 
 const defaultTab = "Home"; 
-const tabs = zip<string, AstroRenderFn, string>(
-    ["Home", "Workspaces", "Tasks", "Results", "Settings"],
-    [Tabs.Home, Tabs.Workspaces, Tabs.Tasks, Tabs.Results, Tabs.Settings],
-    [
-        "heroicons:home",
-        "tabler:briefcase",
-        "heroicons:wrench-screwdriver",
-        "heroicons:archive-box",
-        "heroicons:cog-8-tooth"
-    ],
-).filter(
-    (tuple): tuple is [string, AstroRenderFn, string] =>
-      tuple[0] !== undefined && tuple[1] !== undefined && tuple[2] !== undefined
-).map(([name, Component, icon]) => ({ name, Component, icon }));
-
+const tabs: TabType[] = [
+  {
+    name: "Home",
+    Component: Tabs.Home,
+    icon: "heroicons:home",
+    props: {}
+  },
+  {
+    name: "Workspaces",
+    Component: Tabs.Workspaces,
+    icon: "tabler:briefcase",
+    props: {}
+  },
+  {
+    name: "Tasks",
+    Component: Tabs.Tasks,
+    icon: "heroicons:wrench-screwdriver",
+    props: {}
+  },
+  {
+    name: "Results",
+    Component: Tabs.Results,
+    icon: "heroicons:archive-box",
+    props: {}
+  },
+  {
+    name: "Settings",
+    Component: Tabs.Settings,
+    icon: "heroicons:cog-8-tooth",
+    props: {}
+  }
+];
 ---
 
 <Layouts.Base title="Profile">
@@ -103,7 +124,8 @@ const tabs = zip<string, AstroRenderFn, string>(
                     <tab.Component data-tab={tab.name} 
                         x-show="isCurrentTab($el, currentMainTab)"
                         class="flex flex-col grow"
-                        x-cloak={tab.name !== defaultTab ? true : undefined}>
+                        x-cloak={tab.name !== defaultTab ? true : undefined}
+                        {...tab.props}>
                     </tab.Component>
                 }</Flow.For>
             </div>
