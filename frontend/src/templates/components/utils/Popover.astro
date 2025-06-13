@@ -57,19 +57,38 @@ Object.assign(props, {
 const anchorRandId = crypto.randomUUID(); 
 
 
-const div = new Window().document.createElement("div");
 
-div.innerHTML = await Astro.slots.render("popover-trigger");
-const popoverTriggerAttributes = div.children?.[0].attributes;
-const popoverTriggerClass = div.children?.[0].className;
-popoverTriggerAttributes.removeNamedItem("class");
-const popoverTriggerInnerHTML = div.children?.[0].innerHTML;
+if (!Astro.slots.has("popover-trigger")) {
+    throw new Error("No trigger defined for Popup");
+}
 
-div.innerHTML = await Astro.slots.render("popover-content");
-const popoverContentAttributes = div.children?.[0].attributes;
-const popoverContentClass = div.children?.[0].className;
-popoverContentAttributes.removeNamedItem("class");
-const popoverContentInnerHTML = div.children?.[0].innerHTML;
+if (!Astro.slots.has("popover-content")) {
+    throw new Error("No contend defined for Popup");
+}
+
+function extractAttributes(el: HTMLElement, omit: string[]) {
+    const attributes = {} as Record<string, any>;
+    el?.getAttributeNames()
+        .filter(attrName => !omit.includes(attrName))
+        .forEach(attrName => {
+            attributes[attrName] = el.getAttribute(attrName);
+        });
+    return attributes;
+}
+
+const parser = new (new Window()).DOMParser();
+let document = parser.parseFromString(await Astro.slots.render("popover-trigger"), 'text/html');
+
+const triggerEl = document.body.firstElementChild as unknown as HTMLElement;
+const popoverTriggerClass = triggerEl?.getAttribute("class") || "";
+const popoverTriggerAttributes = extractAttributes(triggerEl, ["class"]);
+const popoverTriggerInnerHTML = triggerEl?.innerHTML || "";
+
+document = parser.parseFromString(await Astro.slots.render("popover-content"), 'text/html');
+const contentEl = document.body.firstElementChild as unknown as HTMLElement;;
+const popoverContentClass = contentEl?.getAttribute("class") || "";
+const popoverContentAttributes = extractAttributes(contentEl, ["class"]);
+const popoverContentInnerHTML = contentEl?.innerHTML || "";
 ---
 
 <Flow.Switch of={type}>
