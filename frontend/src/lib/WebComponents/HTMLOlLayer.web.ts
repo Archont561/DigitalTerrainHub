@@ -48,7 +48,6 @@ export abstract class HTMLOlLayer<L extends Layer, S extends Source>
 
   private setMap() {
     const mapContainer = this.closest('ol-map') as HTMLOlMap;
-    console.log(mapContainer)
     if (mapContainer?.map) {
       mapContainer.map.addLayer(this.layer);
     } else {
