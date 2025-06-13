@@ -36,19 +36,16 @@ const isBackdrop = type === "backdrop";
 const isButton = type === "btn";
 const isButtonAsTrigger = type === "btn trigger";
 
-Object.assign(props, {
-    class: cn(
-        "modal",
-        "isolate",
-        placementClassesMap[placement],
-        { "modal-open": forceOpen },
-        className,
-    ),
-});
+const modalBoxClass = cn(
+    "modal-box",
+    placementClassesMap[placement],
+    { "modal-open": forceOpen },
+    className,
+);
 ---
 
-<dialog {...props}>
-    <div class={cn("modal-box", className)}>
+<dialog class="modal isolate" {...props}>
+    <div class={modalBoxClass}>
         <slot />
 
         <Flow.When test={isButton}>
