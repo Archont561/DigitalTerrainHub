@@ -4,9 +4,9 @@ import { DjangoURLs } from "@assets";
 import { Icon } from "astro-icon/components";
 import { Task } from "@components";
 
-interface Props {
-    id: string;
-    tasks: DjangoAPI.Task[];
+export interface Props extends Astro.HTMLComponentProps<"div"> {
+    id?: string;
+    tasks?: DjangoAPI.Task[];
 }
 
 const {
