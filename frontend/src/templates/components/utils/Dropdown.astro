@@ -8,7 +8,7 @@ export interface Props extends DropdownProps {};
 
 <Popover 
     x-data="{ open: false }" 
-    x-bind:class="{ dropdown-open: open }"
+    x-bind:class="{ 'dropdown-open': open }"
     x-bind:click.away="open=false">
     <slot slot="popover-content" name="dropdown-content" />
     <slot slot="popover-trigger" name="dropdown-trigger" />
