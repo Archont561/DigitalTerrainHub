@@ -4,12 +4,14 @@ import { DjangoURLs, StylesURLs } from "@assets";
 const {
     ...props
 } = Astro.props;
+
+const endpoint = DjangoURLs.api.pyodm.workspaces("${$store.currentWorkspaceUUID}").upload("").self();
 ---
 
 <div {...props} 
     x-data="UppyWidget"
     data-style={StylesURLs.Uppy}
-    x-bind:data-endpoint={DjangoURLs.api.pyodm.workspaces("${$store.currentWorkspaceUUID}").upload("").self()}
+    x-bind:data-endpoint={`\`${endpoint}\``}
 ></div>
 
 <script>
@@ -17,70 +19,72 @@ const {
     import Dashboard from "@uppy/dashboard";
     import Tus from "@uppy/tus";
 
-    window.Alpine.data("UppyWidget",  () => {
-        let modal: HTMLDialogElement | null = null;
-        let backdrop: HTMLFormElement | null = null;
-        let uppy: Uppy = new Uppy();
+    document.addEventListener("alpine:init", (e) => {
+        window.Alpine.data("UppyWidget",  () => {
+            let modal: HTMLDialogElement | null = null;
+            let backdrop: HTMLFormElement | null = null;
+            let uppy: Uppy = new Uppy();
 
-        return {
-            init() {
-                this.$el.uppy = uppy;
+            return {
+                init() {
+                    this.$el.uppy = uppy;
 
-                this.setDashboard();
-                this.setTusProtocol();
+                    this.setDashboard();
+                    this.setTusProtocol();
 
-                modal = this.$el.closest("dialog") as HTMLDialogElement | null;
-                backdrop = modal?.querySelector("form") as HTMLFormElement | null;
+                    modal = this.$el.closest("dialog") as HTMLDialogElement | null;
+                    backdrop = modal?.querySelector("form") as HTMLFormElement | null;
 
-                uppy.on('complete', () => {
-                    if (backdrop) backdrop.classList.add("pointer-events-none");
-                });
-            },
+                    uppy.on('complete', () => {
+                        if (backdrop) backdrop.classList.add("pointer-events-none");
+                    });
+                },
 
-            close() {
-                if (modal) modal.close();
-                if (backdrop) backdrop.classList.remove("pointer-events-none");
-            },
+                close() {
+                    if (modal) modal.close();
+                    if (backdrop) backdrop.classList.remove("pointer-events-none");
+                },
 
-            setDashboard() {
-                this.$el.uppy?.use(Dashboard, {
-                    inline: true,
-                    target: this.$el,
-                    proudlyDisplayPoweredByUppy: true,
-                    theme: "auto",
-                    width: "100%",
-                    height: "100%",
-                    doneButtonHandler: () => {
-                        this.$el.uppy?.cancelAll();
-                        this.close();
+                setDashboard() {
+                    this.$el.uppy?.use(Dashboard, {
+                        inline: true,
+                        target: this.$el,
+                        proudlyDisplayPoweredByUppy: true,
+                        theme: "auto",
+                        width: "100%",
+                        height: "100%",
+                        doneButtonHandler: () => {
+                            this.$el.uppy?.cancelAll();
+                            this.close();
 
-                        const uuid = (window.Alpine.store("currentWorkspaceUUID") as string);
-                        const wsElement = document.querySelector(`[data-uuid='${uuid}']`) as HTMLElement | null;
-                        wsElement?.querySelector(".image-count")?.dispatchEvent(new CustomEvent("upload:done"));
-                    },
-                });
-                this.setCustomStyle();
-            },
+                            const uuid = (window.Alpine.store("currentWorkspaceUUID") as string);
+                            const wsElement = document.querySelector(`[data-uuid='${uuid}']`) as HTMLElement | null;
+                            wsElement?.querySelector(".image-count")?.dispatchEvent(new CustomEvent("upload:done"));
+                        },
+                    });
+                    this.setCustomStyle();
+                },
 
-            setCustomStyle() {
-                const stylesheetURL = this.$el.dataset.style;
-                stylesheetURL && window.utils.loadStylesheet(stylesheetURL);
-                window.htmx
-                    .findAll(".uppy-Root, .uppy-Dashboard")
-                    .forEach((el) => {
-                    (el as HTMLElement).classList.add("size-full");
-                });
-            },
+                setCustomStyle() {
+                    const stylesheetURL = this.$el.dataset.style;
+                    stylesheetURL && window.utils.loadStylesheet(stylesheetURL);
+                    window.htmx
+                        .findAll(".uppy-Root, .uppy-Dashboard")
+                        .forEach((el) => {
+                        (el as HTMLElement).classList.add("size-full");
+                    });
+                },
 
-            setTusProtocol() {
-                this.$el.uppy?.use(Tus, {
-                    endpoint: this.$el.dataset.endpoint,
-                    headers: {
-                        "X-CSRFToken": this.$el.dataset.csrftoken,
-                    },
-                    chunkSize: 50 * 1024 ** 2,
-                });
-            },
-        } as alpine.Components.UppyWidget;
+                setTusProtocol() {
+                    this.$el.uppy?.use(Tus, {
+                        endpoint: this.$el.dataset.endpoint,
+                        headers: {
+                            "X-CSRFToken": this.$el.dataset.csrftoken,
+                        },
+                        chunkSize: 50 * 1024 ** 2,
+                    });
+                },
+            } as alpine.Components.UppyWidget;
+        });
     });
 </script>
