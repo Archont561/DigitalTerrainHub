@@ -1,6 +1,7 @@
 ---
 import * as Flow from "@astropub/flow";
 import { Workspace } from "@components";
+import { clsx as cn } from "clsx";
 
 export interface Props extends Astro.HTMLComponentProps<"section"> {
     workspaces?: DjangoAPI.Workspace[];
@@ -8,8 +9,15 @@ export interface Props extends Astro.HTMLComponentProps<"section"> {
 
 const { 
     workspaces = [],
+    class: className,
     ...props
 } = Astro.props;
+
+Object.assign(props, {
+    class: cn(
+        className,
+    ),
+});
 ---
 
 <section {...props}>
