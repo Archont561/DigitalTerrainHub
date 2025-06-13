@@ -57,14 +57,14 @@ if (!workspaces.length) {
         </div>
     </div>
     <Workspace.GCPEditor id="workspace-edit-dialog" />
-    <Utils.Dialog id="upload-images-dialog" class="h-full w-full p-0 -z-1 xs:h-3/4 md:w-3/5 md:max-w-full"
-    ><Workspace.UppyWidget /></Utils.Dialog>
-    <Utils.Dialog
+    <Utils.Modal id="upload-images-dialog" class="h-full w-full p-0 -z-1 xs:h-3/4 md:w-3/5 md:max-w-full"
+    ><Workspace.UppyWidget /></Utils.Modal>
+    <Utils.Modal
         id="options-dialog"
         x-data="{ handleSubmit(event) { event.preventDefault(); $store.optionsData = JSON.stringify(event.detail.requestConfig.parameters); $el.close(); } }"
         class="h-full w-full p-0 xs:h-3/4 md:w-3/5 md:max-w-full overflow-y-scroll"
         @htmx:before-request.self="handleSubmit($event)">   
-        <slot name="trigger"><Icon name="heroicons:x-mark" /></slot>
+        <Icon slot="trigger" name="heroicons:x-mark" />
         <Forms.TaskOptions options={options}/>
-    </Utils.Dialog>
+    </Utils.Modal>
 </section>

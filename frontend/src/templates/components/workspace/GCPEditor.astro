@@ -9,21 +9,18 @@ export interface Props extends Astro.HTMLComponentProps<"div"> {
 const { id = "workspace-edit-dialog", ...props } = Astro.props;
 ---
 
-<Utils.Dialog
-    type="button"
+<Utils.Modal
+    type="btn"
     id={id}
     x-data="{ currentImage: null, open: false }"
     x-effect="open ? $el.showModal() : $el.close()"
     class="w-full h-full max-w-[calc(100%-10rem)] max-h-[calc(100%-10rem)] p-0 flex flex-col border-2"
-    {...props}
->
-    <slot name="trigger">
-        <div
-            class="size-10 z-100"
-            @click.prevent="currentImage = null; open=false"
-        >
-        </div>
-    </slot>
+    {...props}>
+    <button
+        class="size-10 z-100"
+        slot="trigger-btn"
+        @click.prevent="currentImage = null; open=false"
+    ></button>
 
     <div class="bg-secondary">
         <h2 class="text-secondary-content text-3xl p-2">Editing</h2>
@@ -109,7 +106,7 @@ const { id = "workspace-edit-dialog", ...props } = Astro.props;
             </Ol.MapControl>
         </Ol.Map>
     </div>
-</Utils.Dialog>
+</Utils.Modal>
 
 <script>
     import type { OlPoint } from "@src/types/alpineComponents/GCPEditor";
