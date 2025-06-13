@@ -48,6 +48,7 @@ function getDropdownClasses(placement: PopoverPlacement): string {
 Object.assign(props, {
     class: cn(
         "dropdown",
+        "apperance-none",
         getDropdownClasses(placement),
         { "dropdown-open": forceOpen },
         { "dropdown-hover": openOnHover },
@@ -55,7 +56,6 @@ Object.assign(props, {
     ),
 });
 const anchorRandId = crypto.randomUUID(); 
-
 
 
 if (!Astro.slots.has("popover-trigger")) {
@@ -94,7 +94,7 @@ const popoverContentInnerHTML = contentEl?.innerHTML || "";
 <Flow.Switch of={type}>
     <Flow.Case of="anchor">
         <button
-            class={cn("btn", popoverTriggerClass)}
+            class={popoverTriggerClass}
             popovertarget={`popover-${anchorRandId}`}
             style={`anchor-name:--anchor-${anchorRandId}`}
             set:html={popoverTriggerInnerHTML}
@@ -103,14 +103,16 @@ const popoverContentInnerHTML = contentEl?.innerHTML || "";
         <div {...props}
             popover
             id={`popover-${anchorRandId}`}
-            style={`position-anchor:--anchor-${anchorRandId}`}
-            class={cn("dropdown-content", popoverContentClass)}
-            set:html={popoverContentInnerHTML}
-            {...popoverContentAttributes}></div>
+            style={`position-anchor:--anchor-${anchorRandId}`}>
+            <div 
+                set:html={popoverContentInnerHTML} 
+                {...popoverContentAttributes} 
+                class={popoverContentClass}></div>
+        </div>
     </Flow.Case>
     <Flow.Case of="focus">
         <div {...props}>
-            <div tabindex="0" role="button" class={cn("btn", popoverTriggerClass)}
+            <div tabindex="0" role="button" class={popoverTriggerClass}
                 set:html={popoverTriggerInnerHTML}
                 {...popoverTriggerAttributes}></div>
             <div tabindex="0" class={cn('dropdown-content', popoverContentClass)}
