@@ -49,7 +49,7 @@ const tabs: TabType[] = [
 
 <Layouts.Base title="Profile">
     <div x-data="{ currentMainTab: 'Home', isCurrentTab(el, tab) { return tab === el.dataset.tab; } }" 
-        class="bg-base-100 text-base-content min-h-screen flex">
+        class="bg-base-100 text-base-content h-[100dvh] max-h[100dvh] w-[100dvw] max-w-[100dvw] grid grid-cols-[auto_1fr] overflow-clip">
 
         <aside class="w-64 flex flex-col p-6 border-none">
             <div class="flex items-center justify-start gap-3 mb-6 ">
@@ -89,7 +89,7 @@ const tabs: TabType[] = [
             </menu>
         </aside>
         
-        <main class="flex flex-col w-full">
+        <main class="grid grid-rows-[auto_1fr] w-full max-h-[100dvh]">
             <header class="flex justify-end items-center gap-6 p-6">
                 <input type="text" 
                     placeholder="Search here..." 
@@ -101,10 +101,10 @@ const tabs: TabType[] = [
                         lightTheme="bumblebee"
                     />
 
-                    <Icon role="button" class="btn btn-circle btn-ghost size-8" name="mdi:bell"/>
+                    <Icon role="button" class="btn btn-circle btn-ghost size-10 p-1" name="mdi:bell"/>
                     
-                    <Utils.Popover placement="bottom end">
-                        <label class="avatar online" slot="popover-trigger">
+                    <Utils.Popover placement="bottom end" openOnHover={true}>
+                        <label class="avatar online size-10" slot="popover-trigger">
                             <div class="w-10 rounded-full">
                                 <img src="https://picsum.photos/200" alt="User Avatar" />
                             </div>
@@ -119,11 +119,11 @@ const tabs: TabType[] = [
                 </div>
             </header>
 
-            <div class="bg-base-300 rounded-tl-3xl p-6 grow flex">
+            <div class="bg-base-300 rounded-tl-3xl overflow-y-auto">
                 <Flow.For of={tabs}>{tab => 
                     <tab.Component data-tab={tab.name} 
+                        class="size-full p-10 flex flex-col"
                         x-show="isCurrentTab($el, currentMainTab)"
-                        class="flex flex-col grow"
                         x-cloak={tab.name !== defaultTab ? true : undefined}
                         {...tab.props}>
                     </tab.Component>
