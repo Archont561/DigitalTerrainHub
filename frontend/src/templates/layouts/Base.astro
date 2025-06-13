@@ -2,6 +2,10 @@
 import { Notifications } from "@components";
 import { DjangoURLs, SVGURLs, StylesURLs } from "@assets";
 
+export interface Props {
+	title: string;
+}
+
 const { title } = Astro.props;
 const csrfToken = Astro.request.headers.get("x-csrftoken") || "";
 ---
