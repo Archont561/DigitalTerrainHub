@@ -3,6 +3,7 @@ import * as Flow from "@astropub/flow";
 import { DjangoURLs } from "@assets";
 import { Icon } from "astro-icon/components";
 import { Forms, Utils, Workspace } from "@components";
+import { clsx as cn } from "clsx";
 
 const workspaceURL = `${DjangoURLs.api.pyodm.workspaces("")}?format=astro`;
 
@@ -16,6 +17,7 @@ const {
     id = "workspace-management-board",
     workspaces = [] as DjangoAPI.Workspace[],
     options = [] as DjangoAPI.TaskOption[],
+    class: className,
     ...props
 } = Astro.props as Props;
 
@@ -23,9 +25,16 @@ if (!workspaces.length) {
     const workspace = (await import("@assets")).DummyData.Workspace as DjangoAPI.Workspace;
     for (let i = 0; i < 10; i++) workspaces.push(workspace);
 }
+
+Object.assign(props, {
+    class: cn(
+        className,
+        "size-full",
+    ),
+});
 ---
 
-<section id={id} class="size-full overflow-y-scroll" {...props}>
+<section id={id} {...props}>
     <div class="mx-auto py-10 min-w-md max-w-xl">
         <h2 class="text-2xl mb-3">Workspace management board</h2>
 
