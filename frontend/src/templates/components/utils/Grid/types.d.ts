@@ -1,4 +1,4 @@
-import type { GridContentPlacementMap, GridPlacementMap } from "./gridPositions";
+import type { GridContentPlacementMap, GridPlacementMap } from "./gridPropMaps";
 
 export type Breakpoints = 'base' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 export type GridUnit = 'auto' | `${number}px` | `${number}fr` | `${number}rem`;

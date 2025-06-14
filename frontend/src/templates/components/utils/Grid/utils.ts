@@ -1,5 +1,5 @@
 import type { GridProps, GridCellProps } from "./types";
-import { GridPlacementMap, GridContentPlacementMap } from "./gridPositions";
+import { GridPlacementMap, GridContentPlacementMap } from "./gridPropMaps";
 import _ from "lodash";
 
 function formatValue(propName: string, value: any): string {
