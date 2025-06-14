@@ -13,12 +13,12 @@ import { createCSSVarName } from "@utils";
 
 type PropConverter = (value: any, propName?: string) => Record<string, string>;
 
-const toWidth = (value: any) => typeof value === "number" ? `${value}px` : value;
+const toWidth = (value: any) => _.isNumber(value) ? `${value}px` : value;
 const getBreakpointSuffix = (bp: string) => bp === "base" ? "" : `-${bp}`;
 
 const propConverters: Record<string, PropConverter> = new Proxy({
     gap: (value) => ({
-        [createCSSVarName('flex', 'gap')]: typeof value === "number" ? `calc(var(--spacing)*${value})` : value,
+        [createCSSVarName('flex', 'gap')]: _.isNumber(value) ? `calc(var(--spacing)*${value})` : value,
     }),
     base: (value) => ({
         [createCSSVarName('flex', 'item', 'base')]: toWidth(value),
