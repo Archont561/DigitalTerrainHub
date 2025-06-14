@@ -1,0 +1,74 @@
+---
+import type { ComponentProps } from "astro/types";
+import Melt from "./Melt.astro";
+import * as Flow from "@astropub/flow";
+import { clsx as cn } from "clsx";
+import _ from "lodash";
+
+type CSSLengthUnit =
+    | `px`
+    | `em`
+    | `rem`
+    | `%`
+    | `vw`
+    | `vh`
+    | `vmin`
+    | `vmax`
+    | `ch`
+    | `ex`
+    | `pt`
+    | `pc`
+    | `in`
+    | `cm`
+    | `mm`;
+
+type CSSLengthKeyword =
+    | "auto"
+    | "fit-content"
+    | "max-content"
+    | "min-content"
+    | "inherit"
+    | "initial"
+    | "unset";
+
+type Length = number | `${number}${CSSLengthUnit}` | CSSLengthKeyword;
+
+export interface Props extends Astro.ComponentProps, ComponentProps<typeof Melt> {
+    min: Length;
+    max: Length;
+    base: Length;
+    asTwClasses?: boolean;
+}
+
+const {
+    min,
+    max,
+    base,
+    asTwClasses = false,
+    style,
+    class: className,
+    ...props
+} = Astro.props;
+const normalizeLength = (value: Length) =>
+    typeof value === "number" ? `${value}px` : value;
+
+let styleVars = {};
+let combinedClass = className;
+
+if (asTwClasses) {
+    combinedClass = cn(className, min, base, max);
+} else {
+    styleVars = _.mapValues({ min, base, max }, normalizeLength);
+}
+---
+
+<Melt {...combinedClass} {...props}>
+    <slot />
+    <Flow.When test={!asTwClasses}>
+        <style define:vars={styleVars}>
+            * {
+                width: clamp(var(--min), var(--base), var(--max));
+            }
+        </style>
+    </Flow.When>
+</Melt>
