@@ -10,9 +10,8 @@ const endpoint = DjangoURLs.api.pyodm.workspaces("${$store.currentWorkspaceUUID}
 
 <div {...props} 
     x-data="UppyWidget"
-    data-style={StylesURLs.Uppy}
     x-bind:data-endpoint={`\`${endpoint}\``}
-></div>
+><link rel="stylesheet" href={StylesURLs.Uppy}></div>
 
 <script>
     import Uppy from "@uppy/core";
@@ -62,17 +61,6 @@ const endpoint = DjangoURLs.api.pyodm.workspaces("${$store.currentWorkspaceUUID}
                             wsElement?.querySelector(".image-count")?.dispatchEvent(new CustomEvent("upload:done"));
                         },
                     });
-                    this.setCustomStyle();
-                },
-
-                setCustomStyle() {
-                    const stylesheetURL = this.$el.dataset.style;
-                    stylesheetURL && window.utils.loadStylesheet(stylesheetURL);
-                    window.htmx
-                        .findAll(".uppy-Root, .uppy-Dashboard")
-                        .forEach((el) => {
-                        (el as HTMLElement).classList.add("size-full");
-                    });
                 },
 
                 setTusProtocol() {
@@ -88,3 +76,9 @@ const endpoint = DjangoURLs.api.pyodm.workspaces("${$store.currentWorkspaceUUID}
         });
     });
 </script>
+
+<style is:global>
+    .uppy-Root, .uppy-Dashboard {
+        @apply size-full;
+    }
+</style>

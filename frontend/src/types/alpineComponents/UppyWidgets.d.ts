@@ -14,7 +14,6 @@ interface UppyWidget {
     init(): void;
     close(): void;
     setDashboard(): void;
-    setCustomStyle(): void;
     setTusProtocol(): void;
 }
 
