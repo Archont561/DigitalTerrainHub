@@ -3,7 +3,7 @@
   grid-template-columns: var(--_subgrid-col, var(--_grid-template-columns));
   grid-template-rows: var(--_subgrid-row, var(--_grid-template-rows));
   grid-auto-flow: var(--grid-new-cell-auto-placement);
-  grid-auto-columns: var(--grid-new-column-size);
+  grid-auto-columns: var(--grid-new-col-size);
   grid-auto-rows: var(--grid-new-row-size);
   grid-gap: var(--_grid-gap);
   place-items: var(--_grid-place-items);
