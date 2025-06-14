@@ -1,73 +1,83 @@
 import type { GridProps, GridCellProps } from "./types";
 import { GridPlacementMap, GridContentPlacementMap } from "./gridPropMaps";
 import _ from "lodash";
+import { createCSSVarName } from "@utils";
 
-function formatValue(propName: string, value: any): string {
-    switch (propName) {
-        case "rowStart":
-        case "rowSpan":
-        case "rowEnd":
-        case "colStart":
-        case "colSpan":
-        case "colEnd":
-        case 'newColSize':
-        case 'newRowSize':
-        case 'newCellAutoPlacement':
-            return `${value}`;
-        case "gap":
-            return `calc(var(--spacing)*${value})`;
-        case "placement":
-        case "cellsPlacement":
-            //@ts-ignore
-            return GridPlacementMap[value];
-        case "contentPlacement":
-            //@ts-ignore
-            return GridContentPlacementMap[value];
-        case "cols":
-        case "rows":
-            if (Array.isArray(value)) return value.join(' ');
-            return `repeat(${value}, minmax(0, 1fr))`;
-        default:
-            throw new Error(`Wrong property: ${propName}!`);
-    }
+type PropConverter = (value: any, propName?: string) => Record<string, string>;
+
+const getBreakpointSuffix = (bp:  string) => bp === "base" ? "" : `-${bp}`;
+
+const propConverters: Record<string, PropConverter> = new Proxy({
+    gap: (value) => ({
+        [createCSSVarName("grid", "gap")]: `calc(var(--spacing)*${value})`,
+    }),
+    cols: (value) => ({
+        [createCSSVarName("grid", "cols")]: Array.isArray(value)
+            ? value.join(" ")
+            : `repeat(${value}, minmax(0, 1fr))`,
+    }),
+    rows: (value) => ({
+        [createCSSVarName("grid", "rows")]: Array.isArray(value)
+            ? value.join(" ")
+            : `repeat(${value}, minmax(0, 1fr))`,
+    }),
+    placement: (value) => ({
+        // @ts-ignore
+        [createCSSVarName("grid", "cell", "placement")]: GridPlacementMap[value],
+    }),
+    cellsPlacement: (value) => ({
+        // @ts-ignore
+        [createCSSVarName("grid", "cells", "placement")]: GridPlacementMap[value],
+    }),
+    contentPlacement: (value) => ({
+        // @ts-ignore
+        [createCSSVarName("grid", "content", "placement")]: GridContentPlacementMap[value],
+    }),
+}, {
+    get(target, prop: string): PropConverter {
+        //@ts-ignore
+        if (prop in target) return target[prop];
+        return (value, propType = "") => ({
+            [createCSSVarName("grid", propType, prop || "custom")]: String(value),
+        });
+    },
+});
+
+function getGridCSSVariableVariants(propName: string, breakpoint: string, value: any, propType = ""): Record<string, string> {
+    const propConverter = propConverters[propName];
+    const variables = propConverter(value, propType);
+    return _.mapKeys(variables, (_val, key) => `${key}${getBreakpointSuffix(breakpoint)}`);
 }
 
-function createGridCSSVariable(propName: string, breakpoint: string, value: any, propType = ""): Record<string, string> {
-    const root = `grid${propType ? '-': ''}${_.kebabCase(propType)}`;
-    const modifier = breakpoint === 'base' ? `` : `-${breakpoint}`;
-    return { [`--${root}-${_.kebabCase(propName)}${modifier}`]: formatValue(propName, value) };
-}
-
-export function getGridCSSVariables(props: GridProps | GridCellProps, propType = ""): Record<string, string> {
+export function getGridCSSVariables(
+    props: GridProps | GridCellProps,
+    propType = ""
+): Record<string, string> {
     const variables: Record<string, string> = {};
 
-    Object.entries(props).forEach(([propName, value]) => {
+    _.forEach(props, (value, propName) => {
         if (!value) return;
 
-        const isResponsive = typeof value === "object";
+        const isResponsive = _.isPlainObject(value) && !Array.isArray(value);
+        const breakpoints = isResponsive ? value : { base: value };
 
-        if (!isResponsive) {
-            Object.assign(
-                variables, 
-                createGridCSSVariable(propName, "base", value, propType));            
-            return;
-        }
-        
-        Object.entries(value).forEach(([breakpoint, bpValue]) => {
-            Object.assign(
-                variables, 
-                createGridCSSVariable(propName, breakpoint, bpValue, propType));
+        _.forEach(breakpoints as any, (breakpoint, bpValue) => {
+            _.assign(variables, getGridCSSVariableVariants(propName, breakpoint, bpValue, propType));
         });
     });
 
     return variables;
 }
 
-export function createStylesheetHTML(props: GridProps | GridCellProps, uuid: UUID, propType = ""): string {
-    const cssVars = getGridCSSVariables(props, propType);
 
-    const declarations = Object.entries(cssVars)
-        .map(([key, value]) => `${key}: ${value};`).join("");
+export function createStylesheetHTML(
+    props: GridProps | GridCellProps,
+    uuid: UUID,
+    type = ""
+): string {
+    const cssVars = getGridCSSVariables(props, type);
+
+    const declarations = _.map(cssVars, (value, key) => `${key}: ${value};`).join("");
 
     return `<style>[${uuid}]{${declarations}}</style>`;
 }

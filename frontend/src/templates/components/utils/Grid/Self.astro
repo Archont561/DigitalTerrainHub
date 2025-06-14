@@ -1,13 +1,17 @@
 ---
+import type { ComponentProps } from "astro/types";
 import type { GridProps } from "./types";
 import { createStylesheetHTML } from "./utils";
 import { clsx as cn } from "clsx";
+import Layout from "@layouts";
 
-export type Props = GridProps & Astro.ComponentProps;
+export type Props = GridProps & Astro.ComponentProps & ComponentProps<typeof Layout.Melt>;
 
 const { inline, subgrid, cols, rows, gap, contentPlacement, cellsPlacement, ...props } = Astro.props;
+const gridUUID = crypto.randomUUID();
 
 Object.assign(props, {
+  [gridUUID]: '',
   class: cn(
     "astro-grid",
     { "inline": inline },
@@ -15,15 +19,15 @@ Object.assign(props, {
     props?.class
   ),
 });
-const gridUUID = crypto.randomUUID();
 ---
 
-<div {...{[gridUUID]: ''}} {...props}>
+<Layout.Melt {...props}>
   <slot />
-  <Fragment set:html={createStylesheetHTML(
-    {cols, rows, gap, contentPlacement, cellsPlacement}, gridUUID)}/>
-</div>
+  <Fragment set:html={createStylesheetHTML({
+    cols, rows, gap, contentPlacement, cellsPlacement
+  }, gridUUID)} />
+  <style is:global>
+    @import "./grid.css";
+  </style>
+</Layout.Melt>
 
-<style is:global>
-  @import "./grid.css";
-</style>
