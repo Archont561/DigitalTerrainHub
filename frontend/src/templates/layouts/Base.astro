@@ -2,11 +2,11 @@
 import { Notifications } from "@components";
 import { DjangoURLs, SVGURLs, StylesURLs } from "@assets";
 
-export interface Props {
+export interface Props extends Astro.HTMLComponentProps<"body"> {
 	title: string;
 }
 
-const { title } = Astro.props;
+const { title, ...props } = Astro.props;
 const csrfToken = Astro.request.headers.get("x-csrftoken") || "";
 ---
 
@@ -36,7 +36,7 @@ const csrfToken = Astro.request.headers.get("x-csrftoken") || "";
 			})();
 		</script>
 	</head>
-	<body hx-headers={`{"X-CSRFToken": "${csrfToken}"}`} hx-ext="form-json">
+	<body hx-headers={`{"X-CSRFToken": "${csrfToken}"}`} hx-ext="form-json" {...props}>
 		<slot />
 		<Notifications.ToastContainer 
 			notificationChannelURL={DjangoURLs.sseEventChannel("notifications").self()} />
