@@ -16,7 +16,7 @@ export interface GridProps {
   contentPlacement?: ResponsiveProp<GridContentPlacementMapKeys>;
   cols?: ResponsiveProp<GridColRowValue>;
   rows?: ResponsiveProp<GridColRowValue>;
-  gap?: ResponsiveProp<number>;
+  gap?: ResponsiveProp<number | string>;
   newColSize?: GridUnit;
   newRowSize?: GridUnit;
   newCellAutoPlacement?: NewGridCellPlacement;

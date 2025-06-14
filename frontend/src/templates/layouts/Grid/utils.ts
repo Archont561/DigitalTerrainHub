@@ -9,7 +9,7 @@ const getBreakpointSuffix = (bp:  string) => bp === "base" ? "" : `-${bp}`;
 
 const propConverters: Record<string, PropConverter> = new Proxy({
     gap: (value) => ({
-        [createCSSVarName("grid", "gap")]: `calc(var(--spacing)*${value})`,
+        [createCSSVarName("grid", "gap")]: _.isNumber(value) ? `calc(var(--spacing)*${value})` : String(value),
     }),
     cols: (value) => ({
         [createCSSVarName("grid", "cols")]: Array.isArray(value)
