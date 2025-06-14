@@ -19,52 +19,58 @@
     flex-wrap: wrap-reverse;
   }
 
-  --_gap: var(--_gap-2xl, var(--_gap-xl, var(--_gap-lg, var(--_gap-md, var(--_gap-sm, var(--_gap-xs, var(--flex-gap)))))));
-  --_flex-direction: var(--_flex-direction-2xl, var(--_flex-direction-xl, var(--_flex-direction-lg, var(--_flex-direction-md, var(--_flex-direction-sm, var(--_flex-direction-xs, var(--flex-direction)))))));
-  --_justify-content: var(--_justify-content-2xl, var(--_justify-content-xl, var(--_justify-content-lg, var(--_justify-content-md, var(--_justify-content-sm, var(--_justify-content-xs, var(--flex-justify-line)))))));
-  --_align-items: var(--_align-items-2xl, var(--_align-items-xl, var(--_align-items-lg, var(--_align-items-md, var(--_align-items-sm, var(--_align-items-xs, var(--flex-align-line)))))));
-  --_align-content: var(--_align-content-2xl, var(--_align-content-xl, var(--_align-content-lg, var(--_align-content-md, var(--_align-content-sm, var(--_align-content-xs, var(--flex-align-lines)))))));
+  --_gap: var(--_fx-g-2xl, var(--_fx-g-xl, var(--_fx-g-lg, var(--_fx-g-md, var(--_fx-g-sm, var(--_fx-g-xs, var(--flex-gap)))))));
+  --_flex-directionr: var(--_fx-dir-2xl, var(--_fx-dir-xl, var(--_fx-dir-lg, var(--_fx-dir-md, var(--_fx-dir-sm, var(--_fx-dir-xs, var(--flex-direction)))))));
+  --_justify-content: var(--_fx-jc-2xl, var(--_fx-jc-xl, var(--_fx-jc-lg, var(--_fx-jc-md, var(--_fx-jc-sm, var(--_fx-jc-xs, var(--flex-justify-line)))))));
+  --_align-items: var(--_fx-ai-2xl, var(--_fx-ai-xl, var(--_fx-ai-lg, var(--_fx-ai-md, var(--_fx-ai-sm, var(--_fx-ai-xs, var(--flex-align-line)))))));
+  --_align-content:: var(--_fx-ac-2xl, var(--_fx-ac-xl, var(--_fx-ac-lg, var(--_fx-ac-md, var(--_fx-ac-sm, var(--_fx-ac-xs, var(--flex-align-lines)))))));
 
   @media (width >=30rem) {
-    --_flex-direction-xs: var(--flex-direction-xs);
-    --_justify-content-xs: var(--justify-justify-line-xs);
-    --_align-items-xs: var(--flex-align-line-xs);
-    --_align-content-xs: var(--flex-align-lines-xs);
+    --_fx-dir-xs: var(--flex-direction-xs);
+    --_fx-jc-xs: var(--justify-justify-line-xs);
+    --_fx-ai-xs: var(--flex-align-line-xs);
+    --_fx-ac-xs: var(--flex-align-lines-xs);
+    --_fx-g-xs: var(--flex-gap-xs);
   }
 
   @media (width >=40rem) {
-    --_flex-direction-sm: var(--flex-direction-sm);
-    --_justify-content-sm: var(--justify-justify-line-sm);
-    --_align-items-sm: var(--flex-align-line-sm);
-    --_align-content-sm: var(--flex-align-lines-sm);
+    --_fx-dir-sm: var(--flex-direction-sm);
+    --_fx-jc-sm: var(--justify-justify-line-sm);
+    --_fx-ai-sm: var(--flex-align-line-sm);
+    --_fx-ac-sm: var(--flex-align-lines-sm);
+    --_fx-g-sm: var(--flex-gap-sm);
   }
 
   @media (width >=48rem) {
-    --_flex-direction-md: var(--flex-direction-md);
-    --_justify-content-md: var(--justify-justify-line-md);
-    --_align-items-md: var(--flex-align-line-md);
-    --_align-content-md: var(--flex-align-lines-md);
+    --_fx-dir-md: var(--flex-direction-md);
+    --_fx-jc-md: var(--justify-justify-line-md);
+    --_fx-ai-md: var(--flex-align-line-md);
+    --_fx-ac-md: var(--flex-align-lines-md);
+    --_fx-g-md: var(--flex-gap-md);
   }
 
   @media (width >=64rem) {
-    --_flex-direction-lg: var(--flex-direction-lg);
-    --_justify-content-lg: var(--justify-justify-line-lg);
-    --_align-items-lg: var(--flex-align-line-lg);
-    --_align-content-lg: var(--flex-align-lines-lg);
+    --_fx-dir-lg: var(--flex-direction-lg);
+    --_fx-jc-lg: var(--justify-justify-line-lg);
+    --_fx-ai-lg: var(--flex-align-line-lg);
+    --_fx-ac-lg: var(--flex-align-lines-lg);
+    --_fx-g-lg: var(--flex-gap-lg);
   }
 
   @media (width >=80rem) {
-    --_flex-direction-xl: var(--flex-direction-xl);
-    --_justify-content-xl: var(--justify-justify-line-xl);
-    --_align-items-xl: var(--flex-align-line-xl);
-    --_align-content-xl: var(--flex-align-lines-xl);
+    --_fx-dir-xl: var(--flex-direction-xl);
+    --_fx-jc-xl: var(--justify-justify-line-xl);
+    --_fx-ai-xl: var(--flex-align-line-xl);
+    --_fx-ac-xl: var(--flex-align-lines-xl);
+    --_fx-g-xl: var(--flex-gap-xl);
   }
 
   @media (width >=96rem) {
-    --_flex-direction-2xl: var(--flex-direction-2xl);
-    --_justify-content-2xl: var(--justify-justify-line-2xl);
-    --_align-items-2xl: var(--flex-align-line-2xl);
-    --_align-content-2xl: var(--flex-align-lines-2xl);
+    --_fx-dir-2xl: var(--flex-direction-2xl);
+    --_fx-jc-2xl: var(--justify-justify-line-2xl);
+    --_fx-ai-2xl: var(--flex-align-line-2xl);
+    --_fx-ac-2xl: var(--flex-align-lines-2xl);
+    --_fx-g-2xl: var(--flex-gap-2xl);
   }
 
 }
@@ -74,58 +80,58 @@
   flex: var(--_grow, initial) var(--_shrink, initial) var(--_basis, initial);
   align-self: var(--_align-self);
 
-  --_order: var(--_order-2xl, var(--_order-xl, var(--_order-lg, var(--_order-md, var(--_order-sm, var(--_order-xs, var(--flex-item-order)))))));
-  --_grow: var(--_grow-2xl, var(--_grow-xl, var(--_grow-lg, var(--_grow-md, var(--_grow-sm, var(--_grow-xs, var(--flex-item-grow)))))));
-  --_shrink: var(--_shrink-2xl, var(--_shrink-xl, var(--_shrink-lg, var(--_shrink-md, var(--_shrink-sm, var(--_shrink-xs, var(--flex-item-shrink)))))));
-  --_basis: var(--_basis-2xl, var(--_basis-xl, var(--_basis-lg, var(--_basis-md, var(--_basis-sm, var(--_basis-xs, var(--flex-item-basis)))))));
-  --_align-self: var(--_align-self-2xl, var(--_align-self-xl, var(--_align-self-lg, var(--_align-self-md, var(--_align-self-sm, var(--_align-self-xs, var(--flex-item-placement)))))));
+  --_order: var(--_fx-o-2xl, var(--_fx-o-xl, var(--_fx-o-lg, var(--_fx-o-md, var(--_fx-o-sm, var(--_fx-o-xs, var(--flex-item-order)))))));
+  --_grow: var(--_fx-gw-2xl, var(--_fx-gw-xl, var(--_fx-gw-lg, var(--_fx-gw-md, var(--_fx-gw-sm, var(--_fx-gw-xs, var(--flex-item-grow)))))));
+  --_shrink: var(--_fx-sh-2xl, var(--_fx-sh-xl, var(--_fx-sh-lg, var(--_fx-sh-md, var(--_fx-sh-sm, var(--_fx-sh-xs, var(--flex-item-shrink)))))));
+  --_basis: var(--_fx-bs-2xl, var(--_fx-bs-xl, var(--_fx-bs-lg, var(--_fx-bs-md, var(--_fx-bs-sm, var(--_fx-bs-xs, var(--flex-item-basis)))))));
+  --_align-self: var(--_fx-as-2xl, var(--_fx-as-xl, var(--_fx-as-lg, var(--_fx-as-md, var(--_fx-as-sm, var(--_fx-as-xs, var(--flex-item-placement)))))));
 
   @media (width >=30rem) {
-    --_order-xs: var(--flex-item-order-xs);
-    --_grow-xs: var(--flex-item-grow-xs);
-    --_shrink-xs: var(--flex-item-shrink-xs);
-    --_basis-xs: var(--flex-item-basis-xs);
-    --_align-self-xs: var(--flex-item-placement-xs);
+    --_fx-o-xs: var(--flex-item-order-xs);
+    --_fx-gw-xs: var(--flex-item-grow-xs);
+    --_fx-sh-xs: var(--flex-item-shrink-xs);
+    --_fx-bs-xs: var(--flex-item-basis-xs);
+    --_fx-as-xs: var(--flex-item-placement-xs);
   }
 
   @media (width >=40rem) {
-    --_order-sm: var(--flex-item-order-sm);
-    --_grow-sm: var(--flex-item-grow-sm);
-    --_shrink-sm: var(--flex-item-shrink-sm);
-    --_basis-sm: var(--flex-item-basis-sm);
-    --_align-self-sm: var(--flex-item-placement-sm);
+    --_fx-o-sm: var(--flex-item-order-sm);
+    --_fx-gw-sm: var(--flex-item-grow-sm);
+    --_fx-sh-sm: var(--flex-item-shrink-sm);
+    --_fx-bs-sm: var(--flex-item-basis-sm);
+    --_fx-as-sm: var(--flex-item-placement-sm);
   }
 
   @media (width >=48rem) {
-    --_order-md: var(--flex-item-order-md);
-    --_grow-md: var(--flex-item-grow-md);
-    --_shrink-md: var(--flex-item-shrink-md);
-    --_basis-md: var(--flex-item-basis-md);
-    --_align-self-md: var(--flex-item-placement-md);
+    --_fx-o-md: var(--flex-item-order-md);
+    --_fx-gw-md: var(--flex-item-grow-md);
+    --_fx-sh-md: var(--flex-item-shrink-md);
+    --_fx-bs-md: var(--flex-item-basis-md);
+    --_fx-as-md: var(--flex-item-placement-md);
   }
 
   @media (width >=64rem) {
-    --_order-lg: var(--flex-item-order-lg);
-    --_grow-lg: var(--flex-item-grow-lg);
-    --_shrink-lg: var(--flex-item-shrink-lg);
-    --_basis-lg: var(--flex-item-basis-lg);
-    --_align-self-lg: var(--flex-item-placement-lg);
+    --_fx-o-lg: var(--flex-item-order-lg);
+    --_fx-gw-lg: var(--flex-item-grow-lg);
+    --_fx-sh-lg: var(--flex-item-shrink-lg);
+    --_fx-bs-lg: var(--flex-item-basis-lg);
+    --_fx-as-lg: var(--flex-item-placement-lg);
   }
 
   @media (width >=80rem) {
-    --_order-xl: var(--flex-item-order-xl);
-    --_grow-xl: var(--flex-item-grow-xl);
-    --_shrink-xl: var(--flex-item-shrink-xl);
-    --_basis-xl: var(--flex-item-basis-xl);
-    --_align-self-xl: var(--flex-item-placement-xl);
+    --_fx-o-xl: var(--flex-item-order-xl);
+    --_fx-gw-xl: var(--flex-item-grow-xl);
+    --_fx-sh-xl: var(--flex-item-shrink-xl);
+    --_fx-bs-xl: var(--flex-item-basis-xl);
+    --_fx-as-xl: var(--flex-item-placement-xl);
   }
 
   @media (width >=96rem) {
-    --_order-2xl: var(--flex-item-order-2xl);
-    --_grow-2xl: var(--flex-item-grow-2xl);
-    --_shrink-2xl: var(--flex-item-shrink-2xl);
-    --_basis-2xl: var(--flex-item-basis-2xl);
-    --_align-self-2xl: var(--flex-item-placement-2xl);
+    --_fx-o-2xl: var(--flex-item-order-2xl);
+    --_fx-gw-2xl: var(--flex-item-grow-2xl);
+    --_fx-sh-2xl: var(--flex-item-shrink-2xl);
+    --_fx-bs-2xl: var(--flex-item-basis-2xl);
+    --_fx-as-2xl: var(--flex-item-placement-2xl);
   }
 
 }
