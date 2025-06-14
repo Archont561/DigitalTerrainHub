@@ -4,6 +4,7 @@ import Clamp from "./Clamp.astro";
 import Flex from "./Flex/Self.astro";
 import Grid from "./Grid/Self.astro";
 import GreatestGrid from "./Grid/Variants/Greatest.astro";
+import Subgrid from "./Grid/Variants/Subgrid.astro";
 
 import FlexItem from "./Flex/Item.astro";
 import GridCell from "./Grid/Cell.astro";
@@ -22,5 +23,6 @@ export default {
     Grid,
     Flex,
     GreatestGrid,
+    Subgrid,
     Partials,
 }
