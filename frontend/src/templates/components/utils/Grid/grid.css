@@ -1,0 +1,160 @@
+.astro-grid {
+  display: var(--_display, grid);
+  grid-template-columns: var(--_subgrid-col, var(--_grid-template-columns));
+  grid-template-rows: var(--_subgrid-row, var(--_grid-template-rows));
+  grid-auto-flow: var(--grid-new-cell-auto-placement);
+  grid-auto-columns: var(--grid-new-col-size);
+  grid-auto-rows: var(--grid-new-row-size);
+  grid-gap: var(--_gap);
+  place-items: var(--_place-items);
+  place-content: var(--_place-content);
+  
+  --_grid-template-columns: var(--_grid-cols-2xl, var(--_grid-cols-xl, var(--_grid-cols-lg, var(--_grid-cols-md, var(--_grid-cols-sm, var(--_grid-cols-xs, var(--grid-cols)))))));
+  --_grid-template-rows: var(--_grid-rows-2xl, var(--_grid-rows-xl, var(--_grid-rows-lg, var(--_grid-rows-md, var(--_grid-rows-sm, var(--_grid-rows-xs, var(--grid-rows)))))));
+  --_gap: var(--_grid-gap-2xl, var(--_grid-gap-xl, var(--_grid-gap-lg, var(--_grid-gap-md, var(--_grid-gap-sm, var(--_grid-gap-xs, var(--grid-gap)))))));
+  --_place-items: var(--_grid-cells-placement-2xl, var(--_grid-cells-placement-xl, var(--_grid-cells-placement-lg, var(--_grid-cells-placement-md, var(--_grid-cells-placement-sm, var(--_grid-cells-placement-xs, var(--cells-placement)))))));
+  --_place-content: var(--_grid-content-placement-2xl, var(--_grid-content-placement-xl, var(--_grid-content-placement-lg, var(--_grid-content-placement-md, var(--_grid-content-placement-sm, var(--_grid-content-placement-xs, var(--content-placement)))))));
+  
+  &.inline {
+    --_display: inline-grid;
+  }
+
+  &.subgrid {
+    &.row {
+      --_subgrid-row: subgrid;
+    }
+
+    &.col {
+      --_subgrid-col: subgrid;
+    }
+
+    &:not(.col):not(.row) {
+      --_subgrid-col: subgrid;
+      --_subgrid-row: subgrid;
+    }
+  }
+
+  @media (width >=30rem) {
+    --_grid-cols-xs: var(--grid-cols-xs);
+    --_grid-rows-xs: var(--grid-rows-xs);
+    --_grid-gap-xs: var(--grid-gap-xs);
+    --_grid-cells-placement-xs: var(--grid-cells-placement-xs);
+    --_grid-content-placement-xs: var(--grid-content-placement-xs);
+  }
+
+  @media (width >=40rem) {
+    --_grid-cols-sm: var(--grid-cols-sm);
+    --_grid-rows-sm: var(--grid-rows-sm);
+    --_grid-gap-sm: var(--grid-gap-sm);
+    --_grid-cells-placement-sm: var(--grid-cells-placement-sm);
+    --_grid-content-placement-sm: var(--grid-content-placement-sm);
+  }
+
+  @media (width >=48rem) {
+    --_grid-cols-md: var(--grid-cols-md);
+    --_grid-rows-md: var(--grid-rows-md);
+    --_grid-gap-md: var(--grid-gap-md);
+    --_grid-cells-placement-md: var(--grid-cells-placement-md);
+    --_grid-content-placement-md: var(--grid-content-placement-md);
+  }
+
+  @media (width >=64rem) {
+    --_grid-cols-lg: var(--grid-cols-lg);
+    --_grid-rows-lg: var(--grid-rows-lg);
+    --_grid-gap-lg: var(--grid-gap-lg);
+    --_grid-cells-placement-lg: var(--grid-cells-placement-lg);
+    --_grid-content-placement-lg: var(--grid-content-placement-lg);
+  }
+
+  @media (width >=80rem) {
+    --_grid-cols-xl: var(--grid-cols-xl);
+    --_grid-rows-xl: var(--grid-rows-xl);
+    --_grid-gap-xl: var(--grid-gap-xl);
+    --_grid-cells-placement-xl: var(--grid-cells-placement-xl);
+    --_grid-content-placement-xl: var(--grid-content-placement-xl);
+  }
+
+  @media (width >=96rem) {
+    --_grid-cols-2xl: var(--grid-cols-2xl);
+    --_grid-rows-2xl: var(--grid-rows-2xl);
+    --_grid-gap-2xl: var(--grid-gap-2xl);
+    --_grid-cells-placement-2xl: var(--grid-cells-placement-2xl);
+    --_grid-content-placement-2xl: var(--grid-content-placement-2xl);
+  }
+}
+
+.astro-grid-cell {
+  grid-column-start: var(--_grid-column-start, auto);
+  grid-column-end: var(--_grid-column-end, span var(--_grid-column-span, 1));
+  grid-row-start: var(--_grid-row-start, auto);
+  grid-row-end: var(--_grid-row-end, span var(--_grid-row-span, 1));
+  place-self: var(--_place-self, auto);
+
+  --_grid-row-start: var(--_grid-cell-row-start-2xl, var(--_grid-cell-row-start-xl, var(--_grid-cell-row-start-lg, var(--_grid-cell-row-start-md, var(--_grid-cell-row-start-sm, var(--_grid-cell-row-start-xs, var(--grid-cell-row-start)))))));
+  --_grid-row-span: var(--_grid-cell-row-span-2xl, var(--_grid-cell-row-span-xl, var(--_grid-cell-row-span-lg, var(--_grid-cell-row-span-md, var(--_grid-cell-row-span-sm, var(--_grid-cell-row-span-xs, var(--grid-cell-row-span)))))));
+  --_grid-row-end: var(--_grid-cell-row-end-2xl, var(--_grid-cell-row-end-xl, var(--_grid-cell-row-end-lg, var(--_grid-cell-row-end-md, var(--_grid-cell-row-end-sm, var(--_grid-cell-row-end-xs, var(--grid-cell-row-end)))))));
+  --_grid-col-start: var(--_grid-cell-col-start-2xl, var(--_grid-cell-col-start-xl, var(--_grid-cell-col-start-lg, var(--_grid-cell-col-start-md, var(--_grid-cell-col-start-sm, var(--_grid-cell-col-start-xs, var(--grid-cell-col-start)))))));
+  --_grid-col-span: var(--_grid-cell-col-span-2xl, var(--_grid-cell-col-span-xl, var(--_grid-cell-col-span-lg, var(--_grid-cell-col-span-md, var(--_grid-cell-col-span-sm, var(--_grid-cell-col-span-xs, var(--grid-cell-col-span)))))));
+  --_grid-col-end: var(--_grid-cell-col-end-2xl, var(--_grid-cell-col-end-xl, var(--_grid-cell-col-end-lg, var(--_grid-cell-col-end-md, var(--_grid-cell-col-end-sm, var(--_grid-cell-col-end-xs, var(--grid-cell-col-end)))))));
+  --_place-self: var(--_grid-cell-placement-2xl, var(--_grid-cell-placement-xl, var(--_grid-cell-placement-lg, var(--_grid-cell-placement-md, var(--_grid-cell-placement-sm, var(--_grid-cell-placement-xs, var(--grid-cell-placement)))))));
+
+  @media (width >=30rem) {
+    --_grid-cell-row-start-xs: var(--grid-cell-row-start-xs);
+    --_grid-cell-row-span-xs: var(--grid-cell-row-span-xs);
+    --_grid-cell-row-end-xs: var(--grid-cell-row-end-xs);
+    --_grid-cell-col-start-xs: var(--grid-cell-col-start-xs);
+    --_grid-cell-col-span-xs: var(--grid-cell-col-span-xs);
+    --_grid-cell-col-end-xs: var(--grid-cell-col-end-xs);
+    --_grid-cell-placement-xs: var(--grid-cell-placement-xs);
+  }
+
+  @media (width >=40rem) {
+    --_grid-cell-row-start-sm: var(--grid-cell-row-start-sm);
+    --_grid-cell-row-span-sm: var(--grid-cell-row-span-sm);
+    --_grid-cell-row-end-sm: var(--grid-cell-row-end-sm);
+    --_grid-cell-col-start-sm: var(--grid-cell-col-start-sm);
+    --_grid-cell-col-span-sm: var(--grid-cell-col-span-sm);
+    --_grid-cell-col-end-sm: var(--grid-cell-col-end-sm);
+    --_grid-cell-placement-sm: var(--grid-cell-placement-sm);
+  }
+
+  @media (width >=48rem) {
+    --_grid-cell-row-start-md: var(--grid-cell-row-start-md);
+    --_grid-cell-row-span-md: var(--grid-cell-row-span-md);
+    --_grid-cell-row-end-md: var(--grid-cell-row-end-md);
+    --_grid-cell-col-start-md: var(--grid-cell-col-start-md);
+    --_grid-cell-col-span-md: var(--grid-cell-col-span-md);
+    --_grid-cell-col-end-md: var(--grid-cell-col-end-md);
+    --_grid-cell-placement-md: var(--grid-cell-placement-md);
+  }
+
+  @media (width >=64rem) {
+    --_grid-cell-row-start-lg: var(--grid-cell-row-start-lg);
+    --_grid-cell-row-span-lg: var(--grid-cell-row-span-lg);
+    --_grid-cell-row-end-lg: var(--grid-cell-row-end-lg);
+    --_grid-cell-col-start-lg: var(--grid-cell-col-start-lg);
+    --_grid-cell-col-span-lg: var(--grid-cell-col-span-lg);
+    --_grid-cell-col-end-lg: var(--grid-cell-col-end-lg);
+    --_grid-cell-placement-lg: var(--grid-cell-placement-lg);
+  }
+
+  @media (width >=80rem) {
+    --_grid-cell-row-start-xl: var(--grid-cell-row-start-xl);
+    --_grid-cell-row-span-xl: var(--grid-cell-row-span-xl);
+    --_grid-cell-row-end-xl: var(--grid-cell-row-end-xl);
+    --_grid-cell-col-start-xl: var(--grid-cell-col-start-xl);
+    --_grid-cell-col-span-xl: var(--grid-cell-col-span-xl);
+    --_grid-cell-col-end-xl: var(--grid-cell-col-end-xl);
+    --_grid-cell-placement-xl: var(--grid-cell-placement-xl);
+  }
+
+  @media (width >=96rem) {
+    --_grid-cell-row-start-2xl: var(--grid-cell-row-start-2xl);
+    --_grid-cell-row-span-2xl: var(--grid-cell-row-span-2xl);
+    --_grid-cell-row-end-2xl: var(--grid-cell-row-end-2xl);
+    --_grid-cell-col-start-2xl: var(--grid-cell-col-start-2xl);
+    --_grid-cell-col-span-2xl: var(--grid-cell-col-span-2xl);
+    --_grid-cell-col-end-2xl: var(--grid-cell-col-end-2xl);
+    --_grid-cell-placement-2xl: var(--grid-cell-placement-2xl);
+  }
+}

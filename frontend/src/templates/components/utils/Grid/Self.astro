@@ -1,0 +1,32 @@
+---
+import type { GridProps } from "./types";
+import { createStylesheetHTML } from "./utils";
+import { clsx as cn } from "clsx";
+
+export type Props = GridProps & Astro.ComponentProps;
+
+const { inline, subgrid, cols, rows, gap, contentPlacement, cellsPlacement, ...props } = Astro.props;
+
+Object.assign(props, {
+  class: cn("astro-grid", props?.class),
+});Object.assign(props, {
+  class: cn(
+    "astro-grid-cell",
+    { "inline": inline },
+    { "subgrid": subgrid },
+    props?.class
+  ),
+});
+
+const gridUUID = crypto.randomUUID();
+---
+
+<div {...{[gridUUID]: ''}} {...props}>
+  <slot />
+  <Fragment set:html={createStylesheetHTML(
+    {cols, rows, gap, contentPlacement, cellsPlacement}, gridUUID)}/>
+</div>
+
+<style is:global>
+  @import "./grid.css";
+</style>

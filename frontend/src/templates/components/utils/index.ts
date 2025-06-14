@@ -4,6 +4,7 @@ import Dropdown from "./Dropdown.astro";
 import FileDropzone from "./FileDropzone.astro";
 import Popover from "./Popover.astro";
 import DaisyUIThemeSwitcher from "./DaisyUIThemeSwitcher";
+import Grid from "./Grid";
 
 export {
     Modal,
@@ -12,4 +13,5 @@ export {
     Popover,
     Alert,
     DaisyUIThemeSwitcher,
+    Grid,
 }
