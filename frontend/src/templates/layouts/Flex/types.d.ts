@@ -12,13 +12,13 @@ export interface FlexProps {
     gap?: ResponsiveProp<number | string>;
     placement?: ResponsiveProp<FlexPlacementMapKeys>;
     multilinePlacement?: ResponsiveProp<FlexMultilinePlacement>;
-    direction: ResponsiveProp<FlexDirection>;
+    direction?: ResponsiveProp<FlexDirection>;
 }
 
 export interface FlexItemProps {
-    order: number;
-    grow: ResponsiveProp<number>;
-    shrink: ResponsiveProp<number>;
-    base: ResponsiveProp<number>;
-    placement: ResponsiveProp<keyof typeof FlexItemPlacementMap>;
+    order?: number;
+    grow?: ResponsiveProp<number>;
+    shrink?: ResponsiveProp<number>;
+    base?: ResponsiveProp<number>;
+    placement?: ResponsiveProp<keyof typeof FlexItemPlacementMap>;
 }
