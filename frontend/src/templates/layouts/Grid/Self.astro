@@ -14,8 +14,12 @@ Object.assign(props, {
   [gridUUID]: '',
   class: cn(
     "astro-grid",
-    { "inline": inline },
-    { "subgrid": subgrid },
+    { 
+      "inline": inline,
+      "subgrid": subgrid === "both",
+      "row": subgrid === "col",
+      "col": subgrid === "row",
+    },
     props?.class
   ),
 });
