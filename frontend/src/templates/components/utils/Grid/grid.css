@@ -1,22 +1,22 @@
 .astro-grid {
-  display: var(--_display, grid);
+  display: grid;
   grid-template-columns: var(--_subgrid-col, var(--_grid-template-columns));
   grid-template-rows: var(--_subgrid-row, var(--_grid-template-rows));
   grid-auto-flow: var(--grid-new-cell-auto-placement);
-  grid-auto-columns: var(--grid-new-col-size);
+  grid-auto-columns: var(--grid-new-column-size);
   grid-auto-rows: var(--grid-new-row-size);
-  grid-gap: var(--_gap);
-  place-items: var(--_place-items);
-  place-content: var(--_place-content);
-  
-  --_grid-template-columns: var(--_grid-cols-2xl, var(--_grid-cols-xl, var(--_grid-cols-lg, var(--_grid-cols-md, var(--_grid-cols-sm, var(--_grid-cols-xs, var(--grid-cols)))))));
-  --_grid-template-rows: var(--_grid-rows-2xl, var(--_grid-rows-xl, var(--_grid-rows-lg, var(--_grid-rows-md, var(--_grid-rows-sm, var(--_grid-rows-xs, var(--grid-rows)))))));
-  --_gap: var(--_grid-gap-2xl, var(--_grid-gap-xl, var(--_grid-gap-lg, var(--_grid-gap-md, var(--_grid-gap-sm, var(--_grid-gap-xs, var(--grid-gap)))))));
-  --_place-items: var(--_grid-cells-placement-2xl, var(--_grid-cells-placement-xl, var(--_grid-cells-placement-lg, var(--_grid-cells-placement-md, var(--_grid-cells-placement-sm, var(--_grid-cells-placement-xs, var(--cells-placement)))))));
-  --_place-content: var(--_grid-content-placement-2xl, var(--_grid-content-placement-xl, var(--_grid-content-placement-lg, var(--_grid-content-placement-md, var(--_grid-content-placement-sm, var(--_grid-content-placement-xs, var(--content-placement)))))));
-  
+  grid-gap: var(--_grid-gap);
+  place-items: var(--_grid-place-items);
+  place-content: var(--_grid-place-content);
+
+  --_grid-template-columns: var(--_g-cols-2xl, var(--_g-cols-xl, var(--_g-cols-lg, var(--_g-cols-md, var(--_g-cols-sm, var(--_g-cols-xs, var(--grid-cols)))))));
+  --_grid-template-rows: var(--_g-rows-2xl, var(--_g-rows-xl, var(--_g-rows-lg, var(--_g-rows-md, var(--_g-rows-sm, var(--_g-rows-xs, var(--grid-rows)))))));
+  --_grid-gap: var(--_g-gap-2xl, var(--_g-gap-xl, var(--_g-gap-lg, var(--_g-gap-md, var(--_g-gap-sm, var(--_g-gap-xs, var(--grid-gap)))))));
+  --_grid-place-items: var(--_g-cp-2xl, var(--_g-cp-xl, var(--_g-cp-lg, var(--_g-cp-md, var(--_g-cp-sm, var(--_g-cp-xs, var(--grid-cells-placement)))))));
+  --_grid-place-content: var(--_g-ctp-2xl, var(--_g-ctp-xl, var(--_g-ctp-lg, var(--_g-ctp-md, var(--_g-ctp-sm, var(--_g-ctp-xs, var(--grid-content-placement)))))));
+
   &.inline {
-    --_display: inline-grid;
+    display: inline-grid;
   }
 
   &.subgrid {
@@ -35,51 +35,51 @@
   }
 
   @media (width >=30rem) {
-    --_grid-cols-xs: var(--grid-cols-xs);
-    --_grid-rows-xs: var(--grid-rows-xs);
-    --_grid-gap-xs: var(--grid-gap-xs);
-    --_grid-cells-placement-xs: var(--grid-cells-placement-xs);
-    --_grid-content-placement-xs: var(--grid-content-placement-xs);
+    --_g-cols-xs: var(--grid-cols-xs);
+    --_g-rows-xs: var(--grid-rows-xs);
+    --_g-gap-xs: var(--grid-gap-xs);
+    --_g-cp-xs: var(--grid-cells-placement-xs);
+    --_g-ctp-xs: var(--grid-content-placement-xs);
   }
 
   @media (width >=40rem) {
-    --_grid-cols-sm: var(--grid-cols-sm);
-    --_grid-rows-sm: var(--grid-rows-sm);
-    --_grid-gap-sm: var(--grid-gap-sm);
-    --_grid-cells-placement-sm: var(--grid-cells-placement-sm);
-    --_grid-content-placement-sm: var(--grid-content-placement-sm);
+    --_g-cols-sm: var(--grid-cols-sm);
+    --_g-rows-sm: var(--grid-rows-sm);
+    --_g-gap-sm: var(--grid-gap-sm);
+    --_g-cp-sm: var(--grid-cells-placement-sm);
+    --_g-ctp-sm: var(--grid-content-placement-sm);
   }
 
   @media (width >=48rem) {
-    --_grid-cols-md: var(--grid-cols-md);
-    --_grid-rows-md: var(--grid-rows-md);
-    --_grid-gap-md: var(--grid-gap-md);
-    --_grid-cells-placement-md: var(--grid-cells-placement-md);
-    --_grid-content-placement-md: var(--grid-content-placement-md);
+    --_g-cols-md: var(--grid-cols-md);
+    --_g-rows-md: var(--grid-rows-md);
+    --_g-gap-md: var(--grid-gap-md);
+    --_g-cp-md: var(--grid-cells-placement-md);
+    --_g-ctp-md: var(--grid-content-placement-md);
   }
 
   @media (width >=64rem) {
-    --_grid-cols-lg: var(--grid-cols-lg);
-    --_grid-rows-lg: var(--grid-rows-lg);
-    --_grid-gap-lg: var(--grid-gap-lg);
-    --_grid-cells-placement-lg: var(--grid-cells-placement-lg);
-    --_grid-content-placement-lg: var(--grid-content-placement-lg);
+    --_g-cols-lg: var(--grid-cols-lg);
+    --_g-rows-lg: var(--grid-rows-lg);
+    --_g-gap-lg: var(--grid-gap-lg);
+    --_g-cp-lg: var(--grid-cells-placement-lg);
+    --_g-ctp-lg: var(--grid-content-placement-lg);
   }
 
   @media (width >=80rem) {
-    --_grid-cols-xl: var(--grid-cols-xl);
-    --_grid-rows-xl: var(--grid-rows-xl);
-    --_grid-gap-xl: var(--grid-gap-xl);
-    --_grid-cells-placement-xl: var(--grid-cells-placement-xl);
-    --_grid-content-placement-xl: var(--grid-content-placement-xl);
+    --_g-cols-xl: var(--grid-cols-xl);
+    --_g-rows-xl: var(--grid-rows-xl);
+    --_g-gap-xl: var(--grid-gap-xl);
+    --_g-cp-xl: var(--grid-cells-placement-xl);
+    --_g-ctp-xl: var(--grid-content-placement-xl);
   }
 
   @media (width >=96rem) {
-    --_grid-cols-2xl: var(--grid-cols-2xl);
-    --_grid-rows-2xl: var(--grid-rows-2xl);
-    --_grid-gap-2xl: var(--grid-gap-2xl);
-    --_grid-cells-placement-2xl: var(--grid-cells-placement-2xl);
-    --_grid-content-placement-2xl: var(--grid-content-placement-2xl);
+    --_g-cols-2xl: var(--grid-cols-2xl);
+    --_g-rows-2xl: var(--grid-rows-2xl);
+    --_g-gap-2xl: var(--grid-gap-2xl);
+    --_g-cp-2xl: var(--grid-cells-placement-2xl);
+    --_g-ctp-2xl: var(--grid-content-placement-2xl);
   }
 }
 
@@ -90,71 +90,71 @@
   grid-row-end: var(--_grid-row-end, span var(--_grid-row-span, 1));
   place-self: var(--_place-self, auto);
 
-  --_grid-row-start: var(--_grid-cell-row-start-2xl, var(--_grid-cell-row-start-xl, var(--_grid-cell-row-start-lg, var(--_grid-cell-row-start-md, var(--_grid-cell-row-start-sm, var(--_grid-cell-row-start-xs, var(--grid-cell-row-start)))))));
-  --_grid-row-span: var(--_grid-cell-row-span-2xl, var(--_grid-cell-row-span-xl, var(--_grid-cell-row-span-lg, var(--_grid-cell-row-span-md, var(--_grid-cell-row-span-sm, var(--_grid-cell-row-span-xs, var(--grid-cell-row-span)))))));
-  --_grid-row-end: var(--_grid-cell-row-end-2xl, var(--_grid-cell-row-end-xl, var(--_grid-cell-row-end-lg, var(--_grid-cell-row-end-md, var(--_grid-cell-row-end-sm, var(--_grid-cell-row-end-xs, var(--grid-cell-row-end)))))));
-  --_grid-col-start: var(--_grid-cell-col-start-2xl, var(--_grid-cell-col-start-xl, var(--_grid-cell-col-start-lg, var(--_grid-cell-col-start-md, var(--_grid-cell-col-start-sm, var(--_grid-cell-col-start-xs, var(--grid-cell-col-start)))))));
-  --_grid-col-span: var(--_grid-cell-col-span-2xl, var(--_grid-cell-col-span-xl, var(--_grid-cell-col-span-lg, var(--_grid-cell-col-span-md, var(--_grid-cell-col-span-sm, var(--_grid-cell-col-span-xs, var(--grid-cell-col-span)))))));
-  --_grid-col-end: var(--_grid-cell-col-end-2xl, var(--_grid-cell-col-end-xl, var(--_grid-cell-col-end-lg, var(--_grid-cell-col-end-md, var(--_grid-cell-col-end-sm, var(--_grid-cell-col-end-xs, var(--grid-cell-col-end)))))));
-  --_place-self: var(--_grid-cell-placement-2xl, var(--_grid-cell-placement-xl, var(--_grid-cell-placement-lg, var(--_grid-cell-placement-md, var(--_grid-cell-placement-sm, var(--_grid-cell-placement-xs, var(--grid-cell-placement)))))));
+  --_grid-row-start: var(--_gc-rs-2xl, var(--_gc-rs-xl, var(--_gc-rs-lg, var(--_gc-rs-md, var(--_gc-rs-sm, var(--_gc-rs-xs, var(--grid-cell-row-start)))))));
+  --_grid-row-span: var(--_gc-rsp-2xl, var(--_gc-rsp-xl, var(--_gc-rsp-lg, var(--_gc-rsp-md, var(--_gc-rsp-sm, var(--_gc-rsp-xs, var(--grid-cell-row-span)))))));
+  --_grid-row-end: var(--_gc-re-2xl, var(--_gc-re-xl, var(--_gc-re-lg, var(--_gc-re-md, var(--_gc-re-sm, var(--_gc-re-xs, var(--grid-cell-row-end)))))));
+  --_grid-row-start: var(--_gc-cs-2xl, var(--_gc-cs-xl, var(--_gc-cs-lg, var(--_gc-cs-md, var(--_gc-cs-sm, var(--_gc-cs-xs, var(--grid-cell-col-start)))))));
+  --_grid-row-span: var(--_gc-csp-2xl, var(--_gc-csp-xl, var(--_gc-csp-lg, var(--_gc-csp-md, var(--_gc-csp-sm, var(--_gc-csp-xs, var(--grid-cell-col-span)))))));
+  --_grid-row-end: var(--_gc-ce-2xl, var(--_gc-ce-xl, var(--_gc-ce-lg, var(--_gc-ce-md, var(--_gc-ce-sm, var(--_gc-ce-xs, var(--grid-cell-col-end)))))));
+  --_place-self: var(--_gc-p-xs, var(--_gc-p-sm, var(--_gc-p-md, var(--_gc-p-lg, var(--_gc-p-xl, var(--_gc-p-2xl, var(--grid-cell-placement)))))));
 
   @media (width >=30rem) {
-    --_grid-cell-row-start-xs: var(--grid-cell-row-start-xs);
-    --_grid-cell-row-span-xs: var(--grid-cell-row-span-xs);
-    --_grid-cell-row-end-xs: var(--grid-cell-row-end-xs);
-    --_grid-cell-col-start-xs: var(--grid-cell-col-start-xs);
-    --_grid-cell-col-span-xs: var(--grid-cell-col-span-xs);
-    --_grid-cell-col-end-xs: var(--grid-cell-col-end-xs);
-    --_grid-cell-placement-xs: var(--grid-cell-placement-xs);
+    --_gc-rs-xs: var(--grid-cell-row-start-xs);
+    --_gc-rsp-xs: var(--grid-cell-row-span-xs);
+    --_gc-re-xs: var(--grid-cell-row-end-xs);
+    --_gc-cs-xs: var(--grid-cell-col-start-xs);
+    --_gc-csp-xs: var(--grid-cell-col-span-xs);
+    --_gc-ce-xs: var(--grid-cell-col-end-xs);
+    --_gc-p-xs: var(--grid-cell-placement-xs);
   }
 
   @media (width >=40rem) {
-    --_grid-cell-row-start-sm: var(--grid-cell-row-start-sm);
-    --_grid-cell-row-span-sm: var(--grid-cell-row-span-sm);
-    --_grid-cell-row-end-sm: var(--grid-cell-row-end-sm);
-    --_grid-cell-col-start-sm: var(--grid-cell-col-start-sm);
-    --_grid-cell-col-span-sm: var(--grid-cell-col-span-sm);
-    --_grid-cell-col-end-sm: var(--grid-cell-col-end-sm);
-    --_grid-cell-placement-sm: var(--grid-cell-placement-sm);
+    --_gc-rs-sm: var(--grid-cell-row-start-sm);
+    --_gc-rsp-sm: var(--grid-cell-row-span-sm);
+    --_gc-re-sm: var(--grid-cell-row-end-sm);
+    --_gc-cs-sm: var(--grid-cell-col-start-sm);
+    --_gc-csp-sm: var(--grid-cell-col-span-sm);
+    --_gc-ce-sm: var(--grid-cell-col-end-sm);
+    --_gc-p-sm: var(--grid-cell-placement-sm);
   }
 
   @media (width >=48rem) {
-    --_grid-cell-row-start-md: var(--grid-cell-row-start-md);
-    --_grid-cell-row-span-md: var(--grid-cell-row-span-md);
-    --_grid-cell-row-end-md: var(--grid-cell-row-end-md);
-    --_grid-cell-col-start-md: var(--grid-cell-col-start-md);
-    --_grid-cell-col-span-md: var(--grid-cell-col-span-md);
-    --_grid-cell-col-end-md: var(--grid-cell-col-end-md);
-    --_grid-cell-placement-md: var(--grid-cell-placement-md);
+    --_gc-rs-md: var(--grid-cell-row-start-md);
+    --_gc-rsp-md: var(--grid-cell-row-span-md);
+    --_gc-re-md: var(--grid-cell-row-end-md);
+    --_gc-cs-md: var(--grid-cell-col-start-md);
+    --_gc-csp-md: var(--grid-cell-col-span-md);
+    --_gc-ce-md: var(--grid-cell-col-end-md);
+    --_gc-p-md: var(--grid-cell-placement-md);
   }
 
   @media (width >=64rem) {
-    --_grid-cell-row-start-lg: var(--grid-cell-row-start-lg);
-    --_grid-cell-row-span-lg: var(--grid-cell-row-span-lg);
-    --_grid-cell-row-end-lg: var(--grid-cell-row-end-lg);
-    --_grid-cell-col-start-lg: var(--grid-cell-col-start-lg);
-    --_grid-cell-col-span-lg: var(--grid-cell-col-span-lg);
-    --_grid-cell-col-end-lg: var(--grid-cell-col-end-lg);
-    --_grid-cell-placement-lg: var(--grid-cell-placement-lg);
+    --_gc-rs-lg: var(--grid-cell-row-start-lg);
+    --_gc-rsp-lg: var(--grid-cell-row-span-lg);
+    --_gc-re-lg: var(--grid-cell-row-end-lg);
+    --_gc-cs-lg: var(--grid-cell-col-start-lg);
+    --_gc-csp-lg: var(--grid-cell-col-span-lg);
+    --_gc-ce-lg: var(--grid-cell-col-end-lg);
+    --_gc-p-lg: var(--grid-cell-placement-lg);
   }
 
   @media (width >=80rem) {
-    --_grid-cell-row-start-xl: var(--grid-cell-row-start-xl);
-    --_grid-cell-row-span-xl: var(--grid-cell-row-span-xl);
-    --_grid-cell-row-end-xl: var(--grid-cell-row-end-xl);
-    --_grid-cell-col-start-xl: var(--grid-cell-col-start-xl);
-    --_grid-cell-col-span-xl: var(--grid-cell-col-span-xl);
-    --_grid-cell-col-end-xl: var(--grid-cell-col-end-xl);
-    --_grid-cell-placement-xl: var(--grid-cell-placement-xl);
+    --_gc-rs-xl: var(--grid-cell-row-start-xl);
+    --_gc-rsp-xl: var(--grid-cell-row-span-xl);
+    --_gc-re-xl: var(--grid-cell-row-end-xl);
+    --_gc-cs-xl: var(--grid-cell-col-start-xl);
+    --_gc-csp-xl: var(--grid-cell-col-span-xl);
+    --_gc-ce-xl: var(--grid-cell-col-end-xl);
+    --_gc-p-xl: var(--grid-cell-placement-xl);
   }
 
   @media (width >=96rem) {
-    --_grid-cell-row-start-2xl: var(--grid-cell-row-start-2xl);
-    --_grid-cell-row-span-2xl: var(--grid-cell-row-span-2xl);
-    --_grid-cell-row-end-2xl: var(--grid-cell-row-end-2xl);
-    --_grid-cell-col-start-2xl: var(--grid-cell-col-start-2xl);
-    --_grid-cell-col-span-2xl: var(--grid-cell-col-span-2xl);
-    --_grid-cell-col-end-2xl: var(--grid-cell-col-end-2xl);
-    --_grid-cell-placement-2xl: var(--grid-cell-placement-2xl);
+    --_gc-rs-2xl: var(--grid-cell-row-start-2xl);
+    --_gc-rsp-2xl: var(--grid-cell-row-span-2xl);
+    --_gc-re-2xl: var(--grid-cell-row-end-2xl);
+    --_gc-cs-2xl: var(--grid-cell-col-start-2xl);
+    --_gc-csp-2xl: var(--grid-cell-col-span-2xl);
+    --_gc-ce-2xl: var(--grid-cell-col-end-2xl);
+    --_gc-p-2xl: var(--grid-cell-placement-2xl);
   }
 }
