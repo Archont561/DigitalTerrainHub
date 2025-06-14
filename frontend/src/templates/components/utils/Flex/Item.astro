@@ -1,0 +1,28 @@
+---
+import type { ComponentProps } from "astro/types";
+import type { FlexItemProps } from "./types";
+import { createStylesheetHTML } from "./utils";
+import Layout from "@layouts";
+import { clsx as cn } from "clsx";
+
+type Props = FlexItemProps & Astro.ComponentProps & ComponentProps<typeof Layout.Melt>;
+
+const { shrink, grow, base, order, placement, ...props } = Astro.props;
+
+const flexItemUUID = crypto.randomUUID();
+
+Object.assign(props, {
+    [flexItemUUID]: "",
+    class: cn(
+        "astro-flex-item",
+        props?.class,
+    )
+});
+---
+
+<Layout.Melt {...props}>
+    <slot />
+    <Fragment set:html={createStylesheetHTML({
+        shrink, grow, base, order, placement
+    }, flexItemUUID)}/>
+</Layout.Melt>
