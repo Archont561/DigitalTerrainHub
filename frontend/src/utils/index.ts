@@ -87,3 +87,8 @@ export function resolveURLTree<T>(config: T, basePath = ""): URLObject<T> {
 
     return obj;
 }
+
+export function createCSSVarName(prefix: string, ...parts: string[]) {
+    const kebabed = _.filter(parts, Boolean).map(part => _.kebabCase(part)).join("")
+    return `--${prefix}${parts.length === 0 ? "" : "-"}${kebabed}`;
+};
