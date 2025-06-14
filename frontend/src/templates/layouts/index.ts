@@ -7,10 +7,12 @@ import GreatestGrid from "./Grid/Variants/Greatest.astro";
 
 import FlexItem from "./Flex/Item.astro";
 import GridCell from "./Grid/Cell.astro";
+import GridFlexCell from "./Grid/Variants/FlexCell.astro";
 
 const Partials = {
     FlexItem,
     GridCell,
+    GridFlexCell,
 }
 
 export default {
