@@ -9,7 +9,7 @@ import Task from "./dummy/task.json";
 import User from "./dummy/user.json";
 import Workspace from "./dummy/workspace.json";
 
-import Global from "./styles/global.css?url";
+import Global from "./styles/tailwind.config.css?url";
 import OpenLayers from "./styles/openlayers.css?url";
 import Uppy from "./styles/uppy.css?url";
 

@@ -1,0 +1,21 @@
+@theme {
+    --text-*: initial;
+    --text-xs: clamp(0.75rem, calc(0.25rem * 1vw + 0.75rem), 0.875rem);
+    --text-xs--line-height: 1.5;
+    --text-sm: clamp(0.875rem, calc(0.25rem * 1vw + 0.875rem), 1rem);
+    --text-sm--line-height: 1.5;
+    --text-lg: clamp(1.125rem, calc(0.25rem * 1vw + 1.125rem), 1.25rem);
+    --text-lg--line-height: 1.5;
+    --text-xl: clamp(1.25rem, calc(0.5rem * 1vw + 1.25rem), 1.5rem);
+    --text-xl--line-height: 1.5;
+    --text-2xl: clamp(1.5rem, calc(0.5rem * 1vw + 1.5rem), 1.75rem);
+    --text-2zl--line-height: 1.5;
+    --text-3xl: clamp(1.875rem, calc(0.75rem * 1vw + 1.875rem), 2.25rem);
+    --text-3xl--line-height: 1.5;
+    --text-4xl: clamp(2.25rem, calc(0.5rem * 1vw + 2.25rem), 2.5rem);
+    --text-5xl--line-height: 1.5;
+    --text-6xl: clamp(3.75rem, calc(1.5rem * 1vw + 3.75rem), 4.5rem);
+    --text-6xl--line-height: 1.5;
+    --text-7xl: clamp(4.5rem, calc(1rem * 1vw + 4.5rem), 5rem);
+    --text-7xl--line-height: 1.5;
+}

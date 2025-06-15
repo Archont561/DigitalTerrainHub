@@ -1,9 +1,0 @@
-@import "./base.css";
-@import "./utils.css" layer(utilities);
-
-[x-cloak] { display: none !important; }
-
-button svg,
-a svg {
-  pointer-events: none;
-}

@@ -1,0 +1,33 @@
+@theme {
+    --animate-jump-in-shaking: jump-in-shaking var(--default-animation-duration, 500ms) var(--default-animation-timing-function, ease) var(--default-animation-delay, 0s) infinite;
+
+    @keyframes jump-in-shaking {
+        0% {
+            transform: translateX(0)
+        }
+
+        25% {
+            transform: translateY(-9px)
+        }
+
+        35% {
+            transform: translateY(-9px) rotate(5deg)
+        }
+
+        55% {
+            transform: translateY(-9px) rotate(-5deg)
+        }
+
+        65% {
+            transform: translateY(-9px) rotate(5deg)
+        }
+
+        75% {
+            transform: translateY(-9px) rotate(-5deg)
+        }
+
+        100% {
+            transform: translateY(0) rotate(0)
+        }
+    }
+}

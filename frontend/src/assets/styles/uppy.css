@@ -1,2 +1,2 @@
-@import "../../../node_modules/@uppy/core/dist/style.min.css";
-@import "../../../node_modules/@uppy/dashboard/dist/style.min.css";
+@import "../../../node_modules/@uppy/core/dist/style.min.css" layer(components);
+@import "../../../node_modules/@uppy/dashboard/dist/style.min.css" layer(components);
