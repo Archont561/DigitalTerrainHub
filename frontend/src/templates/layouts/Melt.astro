@@ -4,7 +4,7 @@ export const partial = true;
 import { Window, type Element as HappyElement } from "happy-dom";
 import _ from "lodash";
 
-export interface Props {
+export interface Props extends Astro.ComponentProps {
     melt?: boolean;
 }
 
