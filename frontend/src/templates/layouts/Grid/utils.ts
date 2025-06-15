@@ -79,5 +79,5 @@ export function createStylesheetHTML(
 
     const declarations = _.map(cssVars, (value, key) => `${key}: ${value};`).join("");
 
-    return `<style>[${uuid}]{${declarations}}</style>`;
+    return `<style>[uuid='${uuid}']{${declarations}}</style>`;
 }

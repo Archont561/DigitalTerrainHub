@@ -11,7 +11,7 @@ const { inline, subgrid, cols, rows, gap, contentPlacement, cellsPlacement, ...p
 const gridUUID = crypto.randomUUID();
 
 Object.assign(props, {
-  [gridUUID]: '',
+  uuid: [gridUUID],
   class: mergeCSSClasses(
     "astro-grid",
     { 
