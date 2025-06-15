@@ -14,6 +14,7 @@ const Partials = {
     FlexItem,
     GridCell,
     GridFlexCell,
+    Subgrid,
 }
 
 export default {
@@ -23,6 +24,5 @@ export default {
     Grid,
     Flex,
     GreatestGrid,
-    Subgrid,
     Partials,
 }
