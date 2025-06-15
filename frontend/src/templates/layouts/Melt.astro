@@ -1,7 +1,8 @@
 ---
+export const partial = true;
+
 import { Window, type Element as HappyElement } from "happy-dom";
 import _ from "lodash";
-
 
 export interface Props {
     melt?: boolean;
@@ -14,25 +15,31 @@ const setAttributes = (
     attrs: Record<string, unknown>,
 ) => {
     _.forEach(attrs, (value, key) => {
-        element.setAttribute(key, value as any);
+        if (element.hasAttribute(key)) {
+            const existing = element.getAttribute(key) ?? "";
+            const appended = existing ? `${existing} ${value}` : String(value);
+            element.setAttribute(key, appended);
+        } else {
+            element.setAttribute(key, value as any);
+        }
     });
 };
 
 const document = new new Window().Document();
-const root = document.createElement('div');
-const htmlToMelt = await Astro.slots.render("default");
-console.log("before", root.innerHTML);
-root.innerHTML = htmlToMelt;
-console.log("after", root.innerHTML);
+const root = document.createElement("div");
+if (Astro.slots.has('default')) {
+    root.innerHTML = await Astro.slots.render("default");
+}
 
 let html = "";
-if (melt) {
+if (!melt) {
+    console.log(root.children.length);
+    setAttributes(root, attributes);
+    html = root.outerHTML;
+} else {
     const firstElem = root.firstElementChild;
     firstElem && setAttributes(firstElem, attributes);
     html = root.innerHTML;
-} else {
-    setAttributes(root, attributes);
-    html = root.outerHTML;
 }
 ---
 
