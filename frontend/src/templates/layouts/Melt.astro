@@ -33,7 +33,6 @@ if (Astro.slots.has('default')) {
 
 let html = "";
 if (!melt) {
-    console.log(root.children.length);
     setAttributes(root, attributes);
     html = root.outerHTML;
 } else {
