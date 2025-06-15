@@ -7,4 +7,41 @@
 
 .no-spinner {
   -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.place-content-\(--place-content\) {
+  place-content: var(--place-content);
+}
+
+.place-items-\(--place-items\) {
+  place-items: var(--place-items);
+}
+
+.place-self-\(--place-self\) {
+  place-self: var(--place-self);
+}
+
+.grid-flow-\(--grid-flow\) {
+  grid-auto-flow: var(--grid-flow);
+}
+
+.flex-direction-\(--flex-direction\) {
+  flex-direction: var(--flex-direction);
+}
+
+.align-items-\(--align-items\) {
+  align-items: var(--align-items);
+}
+
+.justify-content-\(--justify-content\) {
+  justify-content: var(--justify-content);
+}
+
+.align-content-\(--align-content\) {
+  align-content: var(--align-content);
+}
+
+.align-self-\(--align-self\) {
+  align-self: var(--align-self);
 }
