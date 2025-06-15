@@ -1,5 +1,6 @@
 ---
 import { Window, type Element as HappyElement } from "happy-dom";
+import _ from "lodash";
 
 const parser = new new Window().DOMParser();
 
@@ -11,11 +12,14 @@ const { melt, ...attributes } = Astro.props;
 
 const document = parser.parseFromString(
     await Astro.slots.render("default"),
-    "text/html"
+    "text/html",
 );
 
-const setAttributes = (element: HappyElement, attrs: Record<string, unknown>) => {
-    Object.entries(attrs).forEach(([key, value]) => {
+const setAttributes = (
+    element: HappyElement,
+    attrs: Record<string, unknown>,
+) => {
+    _.forEach(attrs, (value, key) => {
         element.setAttribute(key, value as any);
     });
 };
@@ -27,7 +31,9 @@ if (melt) {
     html = document.body.innerHTML;
 } else {
     const wrapper = document.createElement("div");
-    [...document.body.children].forEach(child => wrapper.appendChild(child));
+    _.forEach(document.body.children, (child) => {
+        wrapper.appendChild(child);
+    });
     setAttributes(wrapper, attributes);
     html = wrapper.outerHTML;
 }
