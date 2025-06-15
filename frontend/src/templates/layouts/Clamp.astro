@@ -33,42 +33,82 @@ type CSSLengthKeyword =
 
 type Length = number | `${number}${CSSLengthUnit}` | CSSLengthKeyword;
 
-export interface Props extends Astro.ComponentProps, ComponentProps<typeof Melt> {
-    min: Length;
-    max: Length;
-    base: Length;
+export interface Props
+    extends Astro.ComponentProps,
+        ComponentProps<typeof Melt> {
+    minWidth: Length;
+    maxWidth: Length;
+    baseWidth: Length;
+    minHeight?: Length;
+    baseHeight?: Length;
+    maxHeight?: Length;
     asTwClasses?: boolean;
 }
 
 const {
-    min,
-    max,
-    base,
+    minWidth,
+    maxWidth,
+    baseWidth,
+    minHeight,
+    baseHeight,
+    maxHeight,
     asTwClasses = false,
     style,
     class: className,
     ...props
 } = Astro.props;
-const normalizeLength = (value: Length) =>
+
+const normalizeLength = (value: Length | undefined) =>
     typeof value === "number" ? `${value}px` : value;
 
-let styleVars = {};
+let styleHTML = "";
 let combinedClass = className;
+let clampUUID = "";
 
 if (asTwClasses) {
-    combinedClass = mergeCSSClasses(className, min, base, max);
+    combinedClass = mergeCSSClasses(
+        className,
+        minWidth,
+        baseWidth,
+        maxWidth,
+        minHeight,
+        baseHeight,
+        maxHeight,
+    );
 } else {
-    styleVars = _.mapValues({ min, base, max }, normalizeLength);
+    clampUUID = crypto.randomUUID();
+    const {
+        minWidth: minW,
+        baseWidth: baseW,
+        maxWidth: maxW,
+        minHeight: minH,
+        baseHeight: baseH,
+        maxHeight: maxH,
+    } = _.mapValues(
+        { minWidth, baseWidth, maxWidth, minHeight, baseHeight, maxHeight },
+        normalizeLength,
+    );
+
+    const widthClamp = minW && baseW && maxW
+            ? `width: clamp(${minW}, ${baseW}, ${maxW});`
+            : "";
+    const heightClamp = minH && baseH && maxH
+            ? `height: clamp(${minH}, ${baseH}, ${maxH});`
+            : "";
+
+    styleHTML = `<style> [${clampUUID}] { ${widthClamp} ${heightClamp} } </style>`;
 }
 ---
 
-<Melt {...combinedClass} {...props}>
+<Melt
+    {...{
+        ...props,
+        class: combinedClass,
+        ...(clampUUID ? { [clampUUID]: "" } : {}),
+    }}
+>
     <slot />
     <Flow.When test={!asTwClasses}>
-        <style define:vars={styleVars}>
-            * {
-                width: clamp(var(--min), var(--base), var(--max));
-            }
-        </style>
+        <Fragment set:html={styleHTML} />
     </Flow.When>
 </Melt>
