@@ -61,7 +61,7 @@ export function getGridCSSVariables(
         const isResponsive = _.isPlainObject(value) && !Array.isArray(value);
         const breakpoints = isResponsive ? value : { base: value };
 
-        _.forEach(breakpoints as any, (breakpoint, bpValue) => {
+        _.forEach(breakpoints as any, (bpValue, breakpoint) => {
             _.assign(variables, getGridCSSVariableVariants(propName, breakpoint, bpValue, propType));
         });
     });
