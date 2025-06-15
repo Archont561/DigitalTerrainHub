@@ -33,7 +33,12 @@ type CSSLengthKeyword =
     | "unset";
 
 type Length = number | `${number}${CSSLengthUnit}` | CSSLengthKeyword;
-type LengthVar = Length | [Length, Length] | [Length, Length, Length];
+type LengthObject = {
+    min?: Length;
+    base?: Length;
+    max?: Length;
+};
+type LengthVar = Length | [Length, Length] | [Length, Length, Length] | LengthObject;
 
 export interface Props
     extends Astro.ComponentProps,
@@ -44,26 +49,29 @@ export interface Props
 
 const { width, height, class: className, style, ...props } = Astro.props;
 
-function resolveLengthVars(lengthVar?: LengthVar): {
-    min?: Length;
-    base?: Length;
-    max?: Length;
-} {
-    if (_.isEmpty(lengthVar)) return {};
-    if (!_.isArray(lengthVar)) return { base: lengthVar };
+function resolveLengthVars(lengthVar?: LengthVar | LengthObject): LengthObject {
+    if (!lengthVar || _.isEmpty(lengthVar)) return {};
 
-    switch (lengthVar.length) {
-        case 2:
-            return { min: lengthVar.at(0), max: lengthVar.at(1) };
-        case 3:
-            return {
-                min: lengthVar.at(0),
-                base: lengthVar.at(1),
-                max: lengthVar.at(2),
-            };
-        default:
-            return {};
+    if (_.isNumber(lengthVar) || _.isString(lengthVar)) {
+        return { base: lengthVar };
     }
+
+    if (_.isArray(lengthVar)) {
+        switch (lengthVar.length) {
+            case 2:
+                return { min: lengthVar[0], max: lengthVar[1] };
+            case 3:
+                return {
+                    min: lengthVar[0],
+                    base: lengthVar[1],
+                    max: lengthVar[2],
+                };
+            default:
+                return {};
+        }
+    }
+
+    return lengthVar;
 }
 function normalizeLength(value: Length | undefined) {
     return _.isNumber(value) ? `${value}px` : value;
