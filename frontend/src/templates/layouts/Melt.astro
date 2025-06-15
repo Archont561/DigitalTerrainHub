@@ -10,11 +10,6 @@ export interface Props {
 
 const { melt, ...attributes } = Astro.props;
 
-const document = parser.parseFromString(
-    await Astro.slots.render("default"),
-    "text/html",
-);
-
 const setAttributes = (
     element: HappyElement,
     attrs: Record<string, unknown>,
@@ -24,6 +19,9 @@ const setAttributes = (
     });
 };
 
+const htmlToMelt = await Astro.slots.render("default");
+const document = parser.parseFromString(htmlToMelt, "text/html");
+
 let html = "";
 if (melt) {
     const firstElem = document.body.firstElementChild;
@@ -32,7 +30,7 @@ if (melt) {
 } else {
     const wrapper = document.createElement("div");
     _.forEach(document.body.children, (child) => {
-        wrapper.appendChild(child);
+        child && wrapper.appendChild(child.cloneNode(true));
     });
     setAttributes(wrapper, attributes);
     html = wrapper.outerHTML;
