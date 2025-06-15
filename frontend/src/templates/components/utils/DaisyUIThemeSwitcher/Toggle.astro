@@ -43,19 +43,22 @@ if (!darkTheme || !DaisyUIDarkThemes.includes(darkTheme)) {
     {...props}
     data-light-theme={lightTheme}
     data-dark-theme={darkTheme}
-    x-data="ToggleThemeController">
+    x-data="ToggleThemeController"
+>
     <Flow.Switch of={type}>
         <Flow.Case of={"toggle"}>
             <input
                 type="checkbox"
-                x-model="themeChangeFlag"
+                x-on:click="changeTheme($el.checked)"
+                x-ref="controller"
                 class="toggle"
             />
         </Flow.Case>
         <Flow.Case of={"checkbox"}>
             <input
                 type="checkbox"
-                x-model="themeChangeFlag"
+                x-on:click="changeTheme($el.checked)"
+                x-ref="controller"
                 class="checkbox theme-controller"
             />
         </Flow.Case>
@@ -63,7 +66,8 @@ if (!darkTheme || !DaisyUIDarkThemes.includes(darkTheme)) {
             <div class="swap">
                 <input
                     type="checkbox"
-                    x-model="themeChangeFlag"
+                    x-on:click="changeTheme($el.checked)"
+                    x-ref="controller"
                     class="toggle theme-controller"
                 />
                 <slot name="light-icon" />
@@ -77,7 +81,8 @@ if (!darkTheme || !DaisyUIDarkThemes.includes(darkTheme)) {
                 </span>
                 <input
                     type="checkbox"
-                    x-model="themeChangeFlag"
+                    x-on:click="changeTheme($el.checked)"
+                    x-ref="controller"
                     class="toggle theme-controller"
                 />
                 <span class="label-text">
@@ -90,7 +95,8 @@ if (!darkTheme || !DaisyUIDarkThemes.includes(darkTheme)) {
                 <slot name="light-icon" />
                 <input
                     type="checkbox"
-                    x-model="themeChangeFlag"
+                    x-on:click="changeTheme($el.checked)"
+                    x-ref="controller"
                     class="toggle theme-controller"
                 />
                 <slot name="dark-icon" />
@@ -100,7 +106,8 @@ if (!darkTheme || !DaisyUIDarkThemes.includes(darkTheme)) {
             <label class="toggle text-base-content">
                 <input
                     type="checkbox"
-                    x-model="themeChangeFlag"
+                    x-on:click="changeTheme($el.checked)"
+                    x-ref="controller"
                     class="theme-controller"
                 />
                 <slot name="light-icon" />
@@ -108,25 +115,38 @@ if (!darkTheme || !DaisyUIDarkThemes.includes(darkTheme)) {
             </label>
         </Flow.Case>
     </Flow.Switch>
-</>
+</div>
 
 <script>
     window.addEventListener("alpine:init", () => {
         window.Alpine.data("ToggleThemeController", () => ({
-            theme: window.Alpine.$persist('none').as("daisyUITheme").using(sessionStorage),
-            themeChangeFlag: false,
+            theme: window.Alpine.$persist("none")
+                .as("daisyUITheme")
+                .using(sessionStorage),
 
             init() {
+                //@ts-ignore
+                const mediaQuery = window.matchMedia(
+                    "(prefers-color-scheme: dark)",
+                );
+                const mediaChangeTheme = (flag: boolean) => {
+                    this.changeTheme(flag);
+                    (this.$refs.controller as HTMLInputElement).checked = flag;
+                };
+                this.theme === "none" && mediaChangeTheme(mediaQuery.matches);
+                (this.$refs.controller as HTMLInputElement).checked = this.theme === this.$el.dataset.darkTheme
                 document.documentElement.dataset.theme = this.theme;
-                const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-                mediaQuery.matches && (this.themeChangeFlag = true);
-                mediaQuery.addEventListener('change', e => { 
-                        this.themeChangeFlag = e.matches;
+                mediaQuery.addEventListener("change", (e) => {
+                    mediaChangeTheme(e.matches);
                 });
-                this.$watch("themeChangeFlag", (value) => {
-                    const theme = value ? this.$el.dataset.darkTheme : this.$el.dataset.lightTheme;
-                    theme && (this.theme = theme) && (document.documentElement.dataset.theme = theme);
-                })
+            },
+            changeTheme(flag: boolean) {
+                const theme = flag
+                    ? this.$root.dataset.darkTheme
+                    : this.$root.dataset.lightTheme;
+                document.documentElement.dataset.theme = theme;
+                //@ts-ignore
+                this.theme = theme;
             },
         }));
     });

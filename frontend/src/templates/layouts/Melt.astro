@@ -2,7 +2,6 @@
 import { Window, type Element as HappyElement } from "happy-dom";
 import _ from "lodash";
 
-const parser = new new Window().DOMParser();
 
 export interface Props {
     melt?: boolean;
@@ -19,21 +18,21 @@ const setAttributes = (
     });
 };
 
+const document = new new Window().Document();
+const root = document.createElement('div');
 const htmlToMelt = await Astro.slots.render("default");
-const document = parser.parseFromString(htmlToMelt, "text/html");
+console.log("before", root.innerHTML);
+root.innerHTML = htmlToMelt;
+console.log("after", root.innerHTML);
 
 let html = "";
 if (melt) {
-    const firstElem = document.body.firstElementChild;
+    const firstElem = root.firstElementChild;
     firstElem && setAttributes(firstElem, attributes);
-    html = document.body.innerHTML;
+    html = root.innerHTML;
 } else {
-    const wrapper = document.createElement("div");
-    _.forEach(document.body.children, (child) => {
-        child && wrapper.appendChild(child.cloneNode(true));
-    });
-    setAttributes(wrapper, attributes);
-    html = wrapper.outerHTML;
+    setAttributes(root, attributes);
+    html = root.outerHTML;
 }
 ---
 
