@@ -2,7 +2,7 @@
 import type { ComponentProps } from "astro/types";
 import type { GridCellProps } from "./types";
 import { createStylesheetHTML } from "./utils";
-import { clsx as cn } from "clsx";
+import { clsx as mergeCSSClasses } from "clsx";
 import Layout from "@layouts";
 
 export type Props = GridCellProps & Astro.ComponentProps & ComponentProps<typeof Layout.Melt>;
@@ -12,7 +12,7 @@ const gridCellUUID = crypto.randomUUID();
 
 Object.assign(props, {
   [gridCellUUID]: '',
-  class: cn(
+  class: mergeCSSClasses(
     "astro-grid-cell",
     props?.class
   ),

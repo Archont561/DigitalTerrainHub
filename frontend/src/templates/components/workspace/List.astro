@@ -3,7 +3,7 @@ import * as Flow from "@astropub/flow";
 import { DjangoURLs } from "@assets";
 import { Icon } from "astro-icon/components";
 import { Forms, Utils, Workspace } from "@components";
-import { clsx as cn } from "clsx";
+import { clsx as mergeCSSClasses } from "clsx";
 
 const workspaceURL = `${DjangoURLs.api.pyodm.workspaces("")}?format=astro`;
 
@@ -27,7 +27,7 @@ if (!workspaces.length) {
 }
 
 Object.assign(props, {
-    class: cn(
+    class: mergeCSSClasses(
         className,
     ),
 });

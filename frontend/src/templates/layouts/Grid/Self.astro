@@ -2,7 +2,7 @@
 import type { ComponentProps } from "astro/types";
 import type { GridProps } from "./types";
 import { createStylesheetHTML } from "./utils";
-import { clsx as cn } from "clsx";
+import { clsx as mergeCSSClasses } from "clsx";
 import Layout from "@layouts";
 
 export type Props = GridProps & Astro.ComponentProps & ComponentProps<typeof Layout.Melt>;
@@ -12,7 +12,7 @@ const gridUUID = crypto.randomUUID();
 
 Object.assign(props, {
   [gridUUID]: '',
-  class: cn(
+  class: mergeCSSClasses(
     "astro-grid",
     { 
       "inline": inline,

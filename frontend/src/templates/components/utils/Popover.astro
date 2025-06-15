@@ -1,6 +1,6 @@
 ---
 import * as Flow from "@astropub/flow";
-import { clsx as cn } from "clsx";
+import { clsx as mergeCSSClasses } from "clsx";
 import { Window } from 'happy-dom';
 
 type PopoverType = "default" | "focus" | "anchor";
@@ -46,7 +46,7 @@ function getDropdownClasses(placement: PopoverPlacement): string {
 }
 
 Object.assign(props, {
-    class: cn(
+    class: mergeCSSClasses(
         "dropdown",
         "apperance-none",
         getDropdownClasses(placement),
@@ -115,17 +115,17 @@ const popoverContentInnerHTML = contentEl?.innerHTML || "";
             <div tabindex="0" role="button" class={popoverTriggerClass}
                 set:html={popoverTriggerInnerHTML}
                 {...popoverTriggerAttributes}></div>
-            <div tabindex="0" class={cn('dropdown-content', popoverContentClass)}
+            <div tabindex="0" class={mergeCSSClasses('dropdown-content', popoverContentClass)}
                 set:html={popoverContentInnerHTML}
                 {...popoverContentAttributes}></div>
         </div>
     </Flow.Case>
     <Flow.Case default>
         <details {...props}>
-            <summary class={cn("apperance-none block", popoverTriggerClass)}
+            <summary class={mergeCSSClasses("apperance-none block", popoverTriggerClass)}
                 set:html={popoverTriggerInnerHTML}
                 {...popoverTriggerAttributes}></summary>
-            <div class={cn('dropdown-content', popoverContentClass)}
+            <div class={mergeCSSClasses('dropdown-content', popoverContentClass)}
                 set:html={popoverContentInnerHTML}
                 {...popoverContentAttributes}></div>
         </details>

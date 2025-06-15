@@ -3,7 +3,7 @@ import type { ComponentProps } from "astro/types";
 import type { FlexProps } from "./types";
 import Layout from "@layouts";
 import { createStylesheetHTML } from "./utils";
-import { clsx as cn } from "clsx";
+import { clsx as mergeCSSClasses } from "clsx";
 
 type Props = FlexProps & Astro.ComponentProps & ComponentProps<typeof Layout.Melt>;
 
@@ -13,7 +13,7 @@ const flexUUID = crypto.randomUUID();
 
 Object.assign(props, {
     [flexUUID]: "",
-    class: cn(
+    class: mergeCSSClasses(
         "astro-flex",
         { "inline": inline },
         props?.class,
