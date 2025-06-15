@@ -1,7 +1,6 @@
 ---
 import type { ComponentProps } from "astro/types";
 import Melt from "./Melt.astro";
-import * as Flow from "@astropub/flow";
 import { clsx as mergeCSSClasses } from "clsx";
 import _ from "lodash";
 
@@ -32,83 +31,78 @@ type CSSLengthKeyword =
     | "unset";
 
 type Length = number | `${number}${CSSLengthUnit}` | CSSLengthKeyword;
+type LengthVar = Length | [Length, Length] | [Length, Length, Length];
 
 export interface Props
     extends Astro.ComponentProps,
         ComponentProps<typeof Melt> {
-    minWidth: Length;
-    maxWidth: Length;
-    baseWidth: Length;
-    minHeight?: Length;
-    baseHeight?: Length;
-    maxHeight?: Length;
-    asTwClasses?: boolean;
+    width?: LengthVar;
+    height?: LengthVar;
+}
+
+const { width, height, class: className, style, ...props } = Astro.props;
+
+function resolveLengthVars(lengthVar?: LengthVar): {
+    min?: Length;
+    base?: Length;
+    max?: Length;
+} {
+    if (_.isEmpty(lengthVar)) return {};
+    if (!_.isArray(lengthVar)) return { base: lengthVar };
+
+    switch (lengthVar.length) {
+        case 2:
+            return { min: lengthVar.at(0), max: lengthVar.at(1) };
+        case 3:
+            return {
+                min: lengthVar.at(0),
+                base: lengthVar.at(1),
+                max: lengthVar.at(2),
+            };
+        default:
+            return {};
+    }
+}
+function normalizeLength(value: Length | undefined) {
+    return _.isNumber(value) ? `${value}px` : value;
 }
 
 const {
-    minWidth,
-    maxWidth,
-    baseWidth,
-    minHeight,
-    baseHeight,
-    maxHeight,
-    asTwClasses = false,
+    min: minWidth,
+    base: baseWidth,
+    max: maxWidth,
+} = resolveLengthVars(width);
+const {
+    min: minHeight,
+    base: baseHeight,
+    max: maxHeight,
+} = resolveLengthVars(height);
+
+const combinedClass = mergeCSSClasses(className, {
+    "min-w-(--min-width)": minWidth,
+    "w-(--base-width)": baseWidth,
+    "max-w-(--max-width)": maxWidth,
+    "min-h-(--min-height]": minHeight,
+    "w-(--base-height)": baseHeight,
+    "max-w-(--max-height)": maxHeight,
+});
+
+const combinedStyle = mergeCSSClasses(
     style,
-    class: className,
-    ...props
-} = Astro.props;
-
-const normalizeLength = (value: Length | undefined) =>
-    typeof value === "number" ? `${value}px` : value;
-
-let styleHTML = "";
-let combinedClass = className;
-let clampUUID = "";
-
-if (asTwClasses) {
-    combinedClass = mergeCSSClasses(
-        className,
-        minWidth,
-        baseWidth,
-        maxWidth,
-        minHeight,
-        baseHeight,
-        maxHeight,
-    );
-} else {
-    clampUUID = crypto.randomUUID();
-    const {
-        minWidth: minW,
-        baseWidth: baseW,
-        maxWidth: maxW,
-        minHeight: minH,
-        baseHeight: baseH,
-        maxHeight: maxH,
-    } = _.mapValues(
-        { minWidth, baseWidth, maxWidth, minHeight, baseHeight, maxHeight },
-        normalizeLength,
-    );
-
-    const widthClamp = minW && baseW && maxW
-            ? `width: clamp(${minW}, ${baseW}, ${maxW});`
-            : "";
-    const heightClamp = minH && baseH && maxH
-            ? `height: clamp(${minH}, ${baseH}, ${maxH});`
-            : "";
-
-    styleHTML = `<style> [${clampUUID}] { ${widthClamp} ${heightClamp} } </style>`;
-}
+    _.map(
+        _.pickBy({
+            "min-width": minWidth,
+            "base-width": baseWidth,
+            "max-width": maxWidth,
+            "min-height": minHeight,
+            "base-height": baseHeight,
+            "max-height": maxHeight,
+        }),
+        (value, key) => `--${key}: ${normalizeLength(value as any)};`,
+    ).join(""),
+);
 ---
 
-<Melt
-    {...{
-        ...props,
-        class: combinedClass,
-        ...(clampUUID ? { [clampUUID]: "" } : {}),
-    }}
->
+<Melt {...{ ...props, class: combinedClass, style: combinedStyle }}>
     <slot />
-    <Flow.When test={!asTwClasses}>
-        <Fragment set:html={styleHTML} />
-    </Flow.When>
 </Melt>
