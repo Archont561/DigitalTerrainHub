@@ -1,37 +1,54 @@
 ---
 import type { ComponentProps } from "astro/types";
 import type { GridProps } from "./types";
-import { createStylesheetHTML } from "./utils";
+import { getGridCSSVariables } from "./utils";
 import { clsx as mergeCSSClasses } from "clsx";
 import Layout from "@layouts";
 
-export type Props = GridProps & Astro.ComponentProps & ComponentProps<typeof Layout.Melt>;
+export type Props = GridProps &
+  Astro.ComponentProps &
+  ComponentProps<typeof Layout.Melt>;
 
-const { inline, subgrid, cols, rows, gap, contentPlacement, cellsPlacement, ...props } = Astro.props;
-const gridUUID = crypto.randomUUID();
+const {
+  inline,
+  subgrid,
+  cols,
+  rows,
+  gap,
+  contentPlacement,
+  cellsPlacement,
+  newColSize,
+  newRowSize,
+  newCellAutoPlacement,
+  class: className,
+  style,
+  ...props
+} = Astro.props;
 
-Object.assign(props, {
-  uuid: [gridUUID],
-  class: mergeCSSClasses(
-    "astro-grid",
-    { 
-      "inline": inline,
-      "subgrid": subgrid === "both",
-      "row": subgrid === "col",
-      "col": subgrid === "row",
-    },
-    props?.class
-  ),
-});
+const gridClasses = mergeCSSClasses(
+  className,
+  "astro-responsive-grid",
+  inline ? "inline-grid" : "grid",
+  {
+    "grid-cols-subgrid": subgrid && subgrid !== "row",
+    "grid-rows-subgrid": subgrid && subgrid !== "col",
+    "grid-rows-(--grid-rows)": subgrid !== "row" && rows,
+    "grid-cols-(--grid-cols)": subgrid !== "col" && cols,
+    "gap-(--grid-gap)": gap,
+    "place-content-(--place-content)": contentPlacement,
+    "place-items-(--place-items)": cellsPlacement,
+    "auto-rows-(--auto-rows)": newRowSize,
+    "auto-cols-(--auto-cols)": newColSize,
+    "grid-flow-(--grid-flow)": newCellAutoPlacement,
+  },
+);
+
+const gridStyles = mergeCSSClasses(style, getGridCSSVariables({
+  props: { cols, rows, gap, contentPlacement, cellsPlacement, newColSize, newRowSize, newCellAutoPlacement },
+  asInlineStyle: true,
+}));
 ---
 
-<Layout.Melt {...props}>
+<Layout.Melt class={gridClasses} {...props} style={gridStyles}>
   <slot />
-  <Fragment set:html={createStylesheetHTML({
-    cols, rows, gap, contentPlacement, cellsPlacement
-  }, gridUUID)} />
-  <style is:global>
-    @import "./grid.css";
-  </style>
 </Layout.Melt>
-

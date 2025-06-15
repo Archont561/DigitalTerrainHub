@@ -5,54 +5,64 @@ import { createCSSVarName } from "@utils";
 
 type PropConverter = (value: any, propName?: string) => Record<string, string>;
 
-const getBreakpointSuffix = (bp:  string) => bp === "base" ? "" : `-${bp}`;
+const getBreakpointSuffix = (bp: string) => bp === "base" ? "" : `-${bp}`;
+const createAstroGridVarName = (...parts: string[]) => createCSSVarName("astro", ...parts);
 
 const propConverters: Record<string, PropConverter> = new Proxy({
+    default: (value, propName) => {
+        const varName = {
+            colStart: createAstroGridVarName("col", "start"),
+            colSpan: createAstroGridVarName("col", "span"),
+            colEnd: createAstroGridVarName("col", "end"),
+            rowStart: createAstroGridVarName("row", "start"),
+            rowSpan: createAstroGridVarName("row", "span"),
+            rowEnd: createAstroGridVarName("row", "end"),
+            newRowSize: createCSSVarName("auto", "rows"),
+            newColSize: createCSSVarName("auto", "cols"),
+            newCellAutoPlacement: createCSSVarName("grid", "flow"),
+        }[propName || ""] || "";
+        return { [varName]: String(value) };
+    },
     gap: (value) => ({
-        [createCSSVarName("grid", "gap")]: _.isNumber(value) ? `calc(var(--spacing)*${value})` : String(value),
+        [createAstroGridVarName("grid", "gap")]: _.isNumber(value) ? `calc(var(--spacing)*${value})` : String(value),
     }),
     cols: (value) => ({
-        [createCSSVarName("grid", "cols")]: Array.isArray(value)
+        [createAstroGridVarName("grid", "cols")]: _.isArray(value)
             ? value.join(" ")
             : `repeat(${value}, minmax(0, 1fr))`,
     }),
     rows: (value) => ({
-        [createCSSVarName("grid", "rows")]: Array.isArray(value)
+        [createAstroGridVarName("grid", "rows")]: _.isArray(value)
             ? value.join(" ")
             : `repeat(${value}, minmax(0, 1fr))`,
     }),
     placement: (value) => ({
         // @ts-ignore
-        [createCSSVarName("grid", "cell", "placement")]: GridPlacementMap[value],
+        [createAstroGridVarName("place", "self")]: GridPlacementMap[value],
     }),
     cellsPlacement: (value) => ({
         // @ts-ignore
-        [createCSSVarName("grid", "cells", "placement")]: GridPlacementMap[value],
+        [createAstroGridVarName("place", "items")]: GridPlacementMap[value],
     }),
     contentPlacement: (value) => ({
         // @ts-ignore
-        [createCSSVarName("grid", "content", "placement")]: GridContentPlacementMap[value],
+        [createAstroGridVarName("place", "content")]: GridContentPlacementMap[value],
     }),
 }, {
     get(target, prop: string): PropConverter {
         //@ts-ignore
-        if (prop in target) return target[prop];
-        return (value, propType = "") => ({
-            [createCSSVarName("grid", propType, prop || "custom")]: String(value),
-        });
+        return (prop in target) ? target[prop] : target.default;
     },
-});
+})
 
-function getGridCSSVariableVariants(propName: string, breakpoint: string, value: any, propType = ""): Record<string, string> {
-    const propConverter = propConverters[propName];
-    const variables = propConverter(value, propType);
-    return _.mapKeys(variables, (_val, key) => `${key}${getBreakpointSuffix(breakpoint)}`);
-}
+type GetGridCSSVariablesOptions = {
+    props: GridProps | GridCellProps;
+    asInlineStyle?: boolean;
+};
 
-export function getGridCSSVariables(
-    props: GridProps | GridCellProps,
-    propType = ""
-): Record<string, string> {
+export function getGridCSSVariables({
+    props, asInlineStyle = false
+}: GetGridCSSVariablesOptions): Record<string, string> | string {
     const variables: Record<string, string> = {};
 
     _.forEach(props, (value, propName) => {
@@ -62,22 +72,12 @@ export function getGridCSSVariables(
         const breakpoints = isResponsive ? value : { base: value };
 
         _.forEach(breakpoints as any, (bpValue, breakpoint) => {
-            _.assign(variables, getGridCSSVariableVariants(propName, breakpoint, bpValue, propType));
+            const propConverter = propConverters[propName];
+            const gridCSSVariables = propConverter(bpValue, propName);;
+            _.assign(variables, _.mapKeys(gridCSSVariables,
+                (_val, key) => `${key}${getBreakpointSuffix(breakpoint)}`));
         });
     });
 
-    return variables;
-}
-
-
-export function createStylesheetHTML(
-    props: GridProps | GridCellProps,
-    uuid: UUID,
-    type = ""
-): string {
-    const cssVars = getGridCSSVariables(props, type);
-
-    const declarations = _.map(cssVars, (value, key) => `${key}: ${value};`).join("");
-
-    return `<style>[uuid='${uuid}']{${declarations}}</style>`;
+    return asInlineStyle ? _.map(variables, (value, key) => `${key}: ${value};`).join("") : variables;
 }

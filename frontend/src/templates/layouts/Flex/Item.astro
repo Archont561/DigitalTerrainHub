@@ -1,28 +1,46 @@
 ---
 import type { ComponentProps } from "astro/types";
 import type { FlexItemProps } from "./types";
-import { createStylesheetHTML } from "./utils";
 import Layout from "@layouts";
+import { getFlexCSSVariables } from "./utils";
 import { clsx as mergeCSSClasses } from "clsx";
 
-type Props = FlexItemProps & Astro.ComponentProps & ComponentProps<typeof Layout.Melt>;
+type Props = FlexItemProps &
+    Astro.ComponentProps &
+    ComponentProps<typeof Layout.Melt>;
 
-const { shrink, grow, base, order, placement, ...props } = Astro.props;
+const {
+    shrink,
+    grow,
+    base,
+    order,
+    placement,
+    class: className,
+    style,
+    ...props
+} = Astro.props;
 
-const flexItemUUID = crypto.randomUUID();
 
-Object.assign(props, {
-    [flexItemUUID]: "",
-    class: mergeCSSClasses(
-        "astro-flex-item",
-        props?.class,
-    )
-});
+const flexItemClasses = mergeCSSClasses(
+    className,
+    "astro-responsive-flex-item",
+    {
+        "shrink-(--shrink)": shrink,
+        "grow-(--grow)": grow,
+        "basis-(--basis)": base,
+        "align-self-(--align-self)": placement,
+    },
+);
+
+const flexItemStyles = mergeCSSClasses(
+    style,
+    getFlexCSSVariables({
+        props: { shrink, grow, base, order, placement },
+        asInlineStyle: true,
+    }),
+);
 ---
 
-<Layout.Melt {...props}>
+<Layout.Melt class={flexItemClasses} {...props} style={flexItemStyles}>
     <slot />
-    <Fragment set:html={createStylesheetHTML({
-        shrink, grow, base, order, placement
-    }, flexItemUUID)}/>
 </Layout.Melt>

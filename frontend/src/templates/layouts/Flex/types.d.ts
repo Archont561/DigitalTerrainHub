@@ -13,6 +13,7 @@ export interface FlexProps {
     placement?: ResponsiveProp<FlexPlacementMapKeys>;
     multilinePlacement?: ResponsiveProp<FlexMultilinePlacement>;
     direction?: ResponsiveProp<FlexDirection>;
+    wrap?: "normal" | "reverse";
 }
 
 export interface FlexItemProps {
