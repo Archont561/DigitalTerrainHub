@@ -92,3 +92,7 @@ export function createCSSVarName(prefix: string, ...parts: string[]) {
     const kebabed = _.filter(parts, Boolean).map(part => _.kebabCase(part)).join("")
     return `--${prefix}${parts.length === 0 ? "" : "-"}${kebabed}`;
 };
+
+export function toTitleCase(str: string) {
+    return _.startCase(_.toLower(str));
+};
