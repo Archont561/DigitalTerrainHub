@@ -4,6 +4,7 @@ import { Icon } from "astro-icon/components";
 import Layouts from "@layouts";
 import { Utils, Tabs } from "@components";
 import * as Flow from "@astropub/flow";
+import { Button } from "@codemint/astro-ui";
 
 type TabType = {
     name: string;
@@ -48,92 +49,116 @@ const tabs: TabType[] = [
 ---
 
 <Layouts.Base title="Profile">
-    <div x-data="{ currentMainTab: 'Home', isCurrentTab(el, tab) { return tab === el.dataset.tab; } }" 
-        class="bg-base-100 text-base-content h-[100dvh] max-h[100dvh] w-[100dvw] max-w-[100dvw] grid grid-cols-[auto_1fr] overflow-clip">
-
-        <aside class="w-64 flex flex-col p-6 border-none">
-            <div class="flex items-center justify-start gap-3 mb-6 ">
-                <div class="btn btn-circle btn-ghost">
-                    <Icon name="heroicons:bars-4"/>
-                </div>
-                <img class="w-20 h-10" src="https://picsum.photos/100/200" alt="Logo" />
-                <h1 class="text-xl font-bold">DTH</h1>
-            </div>
-
-            <div class="flex items-center justify-start gap-3 mb-6 -mx-2 p-2 border-1 rounded-box">
-                <div class="avatar">
-                    <div class="w-12 rounded-full">
-                        <img src="https://picsum.photos/100" alt="User Avatar" />
-                    </div>
-                </div>
-                <div>
-                    <p class="font-semibold">Fillio Team</p>
-                    <p class="text-sm text-gray-500">hello@fillio.com</p>
-                </div>
-                <label class="justify-self-end">
-                    <Icon name="mdi:chevron-up"/>
-                </label>
-            </div>
-
-            <h2 class="uppercase text-xs font-semibold text-gray-500 mb-2">Menu</h2>
-            <menu class="menu w-full flex flex-col gap-1">
-                <Flow.For of={tabs}>{tab => 
-                    <li><a data-tab={tab.name}
-                        class="flex items-center gap-2"
-                        x-bind:class="isCurrentTab($el, currentMainTab) && 'menu-active'"
-                        x-on:click="currentMainTab = $el.dataset.tab">
-                        <Icon class="size-8" name={tab.icon}/>
-                        <span>{tab.name}</span>
-                    </a></li>
-                }</Flow.For>
-            </menu>
-        </aside>
-        
-        <main class="grid grid-rows-[auto_1fr] w-full max-h-[100dvh]">
-            <header class="flex justify-end items-center gap-6 p-6">
-                <input type="text" 
-                    placeholder="Search here..." 
-                    class="input input-bordered max-w-x" />
+    <div class="contents">
+        <Layouts.Clamp melt width={{ base: "100dvw", max: "100dvw" }} height={{ base: "100dvh", max: "100dvh" }}>
+            <Layouts.Grid melt cols={["auto", "1fr"]} rows={["auto", "1fr"]}>
+                <div x-data="{ currentMainTab: 'Home', isCurrentTab(el, tab) { return tab === el.dataset.tab; } }" 
+                    class="bg-base-100 text-base-content overflow-clip">
+            
+                    <Layouts.Partials.Subgrid melt axis="row" rowSpan={2}>
+                        <aside class="w-64 p-6 border-none">
+                            <Layouts.Flex placement={"start center"} gap={3} class="mb-6">
+                                <Button modifier="circle" buttonStyle="ghost" size="md" class="p-1">
+                                    <Icon class="size-full" name="heroicons:bars-4"/>
+                                </Button>
+                                <img class="w-20 h-10" src="https://picsum.photos/100/200" alt="Logo" />
+                                <h1 class="text-xl font-bold">DTH</h1>
+                            </Layouts.Flex>
+                
+                            <div>
+                                <Layouts.Flex placement={"start center"} gap={3} class="mb-6 -mx-2 p-2 border-1 rounded-box">
+                                    <div class="avatar">
+                                        <div class="w-12 rounded-full">
+                                            <img src="https://picsum.photos/100" alt="User Avatar" />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold">Fillio Team</p>
+                                        <p class="text-sm text-gray-500">hello@fillio.com</p>
+                                    </div>
+                                    <Icon class="size-full" name="mdi:chevron-up"/>
+                                </Layouts.Flex>
                     
-                <div class="flex items-center gap-2">
-                    <Utils.DaisyUIThemeSwitcher.Toggle 
-                        darkTheme="night" 
-                        lightTheme="bumblebee"
-                    />
-
-                    <Icon role="button" class="btn btn-circle btn-ghost size-10 p-1" name="mdi:bell"/>
-                    
-                    <Utils.Popover placement="bottom end" openOnHover={true}>
-                        <label class="avatar online size-10" slot="popover-trigger">
-                            <div class="w-10 rounded-full">
-                                <img src="https://picsum.photos/200" alt="User Avatar" />
+                                <h2 class="uppercase text-xs font-semibold mb-2 text-primary">Menu</h2>
+                                
+                                <Layouts.Flex direction={"col"} gap={1}>
+                                    <menu class="menu">
+                                        <Flow.For of={tabs}>{tab => 
+                                            <li>
+                                                <Layouts.Flex melt placement={"start center"} gap={2}>
+                                                    <a data-tab={tab.name}
+                                                        x-bind:class="isCurrentTab($el, currentMainTab) && 'menu-active'"
+                                                        x-on:click="currentMainTab = $el.dataset.tab">
+                                                        <Icon class="size-8" name={tab.icon}/>
+                                                        <span>{tab.name}</span>
+                                                    </a>
+                                                </Layouts.Flex>
+                                            </li>
+                                        }</Flow.For>
+                                    </menu>
+                                </Layouts.Flex>
                             </div>
-                        </label>
-                        <menu slot="popover-content" class="menu menu-compact gap-1 w-30 border-1 rounded-box bg-base-100">
-                            <li><a>Set Theme</a></li>
-                            <li><form method="POST" action={DjangoURLs.api.user.auth.logout()}>
-                                <input type="submit" value="Logout">
-                            </form></li>
-                        </menu>
-                    </Utils.Popover>
+                        </aside>
+                    </Layouts.Partials.Subgrid>
+                    
+                    <Layouts.Partials.Subgrid melt rowSpan={2}>
+                        <main class="min-h-0">
+                            <Layouts.Flex melt placement={"end center"} gap={6}>
+                                <header class="p-6">
+                                    <input type="text" 
+                                        placeholder="Search here..." 
+                                        class="input input-bordered max-w-x" />
+                                        
+                                    <Layouts.Flex gap={2} placement={"center center"}>
+                                        <Utils.DaisyUIThemeSwitcher.Toggle 
+                                            darkTheme="night" 
+                                            lightTheme="bumblebee"
+                                        />
+                                        
+                                        <Button modifier="circle" buttonStyle="ghost" size="lg" class="p-1">
+                                            <Icon class="size-full" name="mdi:bell"/>
+                                        </Button>
+                                        
+                                        <Utils.Popover placement="bottom end" openOnHover={true}>
+                                            <label slot="popover-trigger" class="avatar online size-10">
+                                                <div class="w-10 rounded-full">
+                                                    <img src="https://picsum.photos/200" alt="User Avatar" />
+                                                </div>
+                                            </label>
+                                            <menu slot="popover-content" class="menu menu-compact gap-1 w-30 border-1 rounded-box bg-base-100">
+                                                <li><a>Set Theme</a></li>
+                                                <li><form method="POST" action={DjangoURLs.api.user.auth.logout()}>
+                                                    <input type="submit" value="Logout">
+                                                </form></li>
+                                            </menu>
+                                        </Utils.Popover>
+                                    </Layouts.Flex>
+                                </header>
+                    
+                            </Layouts.Flex>
+                            <div class="bg-base-300 rounded-tl-3xl min-h-0 overflow-y-auto">
+                                <Flow.For of={tabs}>{tab => 
+                                    <div>
+                                        <tab.Component data-tab={tab.name} 
+                                            x-show="isCurrentTab($el, currentMainTab)"
+                                            class="flex flex-col p-10"
+                                            x-cloak={tab.name !== defaultTab ? true : undefined}
+                                            {...tab.props}>
+                                        </tab.Component>
+                                    </div>
+                                }</Flow.For>
+                            </div>
+                        </main>
+                    </Layouts.Partials.Subgrid>
+            
+                    <Utils.Modal id="accountDeletionConfirmModal" type="btn trigger">
+                        <Button slot="trigger-btn">
+                            <Icon name="heroicons:x-mark-16-solid"/>
+                        </Button>
+                        <div>TO IMPLEMENT</div>
+                    </Utils.Modal>
                 </div>
-            </header>
-
-            <div class="bg-base-300 rounded-tl-3xl overflow-y-auto">
-                <Flow.For of={tabs}>{tab => 
-                    <tab.Component data-tab={tab.name} 
-                        class="size-full p-10 flex flex-col"
-                        x-show="isCurrentTab($el, currentMainTab)"
-                        x-cloak={tab.name !== defaultTab ? true : undefined}
-                        {...tab.props}>
-                    </tab.Component>
-                }</Flow.For>
-            </div>
-        </main>
-
-        <Utils.Modal id="accountDeletionConfirmModal" type="btn trigger">
-            <button class="btn" slot="trigger-btn"><Icon name="heroicons:x-mark-16-solid"/></button>
-            <div>TO IMPLEMENT</div>
-        </Utils.Modal>
+            </Layouts.Grid>
+        </Layouts.Clamp>
     </div>
 </Layouts.Base>
