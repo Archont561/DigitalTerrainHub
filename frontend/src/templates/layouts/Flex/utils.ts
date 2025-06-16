@@ -19,6 +19,11 @@ const createAstroFlexVarName = (...parts: string[]) => createCSSVarName("astro",
 
 const propConverters: Record<string, PropConverter> = new Proxy({
     default: (value, propName) => ({}),
+    direction: (value) => {
+        let flexDirValue = value;
+        if (_.startsWith("col", value)) flexDirValue = flexDirValue.replace("col", "column");
+        return { [createAstroFlexVarName("flex", "direction")]: flexDirValue }
+    },
     gap: (value) => ({
         [createAstroFlexVarName('flex', 'gap')]: _.isNumber(value) ? `calc(var(--spacing)*${value})` : value,
     }),
