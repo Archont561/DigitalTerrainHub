@@ -58,14 +58,6 @@ Object.assign(props, {
 const anchorRandId = crypto.randomUUID(); 
 
 
-if (!Astro.slots.has("popover-trigger")) {
-    throw new Error("No trigger defined for Popup");
-}
-
-if (!Astro.slots.has("popover-content")) {
-    throw new Error("No contend defined for Popup");
-}
-
 function extractAttributes(el: HTMLElement, omit: string[]) {
     const attributes = {} as Record<string, any>;
     el?.getAttributeNames()
