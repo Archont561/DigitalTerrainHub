@@ -72,7 +72,7 @@ def populate_database(sender, **kwargs):
         OptionsPreset.objects.get_or_create(user=None, name=name, defaults={"options": options})
 
     for output in ODMTaskOutputs:
-        NodeODMTaskOption.objects.get_or_create(
+        NodeODMTaskOutput.objects.get_or_create(
             name=output.get("name"),
             description=output.get("description"),
             group=output.get("group"),
@@ -111,12 +111,12 @@ def populate_database(sender, **kwargs):
 
 
     for _ in range(5):
-        workspace = Workspace.objects.get_or_create(
+        workspace, _ = Workspace.objects.get_or_create(
             user=user,
         )
 
         # Step 4: Create NodeODM Tasks for each workspace
-        task = NodeODMTask.objects.get_or_create(
+        task, _ = NodeODMTask.objects.get_or_create(
             workspace=workspace,
             status=random.choice([
                 TaskStatus.QUEUED, 
@@ -130,7 +130,7 @@ def populate_database(sender, **kwargs):
 
         # Step 5: Create GCPPoints
         for i in range(5):
-            gcp_point = GCPPoint.objects.get_or_create(
+            gcp_point, created = GCPPoint.objects.get_or_create(
                 workspace=workspace,
                 label=f"GCP_Point_{i}",
                 location=Point(
@@ -148,13 +148,14 @@ def populate_database(sender, **kwargs):
             )
 
             # Validate and save the GCPPoint
-            try:
-                gcp_point.clean()
-            except ValidationError as e:
-                print(f"Validation error while saving GCPPoint for workspace {workspace.name}: {e}")
-            else:
-                gcp_point.save()
-                print(f"Created GCPPoint for workspace {workspace.name}")
+            if created:
+                try:
+                    gcp_point.clean()
+                except ValidationError as e:
+                    print(f"Validation error while saving GCPPoint for workspace {workspace.name}: {e}")
+                else:
+                    gcp_point.save()
+                    print(f"Created GCPPoint for workspace {workspace.name}")
 
 
         # Step 6: Add some more dummy tasks or other data as needed
