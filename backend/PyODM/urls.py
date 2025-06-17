@@ -11,7 +11,7 @@ router = DefaultRouter()
 router.register(r'workspaces', WorkspaceViewSet, basename='workspace')
 router.register(r'presets', OptionsPresetViewSet, basename='presets')
 router.register(r'task-options', NodeODMTaskOptionViewSet, basename='task-option')
-router.register(r'task-all-outputs', NodeODMTaskOptionViewSet, basename='task-output')
+router.register(r'task-all-outputs', NodeODMTaskOutputViewSet, basename='task-output')
 
 workspaces_router = NestedDefaultRouter(router, r'workspaces', lookup='workspace')
 workspaces_router.register(r'tasks', TaskViewSet, basename='workspace-tasks')
