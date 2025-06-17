@@ -1,0 +1,60 @@
+{
+    "Multispectral": {
+        "auto-boundary": true,
+        "radiometric-calibration": "camera"
+    },
+    "Volume Analysis": {
+        "auto-boundary": true,
+        "dsm": true,
+        "dem-resolution": "2",
+        "pc-quality": "high"
+    },
+    "3D Model": {
+        "auto-boundary": true,
+        "mesh-octree-depth": "12",
+        "use-3dmesh": true,
+        "pc-quality": "high",
+        "mesh-size": "300000"
+    },
+    "Buildings": {
+        "auto-boundary": true,
+        "mesh-size": "300000",
+        "feature-quality": "high",
+        "pc-quality": "high"
+    },
+    "Forest": {
+        "auto-boundary": true,
+        "min-num-features": "18000",
+        "use-3dmesh": true,
+        "feature-quality": "medium"
+    },
+    "DSM + DTM": {
+        "auto-boundary": true,
+        "dsm": true,
+        "dtm": true
+    },
+    "Field": {
+        "sfm-algorithm": "planar",
+        "fast-orthophoto": true,
+        "matcher-neighbors": 4
+    },
+    "Fast Orthophoto": {
+        "auto-boundary": true,
+        "fast-orthophoto": true
+    },
+    "High Resolution": {
+        "auto-boundary": true,
+        "dsm": true,
+        "pc-quality": "high",
+        "dem-resolution": "2.0",
+        "orthophoto-resolution": "2.0"
+    },
+    "Point of Interest": {
+        "mesh-size": 300000,
+        "use-3dmesh": true
+    },
+    "Default": {
+        "auto-boundary": true,
+        "dsm": true
+    }
+}

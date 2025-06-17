@@ -66,8 +66,10 @@ def download_task_on_complete(sender, task, **kwargs):
 
 
 @receiver(post_migrate)
-def create_dummy_data(sender, **kwargs):
-    for name, options in settings.GLOBAL_OPTION_PRESETS.items():
+def populate_database(sender, **kwargs):
+    from PyODM.assets import ODMOptionsPresets
+
+    for name, options in ODMOptionsPresets.items():
         OptionsPreset.objects.get_or_create(user=None, name=name, defaults={"options": options})
 
     if not settings.DEBUG: return
