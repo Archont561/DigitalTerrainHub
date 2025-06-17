@@ -155,11 +155,11 @@ class GCPPoint(models.Model):
 
 
 class NodeODMTaskOption(models.Model):
-    name = models.CharField(max_length=30, unique=True)
+    name = models.CharField(max_length=40, unique=True)
     opt_type = models.CharField(max_length=10)
     description = models.TextField(blank=True)
-    group = models.CharField(max_length=100)
-    default_value = models.CharField(max_length=10)
+    group = models.CharField(max_length=30)
+    default_value = models.CharField(max_length=20)
     domain = models.JSONField()
 
     def __str__(self):
