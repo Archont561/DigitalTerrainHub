@@ -138,11 +138,9 @@ class NodeODMTaskOptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = NodeODMTaskOption
         fields = '__all__'
-        read_only_fields = fields
 
 
 class NodeODMTaskOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = NodeODMTaskOutput
         fields = '__all__'
-        read_only_fields = fields
