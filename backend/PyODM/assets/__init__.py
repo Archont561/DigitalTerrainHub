@@ -2,12 +2,15 @@ import json, re
 from itertools import chain
 from django.conf import settings
 from pyodm import Node, exceptions
+from pathlib import Path
 
-with open("./odm_options_grouping.json") as opts_grouping_file, \
-    open("./odm_outputs.json") as outputs_file, \
-    open("./odm_options_presets.json") as presets_file:
+assets_dir = Path(__file__).parent
+
+with open(assets_dir / "odm_options_grouping.json") as opts_grouping_file, \
+    open(assets_dir / "odm_outputs.json") as outputs_file, \
+    open(assets_dir / "odm_options_presets.json") as presets_file:
     ODMTaskOutputs = json.load(outputs_file)
-    ODMOptionsPresets = json.load(presets_filr)
+    ODMOptionsPresets = json.load(presets_file)
     odm_opts_grouping = json.load(opts_grouping_file)
 
 option_to_group = {opt: group for group, opts in odm_opts_grouping.items() for opt in opts}
