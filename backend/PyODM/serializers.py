@@ -49,6 +49,16 @@ class NodeODMTaskSerializer(serializers.ModelSerializer):
         if preset_name == "custom":
             if not options:
                 raise serializers.ValidationError({"options": "Options are required for custom preset."})
+            
+            option_qs = NodeODMTaskOption.objects.filter(name__in=options.keys())
+            option_definitions = {opt.name: opt for opt in option_qs}
+            for key, value in options.items():
+                option_def = option_definitions.get(key, None)
+                if not option_def:
+                    raise serializers.ValidationError({f"options.{key}": "Unknown option."})
+                if not option_def.is_valid_value(value):
+                    raise serializers.ValidationError({f"options.{key}": f"Invalid value for '{key}'."})
+            
             validated_data["options"] = options
         elif not preset_name:
             raise serializers.ValidationError({"options_preset": "Preset is required."})
