@@ -1,3 +1,5 @@
+import mimetypes
+
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -91,6 +93,21 @@ class TaskViewSet(viewsets.ModelViewSet):
             return Response(output)
         except odm_exceptions.OdmError as e:
             return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=True, methods=["get"], url_path="download-asset/(?P<asset>.+)")
+    def download_asset(self, request, pk=None, asset=None):
+        task = self.get_object()
+        asset_path = task.get_asset_path(asset)
+        if asset_path is None:
+            return Response({ "error": "Invalid asset name" }, status=status.HTTP_404_NOT_FOUND)
+        
+        if not asset_path.exists() or not asset_path.is_file():
+            raise Response({ "error": "File not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        mime_type, _ = mimetypes.guess_type(str(asset_path))
+        response = FileResponse(asset_path.open("rb"), content_type=mime_type)
+        response['Content-Disposition'] = f'inline; filename="{asset_path.name}"'
+        return response
 
 
 @method_decorator(csrf_exempt, name='dispatch')
