@@ -112,7 +112,7 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
         file_path = base_dir / subdir / filename
 
         if not file_path.exists() or not file_path.is_file():
-            raise Http404("File not found")
+            return Response({ "error": "File not found" }, status=status.HTTP_404_NOT_FOUND)
 
         mime_type, _ = mimetypes.guess_type(str(file_path))
         response = FileResponse(file_path.open("rb"), content_type=mime_type)
