@@ -98,7 +98,12 @@ class NodeODMTask(models.Model):
     def delete(self, *args, **kwargs):
         self.get_odm_task().delete()
         return super().delete(*args, **kwargs)
-        
+
+    def get_asset_path(asset):
+        try:
+            return NODEODM_TASKS_DIR / str(task.uuid) / NodeODMTaskOutput.objects.get(asset).path 
+        except NodeODMTaskOutput.DoesNotExist:
+            return None 
 
 class GCPPointManager(models.Manager):
     def to_txt(self, filepath, queryset=None):
