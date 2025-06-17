@@ -12,6 +12,7 @@ services:
       - ./backend/Payment:/app/Payment
       - ./backend/PyODM:/app/PyODM
       - ./backend/User:/app/User
+      - odm_tasks_dir:/app/media/tasks
     depends_on:
       - postgres
       # - nodeodm
@@ -40,6 +41,8 @@ services:
     image: opendronemap/nodeodm
     ports:
       - "3000:3000"
+    volumes:
+      - odm_tasks_dir:/var/www/data
     networks:
       - backend-network
 
@@ -56,6 +59,7 @@ services:
 
 volumes:
   pgdata:
+  odm_tasks_dir:
 
 networks:
   backend-network:
