@@ -155,3 +155,25 @@ class GCPPoint(models.Model):
                 raise ValidationError({
                     'image_name': f"Image '{self.image_name}' does not exist in the workspace."
                 })
+
+
+class NodeODMTaskOption(models.Model):
+    name = models.CharField(max_length=30, unique=True)
+    opt_type = models.CharField(max_length=10)
+    description = models.TextField(blank=True)
+    group = models.CharField(max_length=100)
+    default_value = models.CharField(max_length=10)
+    domain = models.JSONField()
+
+    def __str__(self):
+        return self.name
+
+
+class NodeODMTaskOutput(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(blank=True, null=True)
+    group = models.CharField(max_length=100, blank=True, null=True)
+    path = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name

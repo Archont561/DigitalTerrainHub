@@ -1,0 +1,104 @@
+{
+    "DATASET-STAGE": [
+        "bg-removal",
+        "camera-lens",
+        "cameras",
+        "gcp",
+        "geo",
+        "gps-accuracy",
+        "primary-band",
+        "sky-removal",
+        "use-exif",
+        "video-limit",
+        "video-resolution"
+    ],
+    "SPLIT": [
+        "sm-cluster",
+        "sm-no-align",
+        "split",
+        "split-image-groups",
+        "split-overlap"
+    ],
+    "OPEN_SFM": [
+        "feature-quality",
+        "feature-type",
+        "force-gps",
+        "ignore-gsd",
+        "matcher-neighbors",
+        "matcher-order",
+        "matcher-type",
+        "min-num-features",
+        "pc-quality",
+        "radiometric-calibration",
+        "rolling-shutter",
+        "rolling-shutter-readout",
+        "sfm-algorithm",
+        "sfm-no-partial",
+        "skip-band-alignment",
+        "use-fixed-camera-params",
+        "use-hybrid-bundle-adjustment"
+    ],
+    "OPEN_MVS": [
+        "pc-filter",
+        "pc-skip-geometric"
+    ],
+    "FILTERPOINTS": [
+        "auto-boundary",
+        "auto-boundary-distance",
+        "boundary",
+        "fast-orthophoto",
+        "pc-sample"
+    ],
+    "MESHING": [
+        "mesh-octree-depth",
+        "mesh-size",
+        "skip-3dmodel"
+    ],
+    "MVS_TEXTURING": [
+        "gltf",
+        "texturing-keep-unseen-faces",
+        "texturing-single-material",
+        "texturing-skip-global-seam-leveling",
+        "use-3dmesh"
+    ],
+    "GEOREFERENCING": [
+        "align",
+        "crop",
+        "pc-classify",
+        "pc-copc",
+        "pc-csv",
+        "pc-ept",
+        "pc-las",
+        "pc-rectify"
+    ],
+    "DEM": [
+        "cog",
+        "dem-decimation",
+        "dem-euclidean-map",
+        "dem-gapfill-steps",
+        "dem-resolution",
+        "dsm",
+        "dtm",
+        "smrf-scalar",
+        "smrf-slope",
+        "smrf-threshold",
+        "smrf-window"
+    ],
+    "ORTHOPHOTO": [
+        "build-overviews",
+        "orthophoto-compression",
+        "orthophoto-cutline",
+        "orthophoto-kmz",
+        "orthophoto-no-tiled",
+        "orthophoto-png",
+        "orthophoto-resolution",
+        "skip-orthophoto"
+    ],
+    "REPORT": [
+        "skip-report"
+    ],
+    "POSTPROCESS": [
+        "3d-tiles",
+        "copy-to"
+    ]
+}

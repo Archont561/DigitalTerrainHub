@@ -3,7 +3,7 @@ from django.db.models.signals import post_save, post_delete, post_migrate, Signa
 from django.conf import settings
 from django.dispatch import receiver
 from django_tus.signals import tus_upload_finished_signal
-from .models import Workspace, OptionsPreset, NodeODMTask, GCPPoint
+from .models import Workspace, OptionsPreset, NodeODMTask, GCPPoint, NodeODMTaskOption, NodeODMTaskOutput
 from pathlib import Path
 from PIL import Image
 
@@ -66,10 +66,28 @@ def task_on_complete(sender, task, **kwargs):
 
 @receiver(post_migrate)
 def populate_database(sender, **kwargs):
-    from PyODM.assets import ODMOptionsPresets
+    from PyODM.assets import ODMOptionsPresets, ODMTaskOutputs, ODMTaskOptions
 
     for name, options in ODMOptionsPresets.items():
         OptionsPreset.objects.get_or_create(user=None, name=name, defaults={"options": options})
+
+    for output in ODMTaskOutputs:
+        NodeODMTaskOption.objects.get_or_create(
+            name=output.get("name"),
+            description=output.get("description"),
+            group=output.get("group"),
+            path=output.get("path"),
+        )
+
+    for option in ODMTaskOptions:
+        NodeODMTaskOption.objects.get_or_create(
+            name=option.get("name"),
+            description=option.get("help"),
+            opt_type=option.get("type"),
+            group=option.get("group"),
+            default_value=option.get("value"),
+            domain=option.get("domain"),
+        )
 
     if not settings.DEBUG: return
 

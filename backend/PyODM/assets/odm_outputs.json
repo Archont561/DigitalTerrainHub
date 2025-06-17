@@ -1,0 +1,177 @@
+[
+    {
+        "name": "Task Log",
+        "description": null,
+        "group": null,
+        "path": "log.json"
+    },
+    {
+        "name": "Task Output Log",
+        "description": null,
+        "group": null,
+        "path": "task_output.txt"
+    },
+    {
+        "name": "Images Metadata",
+        "description": null,
+        "group": null,
+        "path": "images.json"
+    },
+    {
+        "name": "Cameras Metadata",
+        "description": null,
+        "group": null,
+        "path": "cameras.json"
+    },
+    {
+        "name": "OpenSfM Depthmaps",
+        "description": "Dense Point Cloud",
+        "group": "opensfm",
+        "path": "opensfm/depthmaps/merged.ply"
+    },
+    {
+        "name": "Point Cloud projection",
+        "description": null,
+        "group": "point_cloud",
+        "path": "odm_georeferencing/proj.txt"
+    },
+    {
+        "name": "Images Centers Coords",
+        "description": "georeferenced centers of images",
+        "group": "point_cloud",
+        "path": "odm_georeferencing/coords.txt"
+    },
+    {
+        "name": "ODM Mesh",
+        "description": "A 3D mesh",
+        "group": "meshing",
+        "path": "odm_meshing/odm_mesh.ply"
+    },
+    {
+        "name": "ODM Mesh Log",
+        "description": "Output of the meshing task. May point out errors.",
+        "group": "meshing",
+        "path": "odm_meshing/odm_meshing_log.txt"
+    },
+    {
+        "name": "3D Textured Model",
+        "description": "Textured mesh",
+        "group": "texturing",
+        "path": "odm_texturing/odm_textured_model.obj"
+    },
+    {
+        "name": "3D Textured GEO Model",
+        "description": "Georeferenced textured mesh",
+        "group": "texturing",
+        "path": "odm_texturing/odm_textured_geo_model.obj"
+    },
+    {
+        "name": "3D Textured Model Images",
+        "description": "Associated textured images used by the model",
+        "group": "texturing",
+        "path": "odm_texturing/texture_N.jpg"
+    },
+    {
+        "name": "Point Cloud Log",
+        "description": null,
+        "group": "point_cloud",
+        "path": "odm_georeferencing/odm_georeferencing_log.txt"
+    },
+    {
+        "name": "Point Cloud UTM Log",
+        "description": "Log for the extract_utm portion",
+        "group": "point_cloud",
+        "path": "odm_georeferencing/odm_georeferencing_utm_log.txt"
+    },
+    {
+        "name": "Point Cloud PLY",
+        "description": "A georeferenced dense point cloud",
+        "group": "point_cloud",
+        "path": "odm_georeferencing/odm_georeferenced_model.ply"
+    },
+    {
+        "name": "Point Cloud LAZ",
+        "description": "LAZ format point cloud",
+        "group": "point_cloud",
+        "path": "odm_georeferencing/odm_georeferenced_model.laz"
+    },
+    {
+        "name": "Point Cloud CSV",
+        "description": "XYZ format point cloud",
+        "group": "point_cloud",
+        "path": "odm_georeferencing/odm_georeferenced_model.csv"
+    },
+    {
+        "name": "Point Cloud CSV",
+        "description": "XYZ format point cloud",
+        "group": "point_cloud",
+        "path": "odm_georeferencing/odm_georeferenced_model.csv"
+    },
+    {
+        "name": "Point Cloud Boundary",
+        "description": null,
+        "group": "point_cloud",
+        "path": "odm_georeferencing/odm_georeferenced_model.bounds.geojson"
+    },
+    {
+        "name": "Orthophoto PNG",
+        "description": "Orthophoto image (no coordinates)",
+        "group": "orthophoto",
+        "path": "odm_orthophoto/odm_orthophoto.png"
+    },
+    {
+        "name": "Orthophoto TIF",
+        "description": "Orthophoto GeoTiff",
+        "group": "orthophoto",
+        "path": "odm_orthophoto/odm_orthophoto.tif"
+    },
+    {
+        "name": "Orthophoto Log",
+        "description": "Orthophoto log file",
+        "group": "orthophoto",
+        "path": "odm_orthophoto/odm_orthophoto_log.txt"
+    },
+    {
+        "name": "Orthophoto GDAL Log",
+        "description": "Log for georeferencing the png file",
+        "group": "orthophoto",
+        "path": "odm_orthophoto/gdal_translate_log.txt"
+    },
+    {
+        "name": "DTM",
+        "description": "Digital Terrain Model Geotiff - the ground",
+        "group": "point_cloud",
+        "path": "odm_dem/dtm.tif"
+    },
+    {
+        "name": "DSM",
+        "description": "Digital Surface Model Geotiff - the tops of everything",
+        "group": "point_cloud",
+        "path": "odm_dem/dsm.tif"
+    },
+    {
+        "name": "Task Statistics",
+        "description": null,
+        "group": "report",
+        "path": "odm_report/stats.json"
+    },
+    {
+        "name": "Cameras Positions",
+        "description": null,
+        "group": "report",
+        "path": "odm_report/shots.geojson"
+    },
+    {
+        "name": "Task Report",
+        "description": null,
+        "group": "report",
+        "path": "odm_report/report.pdf"
+    },
+    {
+        "name": "Cameras Numpy Mapping",
+        "description": null,
+        "group": "report",
+        "path": "odm_report/camera_mappings.npz"
+    }
+]
+
