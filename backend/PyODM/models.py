@@ -168,6 +168,27 @@ class NodeODMTaskOption(models.Model):
     def __str__(self):
         return self.name
 
+    def is_valid_value(self, value):
+        match self.domain:
+            case "bool":
+                return value in [True, False]
+            case "integer":
+                return isinstance(value, int)
+            case "positive integer":
+                return isinstance(value, int) and value > 0
+            case "integer: 1 <= x <= 14":
+                return isinstance(value, int) and 1 <= value <= 14
+            case "json":
+                return isinstance(value, dict) or isinstance(value, list)
+            case "enum":
+                return isinstance(value, list)
+            case "float":
+                return isinstance(value, float)
+            case domain if domain in ["float > 0.0", "positive float"]:
+                return isinstance(value, float) and value > 0.0
+            case "string":
+                return isinstance(value, str)
+
 
 class NodeODMTaskOutput(models.Model):
     name = models.CharField(max_length=255, unique=True)
