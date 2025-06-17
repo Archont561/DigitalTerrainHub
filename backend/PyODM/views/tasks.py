@@ -16,7 +16,7 @@ from pyodm.types import TaskStatus
 
 from PyODM.models import NodeODMTask, OptionsPreset, Workspace
 from PyODM.serializers import NodeODMTaskSerializer
-from PyODM.signals import odm_task_download
+from PyODM.signals import odm_task_completed
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -115,6 +115,6 @@ class TaskProcessingEndWebhookView(APIView):
         task.save()
 
         if task_status_code == TaskStatus.COMPLETED.value:
-            odm_task_download.send(sender=task.__class__, instance=task)
+            odm_task_completed.send(sender=task.__class__, instance=task)
 
         return HttpResponse(status=status.HTTP_200_OK)

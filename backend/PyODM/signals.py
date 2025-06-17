@@ -57,12 +57,11 @@ def start_monitoring_task_status(sender, instance, created, **kwargs):
             uuid=instance.uuid,
         )
 
-odm_task_download = Signal()
+odm_task_completed = Signal()
 
-@receiver(odm_task_download, sender=NodeODMTask)
-def download_task_on_complete(sender, task, **kwargs):
-    task_output_dir = task.get_task_output_dir()
-    task.download_on_complete(destination=task_output_dir)
+@receiver(odm_task_completed, sender=NodeODMTask)
+def task_on_complete(sender, task, **kwargs):
+    ...
 
 
 @receiver(post_migrate)
