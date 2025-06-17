@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Workspace, NodeODMTask, OptionsPreset, GCPPoint
+from .models import Workspace, NodeODMTask, OptionsPreset, GCPPoint, NodeODMTaskOption
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -89,6 +89,7 @@ class OptionsPresetSerializer(serializers.ModelSerializer):
     def get_preset_type(self, obj):
         return "global" if obj.user is None else "custom"
 
+
 class AvailablePresetSerializer(OptionsPresetSerializer):
     class Meta(OptionsPresetSerializer.Meta):
         fields = ['id', 'name', 'preset_type']
@@ -121,3 +122,10 @@ class GCPPointSerializer(serializers.ModelSerializer):
             'location',
             'image',
         ]
+
+
+class NodeODMTaskOptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NodeODMTaskOption
+        fields = '__all__'
+        read_only_fields = fields
