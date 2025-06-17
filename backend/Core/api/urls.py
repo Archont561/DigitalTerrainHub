@@ -17,7 +17,6 @@ urlpatterns = [
     path('user/', include('User.urls', namespace="user")),
     path('payment/', include('Payment.urls', namespace="payment")),
     path('pyodm/', include('PyODM.urls', namespace="pyodm")),
-    path('map/', include('MapViewer.urls', namespace="map")),
     path("schema/", include([
         path('', SpectacularAPIView.as_view(), name='schema'),
         path('swagger-ui/', SpectacularSwaggerView.as_view(url_name='api:schema'), name='swagger-ui'),
