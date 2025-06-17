@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Workspace, NodeODMTask, OptionsPreset, GCPPoint, NodeODMTaskOption
+from .models import Workspace, NodeODMTask, OptionsPreset, GCPPoint, NodeODMTaskOption, NodeODMTaskOutput
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -137,5 +137,12 @@ class GCPPointSerializer(serializers.ModelSerializer):
 class NodeODMTaskOptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = NodeODMTaskOption
+        fields = '__all__'
+        read_only_fields = fields
+
+
+class NodeODMTaskOutputSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NodeODMTaskOutput
         fields = '__all__'
         read_only_fields = fields
