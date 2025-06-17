@@ -98,15 +98,7 @@ class NodeODMTask(models.Model):
     def delete(self, *args, **kwargs):
         self.get_odm_task().delete()
         return super().delete(*args, **kwargs)
-
-    def get_task_output_dir(self):
-        task_output_dir = self.workspace.get_dir() / settings.OUTPUT_DIR_NAME / str(self.uuid)
-        task_output_dir.mkdir(parents=True, exist_ok=True)
-        return task_output_dir
-
-    def download_on_complete(self, *args, **kwargs):
-        return self.get_odm_task().download_assets(*args, **kwargs)
-
+        
 
 class GCPPointManager(models.Manager):
     def to_txt(self, filepath, queryset=None):
