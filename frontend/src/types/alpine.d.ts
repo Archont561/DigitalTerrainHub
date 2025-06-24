@@ -5,7 +5,6 @@ export {};
 declare global {
     namespace alpine {        
         type Component<T> = AlpineComponent<T>;
-        type Alpine = Alpine.Alpine;
 
         interface GlobalIntervalStore {
             interval: number;
@@ -17,12 +16,6 @@ declare global {
             update(): void;
             setIntervalValue(interval: number): void;
             resume(): void;
-        }
-
-        interface AlpineManager {
-            init(): void;
-            findComponent(name: string): Object | null;
-            loadAlpineGlobalState(): void;
         }
 
         namespace Components {

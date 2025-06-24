@@ -1,12 +1,10 @@
 import type { Alpine } from 'alpinejs'
-import AlpineManager from './AlpineManager'
+import GlobalIntervalStore from "./GlobalIntervalStore";
 import persist from "@alpinejs/persist";
 
 export default (Alpine: Alpine) => {
     Alpine.plugin(persist);
-    window.Alpine = {
-        ...Alpine,
-        Manager: new AlpineManager(Alpine),
-    }
-    window.Alpine.Manager.init();
+    Alpine.store("globalInterval", GlobalIntervalStore);
+    Alpine.magic("find", () => (query: string) => document.querySelector(query));
+    window.Alpine = Alpine;
 }

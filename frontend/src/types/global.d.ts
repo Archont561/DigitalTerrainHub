@@ -11,9 +11,7 @@ export { };
 
 declare global {
     interface Window {
-        Alpine: import('alpinejs').Alpine & {
-            Manager: alpine.AlpineManager;
-        };
+        Alpine: import('alpinejs').Alpine;
         htmx: typeof import("htmx.org");
         utils: import("./utils").Utils;
     }
