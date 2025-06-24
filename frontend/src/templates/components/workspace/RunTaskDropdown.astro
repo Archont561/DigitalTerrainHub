@@ -2,6 +2,7 @@
 import * as Flow from "@astropub/flow";
 import { DjangoURLs } from "@assets";
 import { Utils } from "@components";
+import { toTitleCase } from "@utils";
 
 export interface Props extends Astro.HTMLComponentProps<"div"> {
     workspace?: DjangoAPI.Workspace;
@@ -22,8 +23,6 @@ const { globalPresets, userPresets } = presets.reduce<{
   else if (preset.preset_type === "custom") acc.userPresets.push(preset);
   return acc;
 }, { globalPresets: [], userPresets: [] });
-
-const toTitle = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 ---
 
 <Utils.Dropdown
@@ -55,13 +54,13 @@ const toTitle = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
                   
                     <optgroup label="Global Presets">
                       <Flow.For of={globalPresets}>
-                        {preset => <option value={preset.name}>{toTitle(preset.name)}</option>}
+                        {preset => <option value={preset.name}>{toTitleCase(preset.name)}</option>}
                       </Flow.For>
                     </optgroup>
                     <optgroup label="User Presets">
                       <Flow.When test={userPresets.length > 0}>
                         <Flow.For of={userPresets}>
-                          {preset => <option value={preset.name}>{toTitle(preset.name)}</option>}
+                          {preset => <option value={preset.name}>{toTitleCase(preset.name)}</option>}
                         </Flow.For>
                         <Fragment slot="else">
                           <option disabled>No user presets available</option>
