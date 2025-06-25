@@ -56,8 +56,6 @@
     "dotenv": "^16.5.0",
     "happy-dom": "^17.6.3",
     "heroicons-astro": "^1.0.4",
-    "htmx-ext-sse": "^2.2.3",
-    "htmx.org": "^1.9.12",
     "lit": "^3.3.0",
     "luxon": "^3.6.1",
     "ol": "^10.5.0",

@@ -21,22 +21,13 @@ const csrfToken = Astro.request.headers.get("x-csrftoken") || "";
 		<link rel="stylesheet" href={StylesURLs.Global}>
 		<script>
 			import Utils from "@lib/utils";
-			import { DateTime } from "luxon";
-			import htmx from "htmx.org"; 
-			import "htmx-ext-sse"; 
 			
 			(async () => {
-				// @ts-ignore
-				window.luxon = { DateTime };
-				window.htmx = htmx;
 				window.utils = Utils;
-				
-				const htmxExtension = "https://unpkg.com/htmx-ext-form-json";
-				await import(/* @vite-ignore */ htmxExtension);
 			})();
 		</script>
 	</head>
-	<body hx-headers={`{"X-CSRFToken": "${csrfToken}"}`} hx-ext="form-json" {...props}>
+	<body {...props}>
 		<slot />
 		<Notifications.ToastContainer 
 			notificationChannelURL={DjangoURLs.sseEventChannel("notifications").self()} />
