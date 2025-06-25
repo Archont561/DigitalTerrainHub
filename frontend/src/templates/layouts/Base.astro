@@ -17,6 +17,7 @@ const csrfToken = Astro.request.headers.get("x-csrftoken") || "";
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href={SVGURLs.Favicon} />
 		<meta name="generator" content={Astro.generator} />
+		<meta name="csrfToken" content={csrfToken} />
 		<title>{title}</title>
 		<link rel="stylesheet" href={StylesURLs.Global}>
 		<script>
