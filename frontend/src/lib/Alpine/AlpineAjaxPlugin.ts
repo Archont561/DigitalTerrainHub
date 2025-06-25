@@ -15,6 +15,7 @@ type SwapStrategy =
     | "append"
     | "after"
     | "none"
+    | "delete"
     ;
 
 type AjaxAlpineElement<T extends HTMLElement> = ElementWithXAttributes<T> & {
@@ -204,7 +205,7 @@ export default function ajaxPlugin(Alpine: Alpine) {
         }
 
         const httpMethods = ["get", "post", "put", "delete", "patch"];
-        const swapStrategies = ["after", "append", "before", "inside", "none", "prepend", "replace"];
+        const swapStrategies = ["after", "append", "before", "inside", "none", "prepend", "replace", "delete"];
 
         httpMethods.forEach(method => {
             //@ts-ignore
@@ -345,6 +346,9 @@ function performSwap(el: HTMLElement, strategy: SwapStrategy, htmlString: string
             el.insertAdjacentHTML("afterend", htmlString);
             break;
         case "none":
+            break;
+        case "delete":
+            el.remove();
             break;
         default:
             throw new Error(`Invalid Merge Strategy: ${strategy}`);
