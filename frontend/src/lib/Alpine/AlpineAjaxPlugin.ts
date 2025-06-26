@@ -7,16 +7,8 @@ import type {
 import { isEqual } from "lodash";
 import { replaceElementContent, replaceElement } from "@utils";
 
-type SwapStrategy =
-    | "before"
-    | "replace"
-    | "prepend"
-    | "inside"
-    | "append"
-    | "after"
-    | "none"
-    | "delete"
-    ;
+type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+type SwapStrategy = "after" | "append" | "before" | "inside" | "none" | "prepend" | "replace" | "delete";
 
 type AjaxAlpineElement<T extends HTMLElement> = ElementWithXAttributes<T> & {
     _x_ajax_headers?: Record<string, any>;
@@ -38,18 +30,32 @@ type AjaxDirectiveCallback = (
 ) => {};
 
 interface AjaxMagicsOptions {
-    method?: string;
+    method?: HTTPMethod;
     target?: HTMLElement;
     swapStrategy?: SwapStrategy;
     headers?: Record<string, any>;
     values?: Record<string, any>;
 }
 
+type AjaxMagicFunction = {
+    (ajaxURL: string, ajaxOptions?: AjaxMagicsOptions): void;
+} & {
+    [M in Lowercase<HTTPMethod> | HTTPMethod]: AjaxMagicFunction & {
+        [S in SwapStrategy]: AjaxMagicFunction;
+    };
+};
+
 interface AjaxSettings {
     headers: Record<string, any>;
     swapStrategy: SwapStrategy;
     transitions: boolean;
     defaultListenerDelay: number;
+}
+
+declare module "alpinejs" {
+    interface Magics<T> {
+        $ajax: AjaxMagicFunction;
+    }
 }
 
 const DEFAULT_AJAX_HEADERS = {
@@ -197,7 +203,7 @@ export default function ajaxPlugin(Alpine: Alpine) {
             ajaxOptions.swapStrategy && (el._x_ajax_swap_strategy = ajaxOptions.swapStrategy);
             ajaxOptions.values && (el._x_ajax_values = ajaxOptions.values);
 
-            const method = ajaxOptions.method?.toUpperCase() || "GET";
+            const method = (ajaxOptions.method?.toUpperCase() || "GET") as HTTPMethod;
             const shouldJsonify = el.hasAttribute("x-jsonify");
             const ajaxHandler = createAjaxHandler(el, method, shouldJsonify);
             el._x_ajax_magic_previous = { ajaxURL, ajaxOptions, ajaxHandler };
@@ -210,7 +216,7 @@ export default function ajaxPlugin(Alpine: Alpine) {
         httpMethods.forEach(method => {
             //@ts-ignore
             const ajaxMethod = ajax[method] = ajax[method.toUpperCase()] = (ajaxURL, ajaxOptions = {}) =>
-                ajax(ajaxURL, { ...ajaxOptions, method: method.toUpperCase() });
+                ajax(ajaxURL, { ...ajaxOptions, method: method.toUpperCase() as HTTPMethod });
 
             swapStrategies.forEach(swapStrategy => {
                 //@ts-ignore
