@@ -5,7 +5,7 @@ import type {
     ElementWithXAttributes,
 } from 'alpinejs';
 import { isEqual } from "lodash";
-import { replaceElementContent, replaceElement } from "@utils";
+import { replaceElementContent, replaceElement, makeClassCallable } from "@utils";
 
 type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 type SwapStrategy = "after" | "append" | "before" | "inside" | "none" | "prepend" | "replace" | "delete";
@@ -16,11 +16,6 @@ type AjaxAlpineElement<T extends HTMLElement> = ElementWithXAttributes<T> & {
     _x_ajax_swap_strategy?: SwapStrategy;
     _x_ajax_values?: Record<string, any>;
     _x_ajax_eventSource?: EventSource;
-    _x_ajax_magic_previous?: { 
-        ajaxURL: string;
-        ajaxOptions: AjaxMagicsOptions;
-        ajaxHandler: CallableFunction;
-    };
 };
 
 type AjaxDirectiveCallback = (
@@ -29,21 +24,6 @@ type AjaxDirectiveCallback = (
     utilities: DirectiveUtilities
 ) => {};
 
-interface AjaxMagicsOptions {
-    method?: HTTPMethod;
-    target?: HTMLElement;
-    swapStrategy?: SwapStrategy;
-    headers?: Record<string, any>;
-    values?: Record<string, any>;
-}
-
-type AjaxMagicFunction = {
-    (ajaxURL: string, ajaxOptions?: AjaxMagicsOptions): void;
-} & {
-    [M in Lowercase<HTTPMethod> | HTTPMethod]: AjaxMagicFunction & {
-        [S in SwapStrategy]: AjaxMagicFunction;
-    };
-};
 
 interface AjaxSettings {
     headers: Record<string, any>;
@@ -54,7 +34,9 @@ interface AjaxSettings {
 
 declare module "alpinejs" {
     interface Magics<T> {
-        $ajax: AjaxMagicFunction;
+        $ajax: AjaxRequestBuilder & {
+            (...args: Parameters<AjaxRequestBuilder["send"]>): ReturnType<AjaxRequestBuilder["send"]>;
+        };
     }
 }
 
@@ -189,45 +171,8 @@ export default function ajaxPlugin(Alpine: Alpine) {
         }
     } as AjaxDirectiveCallback);
 
-    Alpine.magic("ajax", (el: AjaxAlpineElement<HTMLElement>) => {
-        function ajax(ajaxURL: string, ajaxOptions: AjaxMagicsOptions = {}) {
-            if (
-                el._x_ajax_magic_previous && 
-                isEqual(ajaxURL, el._x_ajax_magic_previous.ajaxURL) &&
-                isEqual(ajaxOptions, el._x_ajax_magic_previous.ajaxOptions)
-            ) {
-                el._x_ajax_magic_previous.ajaxHandler(Alpine.evaluate(el, ajaxURL));
-                return;
-            }
-
-            ajaxOptions.target && (el._x_ajax_target = ajaxOptions.target);
-            ajaxOptions.headers && (el._x_ajax_headers = ajaxOptions.headers);
-            ajaxOptions.swapStrategy && (el._x_ajax_swap_strategy = ajaxOptions.swapStrategy);
-            ajaxOptions.values && (el._x_ajax_values = ajaxOptions.values);
-
-            const method = (ajaxOptions.method?.toUpperCase() || "GET") as HTTPMethod;
-            const ajaxHandler = createAjaxHandler(el, method);
-            el._x_ajax_magic_previous = { ajaxURL, ajaxOptions, ajaxHandler };
-            ajaxHandler(Alpine.evaluate(el, ajaxURL));
-        }
-
-        const httpMethods = ["get", "post", "put", "delete", "patch"];
-        const swapStrategies = ["after", "append", "before", "inside", "none", "prepend", "replace", "delete"];
-
-        httpMethods.forEach(method => {
-            //@ts-ignore
-            const ajaxMethod = ajax[method] = ajax[method.toUpperCase()] = (ajaxURL, ajaxOptions = {}) =>
-                ajax(ajaxURL, { ...ajaxOptions, method: method.toUpperCase() as HTTPMethod });
-
-            swapStrategies.forEach(swapStrategy => {
-                //@ts-ignore
-                ajaxMethod[swapStrategy] = (ajaxURL, ajaxOptions = {}) => 
-                    ajaxMethod(ajaxURL, { ...ajaxOptions, swapStrategy });
-            });
-        });
-
-        return ajax;
-    });
+    const CallableAjaxRequestBuilder = makeClassCallable(AjaxRequestBuilder, "send");
+    Alpine.magic("ajax", (el: AjaxAlpineElement<HTMLElement>) => new CallableAjaxRequestBuilder(el, Alpine).DELETE);
 };
 
 enum AjaxEvent {
@@ -497,4 +442,91 @@ function formToJSON(form: HTMLFormElement) {
     });
 
     return json;
+}
+
+class AjaxRequestBuilder {
+    private method: HTTPMethod = "GET";
+    private options?: { 
+        ajaxURL: string;
+        ajaxHandler: CallableFunction;
+    };
+
+    public GET!: this;
+    public POST!: this;
+    public PUT!: this;
+    public DELETE!: this;
+    public PATCH!: this;
+
+    public after!: this;
+    public append!: this;
+    public before!: this;
+    public inside!: this;
+    public none!: this;
+    public prepend!: this;
+    public replace!: this;
+    public deleteStrategy!: this;
+
+    constructor(private el: AjaxAlpineElement<HTMLElement>, private Alpine: Alpine) {
+        const httpMethods = ["get", "post", "put", "delete", "patch"] as const;
+        const swapStrategies = [
+            "after",
+            "append",
+            "before",
+            "inside",
+            "none",
+            "prepend",
+            "replace",
+            "delete"
+        ] as const;
+
+        httpMethods.forEach(method => {
+            Object.defineProperty(this, method, {
+                get: () => {
+                    this.method = method.toUpperCase() as HTTPMethod;
+                    return this;
+                }
+            });
+        });
+
+        swapStrategies.forEach(strategy => {
+            const key = strategy === "delete" ? "deleteStrategy" : strategy;
+            Object.defineProperty(this, key, {
+                get: () => {
+                    this.el._x_ajax_swap_strategy = strategy as SwapStrategy;
+                    return this;
+                }
+            });
+        });
+    }
+
+    setTarget(target: HTMLElement) {
+        if (!isEqual(this.el._x_ajax_target, target)) {
+            this.el._x_ajax_target = target;
+        }
+        return this;
+    }
+
+    setHeaders(headers: Record<string, string>) {
+        if (!isEqual(this.el._x_ajax_headers, headers)) {
+            this.el._x_ajax_headers = headers;
+        }
+        return this;
+    }
+
+    setValues(values: Record<string, string>) {
+        if (!isEqual(this.el._x_ajax_values, values)) {
+            this.el._x_ajax_values = values;
+        }
+        return this;
+    }
+
+    send(ajaxURL: string) {
+        if (!isEqual(this.options?.ajaxURL, ajaxURL)) {
+            this.options?.ajaxHandler(this.Alpine.evaluate(this.el, ajaxURL));
+            return;   
+        }
+        const ajaxHandler = createAjaxHandler(this.el, this.method);
+        this.options = { ajaxURL, ajaxHandler };
+        ajaxHandler(this.Alpine.evaluate(this.el, ajaxURL));
+    }
 }

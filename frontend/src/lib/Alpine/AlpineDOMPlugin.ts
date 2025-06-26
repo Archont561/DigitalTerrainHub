@@ -1,4 +1,5 @@
 import type { Alpine, ElementWithXAttributes } from "alpinejs";
+import { makeClassCallable } from "@utils";
 
 declare module "alpinejs" {
     interface Magics<T> {
@@ -22,23 +23,9 @@ type FindMagic = {
 };
 
 export default function (Alpine: Alpine) {
-    Alpine.magic("find", el => {
-        const find = ((query: string) => document.querySelector(query)) as FindMagic;
+    const CallableDOMQueryBuilder = makeClassCallable(DOMQueryBuilder, "execute");
 
-        find.inside = (query: string) => el.querySelector(query);
-        find.closest = (query: string) => el.closest(query);
-
-        const all = ((query: string) => document.querySelectorAll(query)) as FindMagic["all"];
-        all.inside = (query: string) => el.querySelectorAll(query);
-        find.all = all;
-
-        find.exists = (query: string) => !!find(query);
-        find.count = (query: string) => find.all(query).length;
-        find.text = (query: string) => find(query)?.textContent ?? '';
-        find.attr = (query: string, attr: string) => find(query)?.getAttribute(attr) ?? null;
-
-        return find;
-    });
+    Alpine.magic("find", (el) => new CallableDOMQueryBuilder(el));
 
     Alpine.magic("$component", el => (id: string) => {
         const componentElement = document.querySelector(`[x-id='${id}']`);
@@ -48,4 +35,72 @@ export default function (Alpine: Alpine) {
         }
         return Alpine.$data(componentElement as ElementWithXAttributes);
     });
+}
+
+type SelectorFunction = "querySelector" | "querySelectorAll" | "closest";
+
+class DOMQueryBuilder {
+    private filters: Record<string, (el: HTMLElement) => boolean> = {};
+    private from: HTMLElement | Document = document;
+    private selectorFunction: SelectorFunction = 'querySelector';
+    private isInsideSet = false;
+    private isAllSet = false;
+
+    constructor(private el: HTMLElement) { }
+
+    get all() {
+        if (!this.isAllSet) {
+            this.selectorFunction = 'querySelectorAll';
+            this.isAllSet = true;
+        }
+        return this;
+    }
+
+    get inside() {
+        if (!this.isInsideSet) {
+            this.from = this.el;
+            this.isInsideSet = true;
+        }
+        return this;
+    }
+
+    get closest() {
+        if (!this.isInsideSet && !this.isAllSet) {
+            this.from = this.el;
+            this.selectorFunction = 'closest';
+        }
+        return this;
+    }
+
+    get visible() {
+        if (!("visible" in this.filters)) {
+            this.filters["visible"] = (el: HTMLElement) => el.checkVisibility();
+        }
+        return this;
+    }
+
+    withClass(className: string) {
+        if (!("withClass" in this.filters)) {
+            this.filters["withClass"] = (el: HTMLElement) => el.classList.contains(className);
+        }
+        return this;
+    }
+
+    execute(query: string): HTMLElement | HTMLElement[] | null {
+        // Call selectorFunction with the query string
+        //@ts-ignore
+        const rawResult = this.from[this.selectorFunction].call(this.from, query);
+
+        let results: HTMLElement[] = rawResult instanceof NodeList
+            ? Array.from(rawResult) as HTMLElement[]
+            : rawResult instanceof Element
+                ? [rawResult as HTMLElement]
+                : [];
+
+        Object.values(this.filters).forEach(filter => {
+            results = results.filter(filter);
+        });
+
+        return rawResult instanceof NodeList ? results : (results.at(0) || null);
+    }
 }
