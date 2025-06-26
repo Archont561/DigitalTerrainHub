@@ -58,24 +58,26 @@ declare module "alpinejs" {
     }
 }
 
-const DEFAULT_AJAX_HEADERS = {
+ajaxPlugin.DEFAULT_AJAX_HEADERS = Object.freeze({
     "X-Alpine-Ajax-Request": true
-}
+});
 
-const settings = {
+ajaxPlugin.settings = Object.freeze({
     headers: {},
     swapStrategy: "replace",
     transitions: false,
     defaultListenerDelay: 300,
-} as AjaxSettings;
+} as AjaxSettings);
 
 ajaxPlugin.setSettings = function (options: Partial<AjaxSettings>) {
+    const newSettings = { ...this.settings };
     Object.entries(options).forEach(([key, value]) => {
-        if (!(key in settings)) throw new Error(`Invalid settings property: ${key}`);
+        if (!(key in this.settings)) throw new Error(`Invalid settings property: ${key}`);
         //@ts-ignore
-        settings[key] = value;
+        newSettings[key] = value;
     });
-    return ajaxPlugin;
+    this.settings = Object.freeze(newSettings);
+    return this;
 }
 
 export default function ajaxPlugin(Alpine: Alpine) {
@@ -130,7 +132,7 @@ export default function ajaxPlugin(Alpine: Alpine) {
         if (value === "closest") from = el.closest;
         else if (value === "child") from = el.querySelector;
         el._x_ajax_target = (from(evaluate(expression) as string) || el) as HTMLElement;
-        el._x_ajax_swap_strategy = (modifiers.at(0) || settings.swapStrategy) as SwapStrategy;
+        el._x_ajax_swap_strategy = (modifiers.at(0) || ajaxPlugin.settings.swapStrategy) as SwapStrategy;
     } as AjaxDirectiveCallback).before("ajax");
 
     Alpine.directive("ajax-values", function (
@@ -243,8 +245,8 @@ function createAjaxHandler(
     method: string,
 ) {
     const target = el._x_ajax_target || el;
-    const swapStrategy = el._x_ajax_swap_strategy || settings.swapStrategy;
-    const headers = Object.assign({}, DEFAULT_AJAX_HEADERS, el._x_ajax_headers || {}, settings.headers);
+    const swapStrategy = el._x_ajax_swap_strategy || ajaxPlugin.settings.swapStrategy;
+    const headers = Object.assign({}, ajaxPlugin.DEFAULT_AJAX_HEADERS, el._x_ajax_headers || {}, ajaxPlugin.settings.headers);
 
     return async function ajaxHandler(ajaxURL: string) {
         let body: BodyInit | null = null;
@@ -319,7 +321,7 @@ function createAjaxHandler(
 }
 
 async function swap(el: HTMLElement, strategy: SwapStrategy, htmlString: string) {
-    if (settings.transitions && document.startViewTransition) {
+    if (ajaxPlugin.settings.transitions && document.startViewTransition) {
         const transition =  document.startViewTransition(() => {
             performSwap(el, strategy, htmlString);
         });
@@ -364,10 +366,10 @@ function dispatch(from: HTMLElement | Window, eventName: string, eventDict: Obje
 }
 
 function getDelay(delayModifier?: string): number {
-    if (!delayModifier) return settings.defaultListenerDelay;
+    if (!delayModifier) return ajaxPlugin.settings.defaultListenerDelay;
 
     const match = /^(\d+)(ms|s)?$/.exec(delayModifier);
-    if (!match) return settings.defaultListenerDelay;
+    if (!match) return ajaxPlugin.settings.defaultListenerDelay;
 
     const [, value, unit] = match;
     return parseInt(value, 10) * (unit === 's' ? 1000 : 1);
