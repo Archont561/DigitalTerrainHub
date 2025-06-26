@@ -1,6 +1,15 @@
 import type { Alpine } from "alpinejs";
 import { getRelativeTimeBetweenDates } from "@utils";
 
+declare module "alpinejs" {
+    interface Magics<T> {
+        $find: (query: string) => Element | null;
+        $closest: (query: string) => Element | null;
+        $relativeTime: typeof getRelativeTimeBetweenDates;
+    }
+}
+
+
 export default function (Alpine: Alpine) {
     Alpine.magic("find", () => (query: string) => document.querySelector(query));
     Alpine.magic("closest", el => (query: string) => el.closest(query));
