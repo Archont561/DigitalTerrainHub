@@ -83,7 +83,7 @@ export default function ajaxPlugin(Alpine: Alpine) {
         el, { value, modifiers, expression }, { Alpine, effect, cleanup, evaluateLater, evaluate }
     ) {
         const method = modifiers.find(modifier => ["get", "put", "post", "delete", "patch"].includes(modifier.toLowerCase())) || "get";
-        const ajaxHandler = createAjaxHandler(el, method.toUpperCase(), el.hasAttribute("x-jsonify"));
+        const ajaxHandler = createAjaxHandler(el, method.toUpperCase());
 
         if (value) {
             const ajaxURL = evaluate(expression) as URLString;
@@ -204,8 +204,7 @@ export default function ajaxPlugin(Alpine: Alpine) {
             ajaxOptions.values && (el._x_ajax_values = ajaxOptions.values);
 
             const method = (ajaxOptions.method?.toUpperCase() || "GET") as HTTPMethod;
-            const shouldJsonify = el.hasAttribute("x-jsonify");
-            const ajaxHandler = createAjaxHandler(el, method, shouldJsonify);
+            const ajaxHandler = createAjaxHandler(el, method);
             el._x_ajax_magic_previous = { ajaxURL, ajaxOptions, ajaxHandler };
             ajaxHandler(Alpine.evaluate(el, ajaxURL));
         }
@@ -242,7 +241,6 @@ enum AjaxEvent {
 function createAjaxHandler(
     el: AjaxAlpineElement<HTMLElement>,
     method: string,
-    shouldJsonifyFormData = false,
 ) {
     const target = el._x_ajax_target || el;
     const swapStrategy = el._x_ajax_swap_strategy || settings.swapStrategy;
@@ -251,11 +249,11 @@ function createAjaxHandler(
     return async function ajaxHandler(ajaxURL: string) {
         let body: BodyInit | null = null;
 
-        if (el instanceof HTMLFormElement) {
+        if (el instanceof HTMLFormElement && !el.hasAttribute("x-ignore")) {
             if (method === "GET") {
                 const queryString = new URLSearchParams(new FormData(el) as any).toString();
                 ajaxURL += (ajaxURL.includes('?') ? '&' : '?') + queryString;
-            } else if (shouldJsonifyFormData) {
+            } else if (el.hasAttribute("x-jsonify")) {
                 headers["Content-Type"] = "application/json";
                 body = JSON.stringify({
                     ...formToJSON(el),
