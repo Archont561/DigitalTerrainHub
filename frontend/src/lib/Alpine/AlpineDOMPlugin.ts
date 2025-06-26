@@ -1,8 +1,9 @@
-import type { Alpine } from "alpinejs";
+import type { Alpine, ElementWithXAttributes } from "alpinejs";
 
 declare module "alpinejs" {
     interface Magics<T> {
         $find: FindMagic;
+        $component: (id: string) => {};
     }
 }
 
@@ -37,5 +38,14 @@ export default function (Alpine: Alpine) {
         find.attr = (query: string, attr: string) => find(query)?.getAttribute(attr) ?? null;
 
         return find;
+    });
+
+    Alpine.magic("$component", el => (id: string) => {
+        const componentElement = document.querySelector(`[x-id='${id}']`);
+        if (!componentElement) {
+            console.warn(`$component: No component found with x-id="${id}"`);
+            return {};
+        }
+        return Alpine.$data(componentElement as ElementWithXAttributes);
     });
 }
