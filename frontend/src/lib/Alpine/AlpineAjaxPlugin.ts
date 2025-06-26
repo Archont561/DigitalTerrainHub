@@ -8,7 +8,7 @@ import { isEqual } from "lodash";
 import { replaceElementContent, replaceElement, makeClassCallable } from "@utils";
 
 type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
-type SwapStrategy = "after" | "append" | "before" | "inside" | "none" | "prepend" | "replace" | "delete";
+type SwapStrategy = "after" | "append" | "before" | "inside" | "none" | "prepend" | "replace" | "remove";
 
 type AjaxAlpineElement<T extends HTMLElement> = ElementWithXAttributes<T> & {
     _x_ajax_headers?: Record<string, any>;
@@ -298,7 +298,7 @@ function performSwap(el: HTMLElement, strategy: SwapStrategy, htmlString: string
             break;
         case "none":
             break;
-        case "delete":
+        case "remove":
             el.remove();
             break;
         default:
@@ -464,7 +464,7 @@ class AjaxRequestBuilder {
     public none!: this;
     public prepend!: this;
     public replace!: this;
-    public deleteStrategy!: this;
+    public remove!: this;
 
     constructor(private el: AjaxAlpineElement<HTMLElement>, private Alpine: Alpine) {
         const httpMethods = ["get", "post", "put", "delete", "patch"] as const;
@@ -489,8 +489,7 @@ class AjaxRequestBuilder {
         });
 
         swapStrategies.forEach(strategy => {
-            const key = strategy === "delete" ? "deleteStrategy" : strategy;
-            Object.defineProperty(this, key, {
+            Object.defineProperty(this, strategy, {
                 get: () => {
                     this.el._x_ajax_swap_strategy = strategy as SwapStrategy;
                     return this;
