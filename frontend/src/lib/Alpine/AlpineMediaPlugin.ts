@@ -1,49 +1,63 @@
-import type { Alpine } from 'alpinejs';
+import type { Alpine, DirectiveCallback } from 'alpinejs';
+import { makeClassCallable } from "@utils";
+
+declare module "alpinejs" {
+    interface Alpine {
+        mediaPlugin: AlpineMediaPlugin;
+    }
+}
 
 type MediaQueryEventTriggerMode = "change" | "match" | "noMatch";
+
 interface MediaSettings {
     breakpoints: Record<string, string>;
     mediaQueriesStorage: Map<string, MediaQueryList>;
 }
 
-mediaPlugin.settings = Object.freeze({
-    breakpoints: {
-        xs: '30rem',   // 480px
-        sm: '40rem',   // 640px
-        md: '48rem',   // 768px
-        lg: '64rem',   // 1024px
-        xl: '80rem',   // 1280px
-        '2xl': '96rem' // 1536px
-    },
-    mediaQueriesStorage: new Map(),
-} as MediaSettings);
+class AlpineMediaPlugin {
+    private settings: MediaSettings = {
+        breakpoints: {
+            xs: '30rem',   // 480px
+            sm: '40rem',   // 640px
+            md: '48rem',   // 768px
+            lg: '64rem',   // 1024px
+            xl: '80rem',   // 1280px
+            '2xl': '96rem' // 1536px
+        },
+        mediaQueriesStorage: new Map(),
+    };
 
-mediaPlugin.setBreakpoints = function(breakpoints: Record<string, string>) {
-    Object.assign(mediaPlugin.settings.breakpoints, breakpoints);
-    return mediaPlugin;
-};
+    getSettings() {
+        return {...this.settings};
+    }
 
-export default function mediaPlugin(Alpine: Alpine) {
-    Alpine.directive("screen", (el, { modifiers, expression, value }, { evaluate, cleanup }) => {
-        let mediaQueryString;
-        let mediaQueryTriggerMode = "change" as MediaQueryEventTriggerMode;
+    setBreakpoints(breakpoints: Record<string, string>) {
+        Object.assign(this.settings.breakpoints, breakpoints);
+        return this;
+    }
+
+    install(Alpine: Alpine) {
+        Alpine.directive("screen", this['x-screen']);
+        Alpine.mediaPlugin = this;
+    }
+
+    private 'x-screen': DirectiveCallback = (el, { modifiers, expression, value }, { evaluate, cleanup }) => {
+        let mediaQueryString: string;
+        let mediaQueryTriggerMode: MediaQueryEventTriggerMode = "change";
 
         if (value.includes("-")) {
-            // Range breakpoint like "md-lg"
-            const [minBreakpoint, maxBreakpoint] = value.split("-").map(getBreakpointValue);
-            // max-width just less than maxBreakpoint to avoid overlap
+            const [minBreakpoint, maxBreakpoint] = value.split("-").map(this.getBreakpointValue.bind(this));
             mediaQueryString = `(min-width: ${minBreakpoint}) and (max-width: calc(${maxBreakpoint} - 0.02px))`;
             mediaQueryTriggerMode = "match";
         } else {
-            // Single breakpoint
-            mediaQueryString = `(min-width: ${getBreakpointValue(value)})`;
+            mediaQueryString = `(min-width: ${this.getBreakpointValue(value)})`;
             if (modifiers.includes("larger")) mediaQueryTriggerMode = "match";
             if (modifiers.includes("smaller")) mediaQueryTriggerMode = "noMatch";
         }
 
-        const mediaQuery = getMediaQuery(mediaQueryString);
+        const mediaQuery = this.getMediaQuery(mediaQueryString);
 
-        const handler = createMediaQueryHandler(
+        const handler = this.createMediaQueryHandler(
             mediaQueryTriggerMode,
             evaluate,
             expression,
@@ -57,35 +71,31 @@ export default function mediaPlugin(Alpine: Alpine) {
         cleanup(() => {
             mediaQuery.removeEventListener("change", handler);
         });
-    });
-}
-
-function getBreakpointValue(value: string): string {
-    // Check Tailwind key first
-    if (value in mediaPlugin.settings.breakpoints) {
-        return mediaPlugin.settings.breakpoints[value];
     }
 
-    // Check if numeric (integer or float)
-    if (/^\d+(\.\d+)?$/.test(value)) {
-        return `${value}px`;
+    private getBreakpointValue(value: string): string {
+        return value in this.settings.breakpoints
+            ? this.settings.breakpoints[value]
+            : /^\d+(\.\d+)?$/.test(value)
+                ? `${value}px`
+                : value;
     }
 
-    // Otherwise assume already CSS length with units
-    return value;
-}
-
-function getMediaQuery(query: string): MediaQueryList {
-    const storage = mediaPlugin.settings.mediaQueriesStorage;
-    if (!storage.has(query)) {
-        storage.set(query, window.matchMedia(query));
+    private getMediaQuery(query: string): MediaQueryList {
+        const storage = this.settings.mediaQueriesStorage;
+        if (!storage.has(query)) {
+            storage.set(query, window.matchMedia(query));
+        }
+        return storage.get(query)!;
     }
-    return storage.get(query)!;
+
+    private createMediaQueryHandler(mode: MediaQueryEventTriggerMode, callback: CallableFunction, ...args: any[]) {
+        if (mode === "change") return (e: MediaQueryListEvent) => callback(...args);
+        if (mode === "match") return (e: MediaQueryListEvent) => e.matches && callback(...args);
+        if (mode === "noMatch") return (e: MediaQueryListEvent) => !e.matches && callback(...args);
+        throw new Error(`Invalid MediaQueryEventTriggerMode: ${mode}`);
+    }
+    
 }
 
-function createMediaQueryHandler(mediaQueryTriggerMode: MediaQueryEventTriggerMode, callback: CallableFunction, ...calbackArgs: any[]) {
-    if (mediaQueryTriggerMode === "change") return (e: MediaQueryListEvent) => callback(...calbackArgs);
-    else if (mediaQueryTriggerMode === "match") return (e: MediaQueryListEvent) => e.matches && callback(...calbackArgs);
-    else if (mediaQueryTriggerMode === "noMatch") return (e: MediaQueryListEvent) => !e.matches && callback(...calbackArgs);
-    throw new Error(`Invalid value: ${mediaQueryTriggerMode}`);
-}
+export default new (makeClassCallable(AlpineMediaPlugin, "install"));

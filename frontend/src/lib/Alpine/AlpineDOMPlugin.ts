@@ -1,42 +1,20 @@
-import type { Alpine, ElementWithXAttributes } from "alpinejs";
+import type { Alpine } from "alpinejs";
 import { makeClassCallable } from "@utils";
 
 declare module "alpinejs" {
+    interface Alpine {
+        domPlugin: AlpineDOMPlugin;
+    }
     interface Magics<T> {
         $find: FindMagic;
         $component: (id: string) => {};
     }
 }
 
-type FindMagic = {
-    <T extends Element = Element>(query: string): T | null;
-    inside: <T extends Element = Element>(query: string) => T | null;
-    closest: <T extends Element = Element>(query: string) => T | null;
-    exists: (query: string) => boolean;
-    count: (query: string) => number;
-    text: (query: string) => string;
-    attr: (query: string, attr: string) => string | null;
-    all: {
-        <T extends Element = Element>(query: string): NodeListOf<T>;
-        inside: <T extends Element = Element>(query: string) => NodeListOf<T>;
-    };
-};
-
-export default function (Alpine: Alpine) {
-    const CallableDOMQueryBuilder = makeClassCallable(DOMQueryBuilder, "execute");
-
-    Alpine.magic("find", (el) => new CallableDOMQueryBuilder(el));
-
-    Alpine.magic("$component", el => (id: string) => {
-        const componentElement = document.querySelector(`[x-id='${id}']`);
-        if (!componentElement) {
-            console.warn(`$component: No component found with x-id="${id}"`);
-            return {};
-        }
-        return Alpine.$data(componentElement as ElementWithXAttributes);
-    });
-}
-
+type AlpineMagicCallback = Parameters<Alpine["magic"]>[1];
+type FindMagic = DOMQueryBuilder & {
+    (...args: Parameters<DOMQueryBuilder["execute"]>): ReturnType<DOMQueryBuilder["execute"]>;
+};;
 type SelectorFunction = "querySelector" | "querySelectorAll" | "closest";
 
 class DOMQueryBuilder {
@@ -104,3 +82,32 @@ class DOMQueryBuilder {
         return rawResult instanceof NodeList ? results : (results.at(0) || null);
     }
 }
+
+class AlpineDOMPlugin {
+    private settings = {};
+    private CallableDOMQueryBuilder = makeClassCallable(DOMQueryBuilder, "execute");
+
+    getSettings() {
+        return { ...this.settings };
+    }
+
+    install(Alpine: Alpine) {
+        Alpine.magic("find", this.$find);
+        Alpine.magic("component", this.$component);
+        Alpine.domPlugin = this;
+    }
+
+    private $find: AlpineMagicCallback = (el) => new this.CallableDOMQueryBuilder(el);
+    
+    private $component: AlpineMagicCallback = (el, { Alpine }) => (id: string) => {
+        const componentElement = document.querySelector(`[x-id='${id}']`);
+        if (!componentElement) {
+            console.warn(`$component: No component found with x-id="${id}"`);
+            return {};
+        }
+        return Alpine.$data(componentElement as any);
+    }
+
+}
+
+export default new (makeClassCallable(AlpineDOMPlugin, "install"));
