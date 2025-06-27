@@ -12,80 +12,118 @@ declare module "alpinejs" {
 }
 
 type AlpineMagicCallback = Parameters<Alpine["magic"]>[1];
-type FindMagic = DOMQueryBuilder & {
-    (...args: Parameters<DOMQueryBuilder["query"]>): ReturnType<DOMQueryBuilder["query"]>;
+type FindMagic = SingleDOMQueryBuilder & {
+    (...args: Parameters<SingleDOMQueryBuilder["query"]>): ReturnType<SingleDOMQueryBuilder["query"]>;
 };;
+
 type SelectorFunction = "querySelector" | "querySelectorAll" | "closest";
 
-class DOMQueryBuilder {
-    private filters: Record<string, (el: HTMLElement) => boolean> = {};
-    private from: HTMLElement | Document = document;
-    private selectorFunction: SelectorFunction = 'querySelector';
-    private isInsideSet = false;
-    private isAllSet = false;
+interface QueryBuilderSettings {
+    from?: HTMLElement | Document;
+    selectorFunction?: SelectorFunction;
+    shouldLookInsideElement?: boolean;
+    filters?: ((el: HTMLElement) => boolean)[];
+}
 
-    constructor(private el: HTMLElement) { }
+abstract class BaseQueryBuilder<TQueryResult> {
+    protected filters: ((el: HTMLElement) => boolean)[] = [];
+    protected from: HTMLElement | Document = document;
+    protected selectorFunction: SelectorFunction = "querySelector";
+    protected shouldLookInsideElement = false;
 
-    get all() {
-        if (!this.isAllSet) {
-            this.selectorFunction = 'querySelectorAll';
-            this.isAllSet = true;
-        }
+    constructor(protected el: HTMLElement, startSettings: QueryBuilderSettings = {}) {
+        if (startSettings.from) this.from = startSettings.from;
+        if (startSettings.shouldLookInsideElement) this.shouldLookInsideElement = startSettings.shouldLookInsideElement;
+        if (startSettings.selectorFunction) this.selectorFunction = startSettings.selectorFunction;
+        if (startSettings.filters) this.filters = [...startSettings.filters];
+    }
+
+    get inside(): this {
+        this.from = this.el;
+        this.shouldLookInsideElement = true;
         return this;
     }
 
-    get inside() {
-        if (!this.isInsideSet) {
+    get closest(): this {
+        if (!this.shouldLookInsideElement) {
             this.from = this.el;
-            this.isInsideSet = true;
+            this.selectorFunction = "closest";
         }
         return this;
     }
 
-    get closest() {
-        if (!this.isInsideSet && !this.isAllSet) {
-            this.from = this.el;
-            this.selectorFunction = 'closest';
+    private visibleFilterAdded = false;
+
+    get visible(): this {
+        if (!this.visibleFilterAdded) {
+            this.filters.push((el: HTMLElement) =>
+                !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length));
+            this.visibleFilterAdded = true;
         }
         return this;
     }
 
-    get visible() {
-        if (!("visible" in this.filters)) {
-            this.filters["visible"] = (el: HTMLElement) => el.checkVisibility();
-        }
+    withClass(className: string): this {
+        this.filters.push(el => el.classList.contains(className));
         return this;
     }
 
-    withClass(className: string) {
-        if (!("withClass" in this.filters)) {
-            this.filters["withClass"] = (el: HTMLElement) => el.classList.contains(className);
-        }
-        return this;
+    protected applyFilters(elements: HTMLElement[]): HTMLElement[] {
+        return this.filters.reduce(
+            (filtered, filter) => filtered.filter(filter),
+            elements
+        );
     }
 
-    query(query: string): HTMLElement | HTMLElement[] | null {
-        // Call selectorFunction with the query string
+    abstract query(selector: string): TQueryResult;
+}
+
+class MultiDOMQueryBuilder extends BaseQueryBuilder<HTMLElement[]> {
+    constructor(el: HTMLElement, startSettings: Omit<QueryBuilderSettings, "selectorFunction"> = {}) {
+        super(el, startSettings);
+        this.selectorFunction = "querySelectorAll";
+    }
+
+    query(selector: string): HTMLElement[] {
         //@ts-ignore
-        const rawResult = this.from[this.selectorFunction].call(this.from, query);
+        const results = Array.from(this.from[this.selectorFunction].call(this.from, selector) as NodeListOf<HTMLElement>);
+        return this.applyFilters(results);
+    }
+}
 
-        let results: HTMLElement[] = rawResult instanceof NodeList
-            ? Array.from(rawResult) as HTMLElement[]
-            : rawResult instanceof Element
-                ? [rawResult as HTMLElement]
-                : [];
+class SingleDOMQueryBuilder extends BaseQueryBuilder<HTMLElement | null> {
+    private allCalled = false;
 
-        Object.values(this.filters).forEach(filter => {
-            results = results.filter(filter);
+    constructor(el: HTMLElement, startSettings: Omit<QueryBuilderSettings, "selectorFunction"> = {}) {
+        super(el, startSettings);
+        this.selectorFunction = "querySelector";
+    }
+
+    get all(): MultiDOMQueryBuilder {
+        if (this.allCalled) {
+            throw new Error("`.all` has already been called on this builder instance.");
+        }
+        this.allCalled = true;
+
+        return new MultiDOMQueryBuilder(this.el, {
+            filters: this.filters,
+            from: this.from,
+            shouldLookInsideElement: this.shouldLookInsideElement,
         });
+    }
 
-        return rawResult instanceof NodeList ? results : (results.at(0) || null);
+    query(selector: string): HTMLElement | null {
+        //@ts-ignore
+        const result = this.from[this.selectorFunction].call(this.from, selector) as (HTMLElement | null);
+
+        const filtered = this.applyFilters(result === null ? [] : [result]);
+        return filtered.at(0) || null;
     }
 }
 
 class AlpineDOMPlugin {
     private settings = {};
-    private CallableDOMQueryBuilder = makeClassCallable(DOMQueryBuilder, "query");
+    private CallableDOMQueryBuilder = makeClassCallable(SingleDOMQueryBuilder, "query");
 
     getSettings() {
         return { ...this.settings };
