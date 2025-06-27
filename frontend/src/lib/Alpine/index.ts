@@ -1,5 +1,4 @@
 import type { Alpine } from 'alpinejs'
-import GlobalIntervalStore from "./GlobalIntervalStore";
 import persist from "@alpinejs/persist";
 import dom from "./AlpineDOMPlugin";
 import time from "./AlpineTimePlugin";
@@ -19,6 +18,5 @@ export default (Alpine: Alpine) => {
             "X-CSRF-Token": document.querySelector("meta[name='csrfToken']")?.getAttribute("content") || ""
         }
     }));
-    Alpine.store("globalInterval", GlobalIntervalStore);
     window.Alpine = Alpine;
 }
