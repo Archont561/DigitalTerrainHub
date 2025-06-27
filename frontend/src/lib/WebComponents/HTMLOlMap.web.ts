@@ -4,6 +4,7 @@ import { Map as OlMap, View } from 'ol';
 import { type ProjectionLike, transform } from 'ol/proj';
 import type { Coordinate } from 'ol/coordinate';
 import OpenLayersStyleURL from "@assets/styles/openlayers.css?url";
+import { getOrCreateStylesheet } from "@utils";
 
 type ZoomString = `${number}` | `${number}, ${number}, ${number}`
 type CenterString = `${number} ${number}` | `${number}, ${number}`
@@ -31,18 +32,10 @@ export class HTMLOlMap extends LitElement implements HTMLOlMapProps {
       view: this.view,
     });
     this.crs && this.updateProjection(this.crs);
-    this.loadStyles();
+    getOrCreateStylesheet(OpenLayersStyleURL);
   }
 
   get mapView() { return this.view }
-
-  private loadStyles() {
-    if (window?.utils?.loadStylesheet) {
-      window.utils.loadStylesheet(OpenLayersStyleURL);
-    } else {
-      console.warn('window.utils.loadStylesheet is not available');
-    }
-  }
 
   updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);

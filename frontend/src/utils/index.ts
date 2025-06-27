@@ -22,3 +22,16 @@ export abstract class CallableClass<T> extends Function {
         return Object.setPrototypeOf(this, new.target.prototype);
     }
 }
+
+export function getOrCreateStylesheet(href: string) {
+    let link = document.querySelector(`link[href=${href}]`) as HTMLLinkElement | null;
+    if (link) return link;
+
+    link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    link.onload = () => console.log(`Stylesheet loaded: ${href}`);
+    link.onerror = () => console.error(`Failed to load stylesheet: ${href}`);
+    document.appendChild(link);
+    return link;
+}
