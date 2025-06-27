@@ -257,7 +257,7 @@ class AlpineAjaxPlugin extends AlpinePluginBase<AjaxSettings> {
         return async (ajaxURL: string) => {
             let body: BodyInit | null = null;
 
-            if (el instanceof HTMLFormElement && !el.hasAttribute("x-ignore")) {
+            if (el instanceof HTMLFormElement && !el.hasAttribute("x-ajax-ignore")) {
                 if (method === "GET") {
                     const queryString = new URLSearchParams(new FormData(el) as any).toString();
                     ajaxURL += (ajaxURL.includes('?') ? '&' : '?') + queryString;
