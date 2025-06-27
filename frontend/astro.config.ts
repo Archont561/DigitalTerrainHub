@@ -5,7 +5,8 @@ import icon from 'astro-icon';
 import dotenv from 'dotenv';
 import node from '@astrojs/node';
 import { strictCustomRouting } from '@inox-tools/custom-routing';
-import { getRoutes } from "./src/templates";
+import { getRoutes } from "@pages";
+import AlpineJSEntrypointURL from "@lib/Alpine/index?url";
 
 dotenv.config();
 export const isDev = import.meta.env.DEV;
@@ -24,7 +25,8 @@ export default defineConfig({
   },
 
   integrations: [
-    alpinejs({ entrypoint: './src/lib/Alpine/index.ts' }),
+    strictCustomRouting(getRoutes()),
+    alpinejs({ entrypoint: AlpineJSEntrypointURL }),
     icon({
       include: {
         ooui: ['article-not-found-ltr', 'upload', 'error', 'success'],
@@ -51,7 +53,6 @@ export default defineConfig({
         mingcute: ['lock-line'],
       },
     }),
-    strictCustomRouting(getRoutes())
   ],
 
   adapter: node({
