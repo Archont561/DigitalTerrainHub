@@ -9,7 +9,6 @@ declare module "alpinejs" {
     }
     interface Magics<T> {
         $find: SingleDOMQueryBuilder;
-        $component: (id: string) => {};
     }
 }
 
