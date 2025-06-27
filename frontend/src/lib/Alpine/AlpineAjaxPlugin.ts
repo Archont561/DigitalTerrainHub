@@ -151,9 +151,9 @@ class AlpineAjaxPlugin {
         Error: 'ajax:error',
         Success: 'ajax:success',
         Failure: 'ajax:failure',
-        JsonBeforeMerge: 'ajax:json:before-merge',
-        HTMLBeforeMerge: 'ajax:before-merge',
-        Merged: 'ajax:merged',
+        JsonBeforeSwap: 'ajax:json:before-swap',
+        HTMLBeforeSwap: 'ajax:html:before-swap',
+        AfterSwap: 'ajax:after-swap',
     } as const;
 
     getSettings() {
@@ -339,14 +339,14 @@ class AlpineAjaxPlugin {
                     switch (mimeType) {
                         case 'application/json': {
                             const json = await response.json();
-                            if (!this.dispatch(el, this.AjaxEvent.JsonBeforeMerge, { detail: { json, response } })) return;
+                            if (!this.dispatch(el, this.AjaxEvent.JsonBeforeSwap, { detail: { json, response } })) return;
                             await this.swap(target, "none", "");
                             break;
                         }
                         case 'text/plain':
                         case 'text/html': {
                             const htmlString = await response.text();
-                            if (!this.dispatch(el, this.AjaxEvent.HTMLBeforeMerge, { detail: { htmlString, response } })) return;
+                            if (!this.dispatch(el, this.AjaxEvent.HTMLBeforeSwap, { detail: { htmlString, response } })) return;
                             await this.swap(target, swapStrategy, htmlString);
                             break;
                         }
@@ -355,7 +355,7 @@ class AlpineAjaxPlugin {
                             break;
                     }
 
-                    if (!this.dispatch(el, this.AjaxEvent.Merged)) return;
+                    if (!this.dispatch(el, this.AjaxEvent.AfterSwap)) return;
                 }
             } catch (error) {
                 if (!this.dispatch(el, this.AjaxEvent.Error, { detail: { error } })) return;
