@@ -106,6 +106,8 @@ class MultiDOMQueryBuilder extends BaseQueryBuilder<HTMLElement[]> {
     }
 }
 
+const CallableMultiDOMQueryBuilder = makeClassCallable(MultiDOMQueryBuilder, "query");
+
 class SingleDOMQueryBuilder extends BaseQueryBuilder<HTMLElement | null> {
     private allCalled = false;
 
@@ -114,13 +116,13 @@ class SingleDOMQueryBuilder extends BaseQueryBuilder<HTMLElement | null> {
         this.selectorFunction = "querySelector";
     }
 
-    get all(): MultiDOMQueryBuilder {
+    get all(): InstanceType<typeof CallableMultiDOMQueryBuilder> {
         if (this.allCalled) {
             throw new Error("`.all` has already been called on this builder instance.");
         }
         this.allCalled = true;
 
-        return new MultiDOMQueryBuilder(this.el, this.Alpine, {
+        return new CallableMultiDOMQueryBuilder(this.el, this.Alpine, {
             filters: this.filters,
             from: this.from,
             shouldLookInsideElement: this.shouldLookInsideElement,
@@ -135,9 +137,11 @@ class SingleDOMQueryBuilder extends BaseQueryBuilder<HTMLElement | null> {
     }
 }
 
+const CallableSingleDOMQueryBuilder = makeClassCallable(SingleDOMQueryBuilder, "query");
+
 class AlpineDOMPlugin {
     private settings = {};
-    private CallableDOMQueryBuilder = makeClassCallable(SingleDOMQueryBuilder, "query");
+    private CallableDOMQueryBuilder = CallableSingleDOMQueryBuilder;
 
     getSettings() {
         return { ...this.settings };
