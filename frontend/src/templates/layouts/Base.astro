@@ -20,13 +20,6 @@ const csrfToken = Astro.request.headers.get("x-csrftoken") || "";
 		<meta name="csrfToken" content={csrfToken} />
 		<title>{title}</title>
 		<link rel="stylesheet" href={StylesURLs.Global}>
-		<script>
-			import Utils from "@lib/utils";
-			
-			(async () => {
-				window.utils = Utils;
-			})();
-		</script>
 	</head>
 	<body {...props}>
 		<slot />
