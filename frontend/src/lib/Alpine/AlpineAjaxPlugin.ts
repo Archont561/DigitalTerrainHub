@@ -7,16 +7,14 @@ import type {
 import AlpinePluginBase from "./AlpinePluginBase";
 import type { PluginMagics } from "./AlpinePluginBase";
 import { isEqual } from "lodash";
-import { replaceElementContent, replaceElement, makeClassCallable } from "@utils";
+import { replaceElementContent, replaceElement, CallableClass } from "@utils";
 
 declare module "alpinejs" {
     interface Alpine {
         ajaxPlugin: AlpineAjaxPlugin;
     }
     interface Magics<T> {
-        $ajax: AjaxRequestBuilder & {
-            (...args: Parameters<AjaxRequestBuilder["send"]>): ReturnType<AjaxRequestBuilder["send"]>;
-        };
+        $ajax: AjaxRequestBuilder;
     }
 }
 
@@ -48,7 +46,7 @@ interface AjaxSettings {
     defaultListenerDelay: number;
 }
 
-class AjaxRequestBuilder {
+class AjaxRequestBuilder extends CallableClass<AjaxRequestBuilder> {
     private method: HTTPMethod = "GET";
     private options?: {
         ajaxURL: string;
@@ -71,6 +69,7 @@ class AjaxRequestBuilder {
     public remove!: this;
 
     constructor(private el: AjaxAlpineElement, private Alpine: Alpine, private createAjaxHandler: CallableFunction) {
+        super("send");
         const httpMethods = ["get", "post", "put", "delete", "patch"] as const;
         const swapStrategies = [
             "after",
@@ -143,8 +142,6 @@ class AlpineAjaxPlugin extends AlpinePluginBase<AjaxSettings> {
         defaultListenerDelay: 300,
     } as AjaxSettings;
 
-    private CallableAjaxRequestBuilder = makeClassCallable(AjaxRequestBuilder, "send");
-
     public readonly DEFAULT_AJAX_HEADERS = {
         "X-Alpine-Ajax-Request": true
     } as const;
@@ -160,7 +157,7 @@ class AlpineAjaxPlugin extends AlpinePluginBase<AjaxSettings> {
     } as const;
 
     protected magics: PluginMagics = {
-        ajax: (el, { Alpine }) => new this.CallableAjaxRequestBuilder(el, Alpine, this.createAjaxHandler),
+        ajax: (el, { Alpine }) => new AjaxRequestBuilder(el, Alpine, this.createAjaxHandler),
     };
 
     protected directives: AjaxPluginDirectives = {

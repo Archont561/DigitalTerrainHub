@@ -1,5 +1,5 @@
-import type { Alpine, DirectiveCallback, Stores } from "alpinejs";
-import { makeClassCallable } from "@utils";
+import type { Alpine, DirectiveCallback, Stores, PluginCallback } from "alpinejs";
+import { CallableClass } from "@utils";
 import { cloneDeep } from "lodash";
 
 type DirectiveEntry = DirectiveCallback | [DirectiveCallback, string];
@@ -13,21 +13,27 @@ export type PluginStore = {
     [K in keyof Stores]: StoreCallback<K>;
 };
 
-export default abstract class AlpinePluginBase<TSettings extends AlpinePluginSettings = AlpinePluginSettings> {
+interface AlpinePluginProtocol {
+    install: PluginCallback
+}
+
+export default abstract class AlpinePluginBase<
+    TSettings extends AlpinePluginSettings = AlpinePluginSettings
+> extends CallableClass<AlpinePluginBase> implements AlpinePluginProtocol {
+
+    static expose<T extends AlpinePluginBase<any>>(this: new () => T): T & PluginCallback {
+        return new this() as T & PluginCallback;
+    }
+
     protected abstract PLUGIN_NAME: string;
     protected Alpine!: Alpine;
     private initialized = false;
 
-    static expose<
-        T extends new (...args: any[]) => AlpinePluginBase<any>
-    >(this: T, ...args: ConstructorParameters<T>) {
-        const CallablePlugin = makeClassCallable(this, "install");
-        return new CallablePlugin(...args);
-    }
+    constructor() { super("install") }
 
     protected afterInstall(Alpine: Alpine) { };
 
-    install(Alpine: Alpine): this {
+    install(Alpine: Alpine) {
         if (this.initialized) {
             console.warn(`Alpine ${this.PLUGIN_NAME} has been already initialized!`);
             return this;

@@ -1,21 +1,17 @@
 import type { Alpine } from "alpinejs";
 import AlpinePluginBase from "./AlpinePluginBase";
 import type { PluginMagics } from "./AlpinePluginBase";
-import { makeClassCallable } from "@utils";
+import { CallableClass } from "@utils";
 
 declare module "alpinejs" {
     interface Alpine {
         domPlugin: AlpineDOMPlugin;
     }
     interface Magics<T> {
-        $find: FindMagic;
+        $find: SingleDOMQueryBuilder;
         $component: (id: string) => {};
     }
 }
-
-type FindMagic = SingleDOMQueryBuilder & {
-    (...args: Parameters<SingleDOMQueryBuilder["query"]>): ReturnType<SingleDOMQueryBuilder["query"]>;
-};;
 
 type SelectorFunction = "querySelector" | "querySelectorAll" | "closest";
 
@@ -26,13 +22,14 @@ interface QueryBuilderSettings {
     filters?: ((el: HTMLElement) => boolean)[];
 }
 
-abstract class BaseQueryBuilder<TQueryResult> {
+abstract class BaseQueryBuilder<TQueryResult> extends CallableClass<BaseQueryBuilder<TQueryResult>> {
     protected filters: ((el: HTMLElement) => boolean)[] = [];
     protected from: HTMLElement | Document = document;
     protected selectorFunction: SelectorFunction = "querySelector";
     protected shouldLookInsideElement = false;
 
     constructor(protected el: HTMLElement, protected Alpine: Alpine, startSettings: QueryBuilderSettings = {}) {
+        super("query");
         if (startSettings.from) this.from = startSettings.from;
         if (startSettings.shouldLookInsideElement) this.shouldLookInsideElement = startSettings.shouldLookInsideElement;
         if (startSettings.selectorFunction) this.selectorFunction = startSettings.selectorFunction;
@@ -107,8 +104,6 @@ class MultiDOMQueryBuilder extends BaseQueryBuilder<HTMLElement[]> {
     }
 }
 
-const CallableMultiDOMQueryBuilder = makeClassCallable(MultiDOMQueryBuilder, "query");
-
 class SingleDOMQueryBuilder extends BaseQueryBuilder<HTMLElement | null> {
     private allCalled = false;
 
@@ -117,13 +112,13 @@ class SingleDOMQueryBuilder extends BaseQueryBuilder<HTMLElement | null> {
         this.selectorFunction = "querySelector";
     }
 
-    get all(): InstanceType<typeof CallableMultiDOMQueryBuilder> {
+    get all(): InstanceType<typeof MultiDOMQueryBuilder> {
         if (this.allCalled) {
             throw new Error("`.all` has already been called on this builder instance.");
         }
         this.allCalled = true;
 
-        return new CallableMultiDOMQueryBuilder(this.el, this.Alpine, {
+        return new MultiDOMQueryBuilder(this.el, this.Alpine, {
             filters: this.filters,
             from: this.from,
             shouldLookInsideElement: this.shouldLookInsideElement,
@@ -138,14 +133,11 @@ class SingleDOMQueryBuilder extends BaseQueryBuilder<HTMLElement | null> {
     }
 }
 
-const CallableSingleDOMQueryBuilder = makeClassCallable(SingleDOMQueryBuilder, "query");
-
-
 class AlpineDOMPlugin extends AlpinePluginBase {
     protected PLUGIN_NAME = "domPlugin"
 
     protected magics: PluginMagics = {
-        find: (el, { Alpine }) => new CallableSingleDOMQueryBuilder(el, Alpine),
+        find: (el, { Alpine }) => new SingleDOMQueryBuilder(el, Alpine),
     }
 }
 
