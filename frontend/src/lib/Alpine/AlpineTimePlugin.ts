@@ -1,3 +1,4 @@
+import type { Stores } from "alpinejs";
 import AlpinePluginBase from "./AlpinePluginBase";
 import type { PluginDirectives, PluginMagics, PluginStore } from "./AlpinePluginBase";
 import { getRelativeTimeBetweenDates } from "@utils";
@@ -8,6 +9,19 @@ declare module "alpinejs" {
     }
     interface Magics<T> {
         $relativeTime: typeof getRelativeTimeBetweenDates;
+    }
+    interface Stores {
+        globalInterval: {
+            interval: number;
+            flag: boolean;
+            intervalID: ReturnType<typeof setInterval> | null;
+
+            stop(): void;
+            init(): void;
+            update(): void;
+            setIntervalValue(interval: number): void;
+            resume(): void;
+        }
     }
 }
 
@@ -33,7 +47,7 @@ class AlpineTimePlugin extends AlpinePluginBase<TimeSettings> {
         ) => {
             const firstModifier = modifiers.at(0);
             if (firstModifier === "global") {
-                const globalInterval = Alpine.store('globalInterval') as alpine.GlobalIntervalStore;
+                const globalInterval = Alpine.store('globalInterval');
                 effect(() => {
                     globalInterval.flag;
                     evaluate(expression, { "$globalInterval": globalInterval });
@@ -83,7 +97,7 @@ class AlpineTimePlugin extends AlpinePluginBase<TimeSettings> {
                 resume() {
                     this.intervalID = setInterval(() => this.update(), this.interval);
                 }
-            } as alpine.GlobalIntervalStore;
+            } as Stores["globalInterval"];
 
             globalInterval.init();
             return globalInterval;

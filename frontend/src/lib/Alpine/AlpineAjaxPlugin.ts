@@ -1,11 +1,6 @@
-import type {
-    Alpine,
-    DirectiveData,
-    DirectiveUtilities,
-    ElementWithXAttributes,
-} from 'alpinejs';
+import type { Alpine } from 'alpinejs';
 import AlpinePluginBase from "./AlpinePluginBase";
-import type { PluginMagics } from "./AlpinePluginBase";
+import type { PluginDirectives, PluginMagics } from "./AlpinePluginBase";
 import { isEqual } from "lodash";
 import { replaceElementContent, replaceElement, CallableClass } from "@utils";
 
@@ -21,23 +16,13 @@ declare module "alpinejs" {
 type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 type SwapStrategy = "after" | "append" | "before" | "inside" | "none" | "prepend" | "replace" | "remove";
 
-type AjaxAlpineElement = ElementWithXAttributes<HTMLElement> & {
+type AjaxAlpineElement = HTMLElement & {
     _x_ajax_headers?: Record<string, any>;
     _x_ajax_target?: HTMLElement;
     _x_ajax_swap_strategy?: SwapStrategy;
     _x_ajax_values?: Record<string, any>;
     _x_ajax_eventSource?: EventSource;
 };
-
-interface AjaxDirectiveCallback {
-    (
-        el: AjaxAlpineElement,
-        directive: DirectiveData, 
-        utilities: DirectiveUtilities,
-    ): void;
-}
-type AjaxDirectiveEntry = AjaxDirectiveCallback | [AjaxDirectiveCallback, string];
-type AjaxPluginDirectives = Record<string, AjaxDirectiveEntry>;
 
 interface AjaxSettings {
     headers: Record<string, any>;
@@ -160,7 +145,7 @@ class AlpineAjaxPlugin extends AlpinePluginBase<AjaxSettings> {
         ajax: (el, { Alpine }) => new AjaxRequestBuilder(el, Alpine, this.createAjaxHandler),
     };
 
-    protected directives: AjaxPluginDirectives = {
+    protected directives: PluginDirectives<AjaxAlpineElement> = {
         ajax: [(el,
             { value, modifiers, expression },
             { Alpine, effect, cleanup, evaluateLater, evaluate }

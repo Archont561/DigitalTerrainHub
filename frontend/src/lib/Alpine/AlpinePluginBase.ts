@@ -1,24 +1,41 @@
-import type { Alpine, DirectiveCallback, Stores, PluginCallback } from "alpinejs";
+import type { 
+    Alpine, 
+    DirectiveData,
+    DirectiveUtilities,
+    MagicUtilities,
+    ElementWithXAttributes, 
+    Stores, 
+    PluginCallback
+} from "alpinejs";
 import { CallableClass } from "@utils";
 import { cloneDeep } from "lodash";
 
-type DirectiveEntry = DirectiveCallback | [DirectiveCallback, string];
-type MagicCallback = Parameters<Alpine["magic"]>[1];
-type StoreCallback<T extends keyof Stores> = (Alpine: Alpine) => Stores[T];
-interface AlpinePluginSettings extends Object { }
+type PluginDirectiveCallback<T extends HTMLElement> = (
+    el: ElementWithXAttributes<T>,
+    directive: DirectiveData,
+    utilities: DirectiveUtilities
+) => void;
 
-export type PluginDirectives = Record<string, DirectiveEntry>;
-export type PluginMagics = Record<string, MagicCallback>;
+interface PluginMagicCallback<T extends HTMLElement> {
+    (el: ElementWithXAttributes<T>, options: MagicUtilities): void;
+};
+
+type StoreCallback<T extends keyof Stores> = (Alpine: Alpine) => Stores[T];
+
+export type PluginDirectives<T extends HTMLElement = HTMLElement, Keys extends string = string> = 
+    Record<string, PluginDirectiveCallback<T> | [PluginDirectiveCallback<T>, Keys]>;
+export type PluginMagics<T extends HTMLElement = HTMLElement> = Record<string, PluginMagicCallback<T>>;
 export type PluginStore = {
     [K in keyof Stores]: StoreCallback<K>;
 };
 
+interface AlpinePluginSettings { }
 interface AlpinePluginProtocol {
-    install: PluginCallback
+    install: PluginCallback;
 }
 
 export default abstract class AlpinePluginBase<
-    TSettings extends AlpinePluginSettings = AlpinePluginSettings
+    TSettings extends Object = AlpinePluginSettings
 > extends CallableClass<AlpinePluginBase> implements AlpinePluginProtocol {
 
     static expose<T extends AlpinePluginBase<any>>(this: new () => T): T & PluginCallback {

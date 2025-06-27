@@ -6,7 +6,7 @@ import type { Point } from 'ol/geom';
 import type { Extent } from "ol/extent";
 import type { Coordinate } from 'ol/coordinate';
 import type { AlpineComponent } from 'alpinejs';
-import type { GCPointBinding } from '../../lib/db/GCPPointsDB';
+import type { GCPointBinding } from '@lib/db/GCPPointsDB';
 
 
 export type OlPoint = Feature<Point>;
