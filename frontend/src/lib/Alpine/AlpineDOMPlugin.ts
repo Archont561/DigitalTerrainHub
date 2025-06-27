@@ -1,4 +1,6 @@
 import type { Alpine } from "alpinejs";
+import AlpinePluginBase from "./AlpinePluginBase";
+import type { PluginMagics } from "./AlpinePluginBase";
 import { makeClassCallable } from "@utils";
 
 declare module "alpinejs" {
@@ -11,7 +13,6 @@ declare module "alpinejs" {
     }
 }
 
-type AlpineMagicCallback = Parameters<Alpine["magic"]>[1];
 type FindMagic = SingleDOMQueryBuilder & {
     (...args: Parameters<SingleDOMQueryBuilder["query"]>): ReturnType<SingleDOMQueryBuilder["query"]>;
 };;
@@ -139,20 +140,13 @@ class SingleDOMQueryBuilder extends BaseQueryBuilder<HTMLElement | null> {
 
 const CallableSingleDOMQueryBuilder = makeClassCallable(SingleDOMQueryBuilder, "query");
 
-class AlpineDOMPlugin {
-    private settings = {};
-    private CallableDOMQueryBuilder = CallableSingleDOMQueryBuilder;
 
-    getSettings() {
-        return { ...this.settings };
+class AlpineDOMPlugin extends AlpinePluginBase {
+    protected PLUGIN_NAME = "domPlugin"
+
+    protected magics: PluginMagics = {
+        find: (el, { Alpine }) => new CallableSingleDOMQueryBuilder(el, Alpine),
     }
-
-    install(Alpine: Alpine) {
-        Alpine.magic("find", this.$find);
-        Alpine.domPlugin = this;
-    }
-
-    private $find: AlpineMagicCallback = (el, { Alpine }) => new this.CallableDOMQueryBuilder(el, Alpine);
 }
 
-export default new (makeClassCallable(AlpineDOMPlugin, "install"));
+export default AlpineDOMPlugin.expose();

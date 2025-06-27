@@ -1,5 +1,6 @@
-import type { Alpine, DirectiveCallback } from 'alpinejs';
-import { getRelativeTimeBetweenDates, makeClassCallable } from "@utils";
+import AlpinePluginBase from "./AlpinePluginBase";
+import type { PluginDirectives, PluginMagics, PluginStore } from "./AlpinePluginBase";
+import { getRelativeTimeBetweenDates } from "@utils";
 
 declare module "alpinejs" {
     interface Alpine {
@@ -10,61 +11,55 @@ declare module "alpinejs" {
     }
 }
 
-type AlpineMagicCallback = Parameters<Alpine["magic"]>[1];
+interface TimeSettings {
+    defaultInterval: number,
+}
 
-class AlpineTimePlugin {
-    private settings = {
+class AlpineTimePlugin extends AlpinePluginBase<TimeSettings> {
+    protected PLUGIN_NAME = "timePlugin";
+
+    protected settings = {
         defaultInterval: 100,
+    } as TimeSettings;
+
+    protected magics: PluginMagics = {
+        relativeTime: () => getRelativeTimeBetweenDates,
     };
 
-    getSettings() {
-        return { ...this.settings };
-    }
-
-    install(Alpine: Alpine) {
-        this.settings = Alpine.reactive(this.settings);
-        Alpine.magic("$relativeTime", this.$relativeTime);
-        Alpine.directive("screen", this['x-interval']);
-        Object.entries(this.pluginStoreCallbacks).forEach(([key, callback]) => {
-            Alpine.store(key, callback(Alpine));
-        });
-        Alpine.timePlugin = this;
-    }
-
-    private $relativeTime: AlpineMagicCallback = () => getRelativeTimeBetweenDates;
-
-    private "x-interval": DirectiveCallback = (el,
-        { modifiers, expression },
-        { evaluate, cleanup, effect, Alpine }
-    ) => {
-        const firstModifier = modifiers.at(0);
-        if (firstModifier === "global") {
-            const globalInterval = Alpine.store('globalInterval') as alpine.GlobalIntervalStore;
-            effect(() => {
-                globalInterval.flag;
-                evaluate(expression, { "$globalInterval": globalInterval });
-            });
-        } else {
-            let intervalID: ReturnType<typeof setInterval>;
-            const shouldUseDefaultInterval = !firstModifier || isNaN(Number(firstModifier));
-
-            effect(() => {
-                const interval = shouldUseDefaultInterval
-                    ? this.settings.defaultInterval
-                    : parseInt(firstModifier);
-
-                clearInterval(intervalID);
-                intervalID = setInterval(evaluate, interval, expression);
-            });
-            
-            cleanup(() => {
-                clearInterval(intervalID);
-            });
-
+    protected directives: PluginDirectives = {
+        interval: (el,
+            { modifiers, expression },
+            { evaluate, cleanup, effect, Alpine }
+        ) => {
+            const firstModifier = modifiers.at(0);
+            if (firstModifier === "global") {
+                const globalInterval = Alpine.store('globalInterval') as alpine.GlobalIntervalStore;
+                effect(() => {
+                    globalInterval.flag;
+                    evaluate(expression, { "$globalInterval": globalInterval });
+                });
+            } else {
+                let intervalID: ReturnType<typeof setInterval>;
+                const shouldUseDefaultInterval = !firstModifier || isNaN(Number(firstModifier));
+    
+                effect(() => {
+                    const interval = shouldUseDefaultInterval
+                        ? this.settings.defaultInterval
+                        : parseInt(firstModifier);
+    
+                    clearInterval(intervalID);
+                    intervalID = setInterval(evaluate, interval, expression);
+                });
+                
+                cleanup(() => {
+                    clearInterval(intervalID);
+                });
+    
+            }
         }
     }
 
-    private pluginStoreCallbacks: Record<string, (Alpine: Alpine) => any> = {
+    protected pluginStore: PluginStore = {
         globalInterval: () => {
             const globalInterval =  {
                 interval: 1000,
@@ -94,7 +89,6 @@ class AlpineTimePlugin {
             return globalInterval;
         },
     }
-
 }
 
-export default new (makeClassCallable(AlpineTimePlugin, "install"));
+export default AlpineTimePlugin.expose();

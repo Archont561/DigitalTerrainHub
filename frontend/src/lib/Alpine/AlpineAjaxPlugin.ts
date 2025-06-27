@@ -4,6 +4,8 @@ import type {
     DirectiveUtilities,
     ElementWithXAttributes,
 } from 'alpinejs';
+import AlpinePluginBase from "./AlpinePluginBase";
+import type { PluginMagics } from "./AlpinePluginBase";
 import { isEqual } from "lodash";
 import { replaceElementContent, replaceElement, makeClassCallable } from "@utils";
 
@@ -32,12 +34,12 @@ type AjaxAlpineElement = ElementWithXAttributes<HTMLElement> & {
 interface AjaxDirectiveCallback {
     (
         el: AjaxAlpineElement,
-        directive: DirectiveData,
-        utilities: DirectiveUtilities
+        directive: DirectiveData, 
+        utilities: DirectiveUtilities,
     ): void;
 }
-
-type AlpineMagicCallback = Parameters<Alpine["magic"]>[1];
+type AjaxDirectiveEntry = AjaxDirectiveCallback | [AjaxDirectiveCallback, string];
+type AjaxPluginDirectives = Record<string, AjaxDirectiveEntry>;
 
 interface AjaxSettings {
     headers: Record<string, any>;
@@ -132,17 +134,18 @@ class AjaxRequestBuilder {
     }
 }
 
-class AlpineAjaxPlugin {
-    private settings: AjaxSettings = {
+class AlpineAjaxPlugin extends AlpinePluginBase<AjaxSettings> {
+    protected PLUGIN_NAME = "ajaxPlugin";
+    protected settings = {
         headers: {},
         swapStrategy: "replace",
         transitions: false,
         defaultListenerDelay: 300,
-    } as const;
+    } as AjaxSettings;
 
     private CallableAjaxRequestBuilder = makeClassCallable(AjaxRequestBuilder, "send");
 
-    public readonly DEFAULT_AJAX_HEADERS: Record<string, any> = {
+    public readonly DEFAULT_AJAX_HEADERS = {
         "X-Alpine-Ajax-Request": true
     } as const;
 
@@ -156,136 +159,113 @@ class AlpineAjaxPlugin {
         AfterSwap: 'ajax:after-swap',
     } as const;
 
-    getSettings() {
-        return { ...this.settings };
-    }
+    protected magics: PluginMagics = {
+        ajax: (el, { Alpine }) => new this.CallableAjaxRequestBuilder(el, Alpine, this.createAjaxHandler),
+    };
 
-    setSettings(options: Partial<AjaxSettings>) {
-        Object.entries(options).forEach(([key, value]) => {
-            if (!(key in this.settings)) throw new Error(`Invalid settings property: ${key}`);
-            //@ts-ignore
-            this.settings[key] = value;
-        });
-        return this;
-    }
-
-    install(Alpine: Alpine) {
-        Alpine.magic("ajax", this.$ajax);
-        Alpine.directive("ajax", this["x-ajax"]).before("ajax-sse");
-        Alpine.directive("ajax-target", this["x-ajax-target"]).before("ajax");
-        Alpine.directive("ajax-headers", this["x-ajax-headers"]).before("ajax");
-        Alpine.directive("ajax-values", this["x-ajax-values"]).before("ajax");
-        Alpine.directive("ajax-sse", this["x-ajax-sse"]);
-        Alpine.ajaxPlugin = this;
-    }
-
-    private $ajax: AlpineMagicCallback = (el, { Alpine }) => new this.CallableAjaxRequestBuilder(el, Alpine, this.createAjaxHandler);
-
-    private 'x-ajax' = ((el,
-        { value, modifiers, expression },
-        { Alpine, effect, cleanup, evaluateLater, evaluate }
-    ) => {
-        const method = modifiers.find(modifier => ["get", "put", "post", "delete", "patch"].includes(modifier.toLowerCase())) || "get";
-        const ajaxHandler = this.createAjaxHandler(el, method.toUpperCase() as HTTPMethod);
-
-        if (value) {
-            const ajaxURL = evaluate(expression) as URLString;
-            if (value === "load") {
-                Alpine.nextTick(() => {
-                    ajaxHandler(ajaxURL);
-                })
+    protected directives: AjaxPluginDirectives = {
+        ajax: [(el,
+            { value, modifiers, expression },
+            { Alpine, effect, cleanup, evaluateLater, evaluate }
+        ) => {
+            const method = modifiers.find(modifier => ["get", "put", "post", "delete", "patch"].includes(modifier.toLowerCase())) || "get";
+            const ajaxHandler = this.createAjaxHandler(el, method.toUpperCase() as HTTPMethod);
+    
+            if (value) {
+                const ajaxURL = evaluate(expression) as URLString;
+                if (value === "load") {
+                    Alpine.nextTick(() => {
+                        ajaxHandler(ajaxURL);
+                    })
+                } else {
+                    const shouldDebounce = modifiers.includes("debounce");
+                    const shouldThrottle = modifiers.includes("throttle");
+                    const eventListenerModifier = shouldDebounce
+                        ? Alpine.debounce
+                        : shouldThrottle
+                            ? Alpine.throttle
+                            : (func: CallableFunction) => func();
+                    const delay = this.getDelay(modifiers.find(modifier => /^\d+(ms|s)?$/.test(modifier)));
+                    const listener = () => eventListenerModifier(() => ajaxHandler(ajaxURL), delay);
+    
+                    el.addEventListener(value, listener);
+                    cleanup(() => {
+                        el.removeEventListener(value, listener);
+                    });
+                }
             } else {
-                const shouldDebounce = modifiers.includes("debounce");
-                const shouldThrottle = modifiers.includes("throttle");
-                const eventListenerModifier = shouldDebounce
-                    ? Alpine.debounce
-                    : shouldThrottle
-                        ? Alpine.throttle
-                        : (func: CallableFunction) => func();
-                const delay = this.getDelay(modifiers.find(modifier => /^\d+(ms|s)?$/.test(modifier)));
-                const listener = () => eventListenerModifier(() => ajaxHandler(ajaxURL), delay);
-
-                el.addEventListener(value, listener);
+                const getAjaxURL = evaluateLater(expression);
+                effect(() => {
+                    getAjaxURL(ajaxURL => {
+                        ajaxHandler(ajaxURL as URLString);
+                    });
+                });
+            }
+        }, "ajax-sse"],
+        'ajax-target': [(el,
+            { value, modifiers, expression },
+            { evaluate }
+        ) => {
+            let from = document.querySelector;
+            if (value === "closest") from = el.closest;
+            else if (value === "inside") from = el.querySelector;
+            el._x_ajax_target = (from(evaluate(expression) as string) || el) as HTMLElement;
+            el._x_ajax_swap_strategy = (modifiers.at(0) || this.settings.swapStrategy) as SwapStrategy;
+        }, "ajax"],
+        'ajax-headers': [(el, { expression }, { evaluate }) => {
+            el._x_ajax_headers = JSON.parse(evaluate(expression));
+        }, "ajax"],
+        'ajax-values': [(el, { expression, value }, { evaluate }) => {
+            const values = JSON.parse(evaluate(expression) || "");
+            if (value === "append") {
+                el._x_ajax_values = Object.assign(el._x_ajax_values || {}, values);
+            } else {
+                el._x_ajax_values = values;
+            }
+        }, "ajax"],
+        'ajax-sse': (el,
+            { value, expression },
+            { cleanup, evaluate }
+        ) => {
+            if (!value) {
+                const source = el._x_ajax_eventSource = new EventSource(evaluate(expression));
+                source.onerror = error => {
+                    if (!this.dispatch(el, 'ajax-sse:error', { detail: { error } })) return;
+                    console.error(`SSE Error: ${error}`);
+                };
+    
                 cleanup(() => {
-                    el.removeEventListener(value, listener);
+                    source.close();
+                });
+            } else {
+                const handler = (() => {
+                    const hasTarget = el.getAttributeNames().some(attr => attr.startsWith("x-ajax-target"));
+                    const isExpressionEmpty = expression.trim() === "";
+    
+                    if (!isExpressionEmpty) return (event: MessageEvent) => evaluate(expression, { $sse: event, $swap: this.swap });
+    
+                    if (hasTarget) return (event: MessageEvent) => this.swap(
+                        el._x_ajax_target as HTMLElement,
+                        el._x_ajax_swap_strategy as SwapStrategy,
+                        event.data
+                    );
+    
+                    return (event: MessageEvent) => this.swap(el, "replace", event.data);
+                })();
+    
+                const closestSSEAjaxAlpineElement = el.closest("[x-ajax-sse]") as AjaxAlpineElement;
+                const source = closestSSEAjaxAlpineElement._x_ajax_eventSource;
+                if (!source) {
+                    throw new Error('No event source specified!');
+                }
+    
+                source.addEventListener(value, handler);
+                cleanup(() => {
+                    source.removeEventListener(value, handler);
                 });
             }
-        } else {
-            const getAjaxURL = evaluateLater(expression);
-            effect(() => {
-                getAjaxURL(ajaxURL => {
-                    ajaxHandler(ajaxURL as URLString);
-                });
-            });
-        }
-    }) as AjaxDirectiveCallback;
-
-    private 'x-ajax-target' = ((el,
-        { value, modifiers, expression },
-        { evaluate }
-    ) => {
-        let from = document.querySelector;
-        if (value === "closest") from = el.closest;
-        else if (value === "inside") from = el.querySelector;
-        el._x_ajax_target = (from(evaluate(expression) as string) || el) as HTMLElement;
-        el._x_ajax_swap_strategy = (modifiers.at(0) || this.settings.swapStrategy) as SwapStrategy;
-    }) as AjaxDirectiveCallback;
-
-    private 'x-ajax-headers' = ((el, { expression }, { evaluate }) => {
-        el._x_ajax_headers = JSON.parse(evaluate(expression));
-    }) as AjaxDirectiveCallback;
-
-    private 'x-ajax-values' = ((el, { expression, value }, { evaluate }) => {
-        const values = JSON.parse(evaluate(expression) || "");
-        if (value === "append") {
-            el._x_ajax_values = Object.assign(el._x_ajax_values || {}, values);
-        } else {
-            el._x_ajax_values = values;
-        }
-    }) as AjaxDirectiveCallback;
-
-    private 'x-ajax-sse' = ((el,
-        { value, expression },
-        { cleanup, evaluate }
-    ) => {
-        if (!value) {
-            const source = el._x_ajax_eventSource = new EventSource(evaluate(expression));
-            source.onerror = error => {
-                if (!this.dispatch(el, 'ajax-sse:error', { detail: { error } })) return;
-                console.error(`SSE Error: ${error}`);
-            };
-
-            cleanup(() => {
-                source.close();
-            });
-        } else {
-            const handler = (() => {
-                const hasTarget = el.getAttributeNames().some(attr => attr.startsWith("x-ajax-target"));
-                const isExpressionEmpty = expression.trim() === "";
-
-                if (!isExpressionEmpty) return (event: MessageEvent) => evaluate(expression, { $sse: event, $swap: this.swap });
-
-                if (hasTarget) return (event: MessageEvent) => this.swap(
-                    el._x_ajax_target as HTMLElement,
-                    el._x_ajax_swap_strategy as SwapStrategy,
-                    event.data
-                );
-
-                return (event: MessageEvent) => this.swap(el, "replace", event.data);
-            })();
-
-            const closestSSEAjaxAlpineElement = el.closest("[x-ajax-sse]") as AjaxAlpineElement;
-            const source = closestSSEAjaxAlpineElement._x_ajax_eventSource;
-            if (!source) {
-                throw new Error('No event source specified!');
-            }
-
-            source.addEventListener(value, handler);
-            cleanup(() => {
-                source.removeEventListener(value, handler);
-            });
-        }
-    }) as AjaxDirectiveCallback;
+        },
+    };
 
     private createAjaxHandler(el: AjaxAlpineElement, method: HTTPMethod) {
         const target = el._x_ajax_target || el;
@@ -545,4 +525,4 @@ class AlpineAjaxPlugin {
 
 }
 
-export default new (makeClassCallable(AlpineAjaxPlugin, "install"));
+export default AlpineAjaxPlugin.expose();

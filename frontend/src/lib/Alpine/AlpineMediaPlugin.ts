@@ -1,5 +1,5 @@
-import type { Alpine, DirectiveCallback } from 'alpinejs';
-import { makeClassCallable } from "@utils";
+import AlpinePluginBase from "./AlpinePluginBase";
+import type { PluginDirectives } from "./AlpinePluginBase";
 
 declare module "alpinejs" {
     interface Alpine {
@@ -14,8 +14,9 @@ interface MediaSettings {
     mediaQueriesStorage: Map<string, MediaQueryList>;
 }
 
-class AlpineMediaPlugin {
-    private settings: MediaSettings = {
+class AlpineMediaPlugin extends AlpinePluginBase<MediaSettings> {
+    protected PLUGIN_NAME = "mediaPlugin";
+    protected settings = {
         breakpoints: {
             xs: '30rem',   // 480px
             sm: '40rem',   // 640px
@@ -25,52 +26,45 @@ class AlpineMediaPlugin {
             '2xl': '96rem' // 1536px
         },
         mediaQueriesStorage: new Map(),
-    };
-
-    getSettings() {
-        return {...this.settings};
-    }
+    } as MediaSettings;
 
     setBreakpoints(breakpoints: Record<string, string>) {
         Object.assign(this.settings.breakpoints, breakpoints);
         return this;
     }
 
-    install(Alpine: Alpine) {
-        Alpine.directive("screen", this['x-screen']);
-        Alpine.mediaPlugin = this;
-    }
-
-    private 'x-screen': DirectiveCallback = (el, { modifiers, expression, value }, { evaluate, cleanup }) => {
-        let mediaQueryString: string;
-        let mediaQueryTriggerMode: MediaQueryEventTriggerMode = "change";
-
-        if (value.includes("-")) {
-            const [minBreakpoint, maxBreakpoint] = value.split("-").map(this.getBreakpointValue.bind(this));
-            mediaQueryString = `(min-width: ${minBreakpoint}) and (max-width: calc(${maxBreakpoint} - 0.02px))`;
-            mediaQueryTriggerMode = "match";
-        } else {
-            mediaQueryString = `(min-width: ${this.getBreakpointValue(value)})`;
-            if (modifiers.includes("larger")) mediaQueryTriggerMode = "match";
-            if (modifiers.includes("smaller")) mediaQueryTriggerMode = "noMatch";
+    protected directives: PluginDirectives = {
+        screen: (el, { modifiers, expression, value }, { evaluate, cleanup }) => {
+            let mediaQueryString: string;
+            let mediaQueryTriggerMode: MediaQueryEventTriggerMode = "change";
+    
+            if (value.includes("-")) {
+                const [minBreakpoint, maxBreakpoint] = value.split("-").map(this.getBreakpointValue.bind(this));
+                mediaQueryString = `(min-width: ${minBreakpoint}) and (max-width: calc(${maxBreakpoint} - 0.02px))`;
+                mediaQueryTriggerMode = "match";
+            } else {
+                mediaQueryString = `(min-width: ${this.getBreakpointValue(value)})`;
+                if (modifiers.includes("larger")) mediaQueryTriggerMode = "match";
+                if (modifiers.includes("smaller")) mediaQueryTriggerMode = "noMatch";
+            }
+    
+            const mediaQuery = this.getMediaQuery(mediaQueryString);
+    
+            const handler = this.createMediaQueryHandler(
+                mediaQueryTriggerMode,
+                evaluate,
+                expression,
+                { "$mediaQuery": mediaQuery }
+            );
+    
+            handler({ matches: mediaQuery.matches } as MediaQueryListEvent);
+    
+            mediaQuery.addEventListener("change", handler);
+    
+            cleanup(() => {
+                mediaQuery.removeEventListener("change", handler);
+            });
         }
-
-        const mediaQuery = this.getMediaQuery(mediaQueryString);
-
-        const handler = this.createMediaQueryHandler(
-            mediaQueryTriggerMode,
-            evaluate,
-            expression,
-            { "$mediaQuery": mediaQuery }
-        );
-
-        handler({ matches: mediaQuery.matches } as MediaQueryListEvent);
-
-        mediaQuery.addEventListener("change", handler);
-
-        cleanup(() => {
-            mediaQuery.removeEventListener("change", handler);
-        });
     }
 
     private getBreakpointValue(value: string): string {
@@ -98,4 +92,4 @@ class AlpineMediaPlugin {
     
 }
 
-export default new (makeClassCallable(AlpineMediaPlugin, "install"));
+export default AlpineMediaPlugin.expose();
