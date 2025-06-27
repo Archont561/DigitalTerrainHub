@@ -56,7 +56,7 @@ export function resolveURLTree<T>(config: T, basePath = ""): URLObject<T> {
     if (Array.isArray((config as any).endpoints)) {
         for (const ep of (config as any).endpoints) {
             // Convert kebab-case endpoint key to camelCase for object keys and URLs
-            const key = ep === "" ? "home" : _(ep);
+            const key = ep === "" ? "home" : _.kebabCase(ep);
             if (ep === "") {
                 obj["home"] = () => resolveURL`${basePath}`;
             } else {
