@@ -13,7 +13,7 @@ declare module "alpinejs" {
 
 type AlpineMagicCallback = Parameters<Alpine["magic"]>[1];
 type FindMagic = DOMQueryBuilder & {
-    (...args: Parameters<DOMQueryBuilder["execute"]>): ReturnType<DOMQueryBuilder["execute"]>;
+    (...args: Parameters<DOMQueryBuilder["query"]>): ReturnType<DOMQueryBuilder["query"]>;
 };;
 type SelectorFunction = "querySelector" | "querySelectorAll" | "closest";
 
@@ -64,7 +64,7 @@ class DOMQueryBuilder {
         return this;
     }
 
-    execute(query: string): HTMLElement | HTMLElement[] | null {
+    query(query: string): HTMLElement | HTMLElement[] | null {
         // Call selectorFunction with the query string
         //@ts-ignore
         const rawResult = this.from[this.selectorFunction].call(this.from, query);
@@ -85,7 +85,7 @@ class DOMQueryBuilder {
 
 class AlpineDOMPlugin {
     private settings = {};
-    private CallableDOMQueryBuilder = makeClassCallable(DOMQueryBuilder, "execute");
+    private CallableDOMQueryBuilder = makeClassCallable(DOMQueryBuilder, "query");
 
     getSettings() {
         return { ...this.settings };
@@ -98,7 +98,7 @@ class AlpineDOMPlugin {
     }
 
     private $find: AlpineMagicCallback = (el) => new this.CallableDOMQueryBuilder(el);
-    
+
     private $component: AlpineMagicCallback = (el, { Alpine }) => (id: string) => {
         const componentElement = document.querySelector(`[x-id='${id}']`);
         if (!componentElement) {
