@@ -31,7 +31,7 @@ abstract class BaseQueryBuilder<TQueryResult> {
     protected selectorFunction: SelectorFunction = "querySelector";
     protected shouldLookInsideElement = false;
 
-    constructor(protected el: HTMLElement, startSettings: QueryBuilderSettings = {}) {
+    constructor(protected el: HTMLElement, protected Alpine: Alpine, startSettings: QueryBuilderSettings = {}) {
         if (startSettings.from) this.from = startSettings.from;
         if (startSettings.shouldLookInsideElement) this.shouldLookInsideElement = startSettings.shouldLookInsideElement;
         if (startSettings.selectorFunction) this.selectorFunction = startSettings.selectorFunction;
@@ -76,26 +76,41 @@ abstract class BaseQueryBuilder<TQueryResult> {
     }
 
     abstract query(selector: string): TQueryResult;
+
+    protected createProxyForQueryResultHTMLElement(target: HTMLElement) {
+        const Alpine = this.Alpine;
+        return new Proxy(target, {
+            get(obj, prop, receiver) {
+                if (prop === "text") {
+                    return () => obj.textContent ?? "";
+                }
+                if (prop === "$data") {
+                    return Alpine.$data(obj);
+                }
+                return Reflect.get(obj, prop, receiver);
+            },
+        });
+    }
 }
 
 class MultiDOMQueryBuilder extends BaseQueryBuilder<HTMLElement[]> {
-    constructor(el: HTMLElement, startSettings: Omit<QueryBuilderSettings, "selectorFunction"> = {}) {
-        super(el, startSettings);
+    constructor(el: HTMLElement, Alpine: Alpine, startSettings: Omit<QueryBuilderSettings, "selectorFunction"> = {}) {
+        super(el, Alpine, startSettings);
         this.selectorFunction = "querySelectorAll";
     }
 
     query(selector: string): HTMLElement[] {
         //@ts-ignore
         const results = Array.from(this.from[this.selectorFunction].call(this.from, selector) as NodeListOf<HTMLElement>);
-        return this.applyFilters(results);
+        return this.applyFilters(results).map(el => this.createProxyForQueryResultHTMLElement(el));
     }
 }
 
 class SingleDOMQueryBuilder extends BaseQueryBuilder<HTMLElement | null> {
     private allCalled = false;
 
-    constructor(el: HTMLElement, startSettings: Omit<QueryBuilderSettings, "selectorFunction"> = {}) {
-        super(el, startSettings);
+    constructor(el: HTMLElement, Alpine: Alpine, startSettings: Omit<QueryBuilderSettings, "selectorFunction"> = {}) {
+        super(el, Alpine, startSettings);
         this.selectorFunction = "querySelector";
     }
 
@@ -105,7 +120,7 @@ class SingleDOMQueryBuilder extends BaseQueryBuilder<HTMLElement | null> {
         }
         this.allCalled = true;
 
-        return new MultiDOMQueryBuilder(this.el, {
+        return new MultiDOMQueryBuilder(this.el, this.Alpine, {
             filters: this.filters,
             from: this.from,
             shouldLookInsideElement: this.shouldLookInsideElement,
@@ -115,9 +130,8 @@ class SingleDOMQueryBuilder extends BaseQueryBuilder<HTMLElement | null> {
     query(selector: string): HTMLElement | null {
         //@ts-ignore
         const result = this.from[this.selectorFunction].call(this.from, selector) as (HTMLElement | null);
-
-        const filtered = this.applyFilters(result === null ? [] : [result]);
-        return filtered.at(0) || null;
+        const resultAfterFiltration = this.applyFilters(result === null ? [] : [result]).at(0) || null;
+        return resultAfterFiltration === null ? null : this.createProxyForQueryResultHTMLElement(resultAfterFiltration);
     }
 }
 
@@ -131,21 +145,10 @@ class AlpineDOMPlugin {
 
     install(Alpine: Alpine) {
         Alpine.magic("find", this.$find);
-        Alpine.magic("component", this.$component);
         Alpine.domPlugin = this;
     }
 
-    private $find: AlpineMagicCallback = (el) => new this.CallableDOMQueryBuilder(el);
-
-    private $component: AlpineMagicCallback = (el, { Alpine }) => (id: string) => {
-        const componentElement = document.querySelector(`[x-id='${id}']`);
-        if (!componentElement) {
-            console.warn(`$component: No component found with x-id="${id}"`);
-            return {};
-        }
-        return Alpine.$data(componentElement as any);
-    }
-
+    private $find: AlpineMagicCallback = (el, { Alpine }) => new this.CallableDOMQueryBuilder(el, Alpine);
 }
 
 export default new (makeClassCallable(AlpineDOMPlugin, "install"));
