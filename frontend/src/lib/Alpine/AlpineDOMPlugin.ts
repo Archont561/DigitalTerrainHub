@@ -6,6 +6,7 @@ import { CallableClass } from "@utils";
 declare module "alpinejs" {
     interface Alpine {
         domPlugin: AlpineDOMPlugin;
+        $find: SingleDOMQueryBuilder;
     }
     interface Magics<T> {
         $find: SingleDOMQueryBuilder;
@@ -15,37 +16,23 @@ declare module "alpinejs" {
 type SelectorFunction = "querySelector" | "querySelectorAll" | "closest";
 
 interface QueryBuilderSettings {
-    from?: HTMLElement | Document;
-    selectorFunction?: SelectorFunction;
-    shouldLookInsideElement?: boolean;
+    searchStartNode?: HTMLElement | Document;
     filters?: ((el: HTMLElement) => boolean)[];
 }
 
 abstract class BaseQueryBuilder<TQueryResult> extends CallableClass<BaseQueryBuilder<TQueryResult>> {
     protected filters: ((el: HTMLElement) => boolean)[] = [];
-    protected from: HTMLElement | Document = document;
-    protected selectorFunction: SelectorFunction = "querySelector";
-    protected shouldLookInsideElement = false;
+    protected searchStartNode: HTMLElement | Document = document;
+    protected selectorFunction!: SelectorFunction;
 
-    constructor(protected el: HTMLElement, protected Alpine: Alpine, startSettings: QueryBuilderSettings = {}) {
+    constructor(protected Alpine: Alpine, startSettings: QueryBuilderSettings = {}) {
         super("query");
-        if (startSettings.from) this.from = startSettings.from;
-        if (startSettings.shouldLookInsideElement) this.shouldLookInsideElement = startSettings.shouldLookInsideElement;
-        if (startSettings.selectorFunction) this.selectorFunction = startSettings.selectorFunction;
+        if (startSettings.searchStartNode) this.searchStartNode = startSettings.searchStartNode;
         if (startSettings.filters) this.filters = [...startSettings.filters];
     }
 
-    get inside(): this {
-        this.from = this.el;
-        this.shouldLookInsideElement = true;
-        return this;
-    }
-
-    get closest(): this {
-        if (!this.shouldLookInsideElement) {
-            this.from = this.el;
-            this.selectorFunction = "closest";
-        }
+    from(from: HTMLElement | Document): this {
+        this.searchStartNode = from;
         return this;
     }
 
@@ -91,14 +78,24 @@ abstract class BaseQueryBuilder<TQueryResult> extends CallableClass<BaseQueryBui
 }
 
 class MultiDOMQueryBuilder extends BaseQueryBuilder<HTMLElement[]> {
-    constructor(el: HTMLElement, Alpine: Alpine, startSettings: Omit<QueryBuilderSettings, "selectorFunction"> = {}) {
-        super(el, Alpine, startSettings);
+    constructor(Alpine: Alpine, startSettings: QueryBuilderSettings = {}) {
+        super(Alpine, startSettings);
         this.selectorFunction = "querySelectorAll";
     }
 
-    query(selector: string): HTMLElement[] {
+    get closest(): this {
+        console.warn(`Cannot query closest element when 'all' mode!`);
+        return this;
+    }
+
+    get all(): this {
+        console.warn(`Already in 'all mode!`);
+        return this;
+    }
+
+    query(query: string): HTMLElement[] {
         //@ts-ignore
-        const results = Array.from(this.from[this.selectorFunction].call(this.from, selector) as NodeListOf<HTMLElement>);
+        const results = Array.from(this.searchStartNode[this.selectorFunction].call(this.searchStartNode, query) as NodeListOf<HTMLElement>);
         return this.applyFilters(results).map(el => this.createProxyForQueryResultHTMLElement(el));
     }
 }
@@ -106,9 +103,18 @@ class MultiDOMQueryBuilder extends BaseQueryBuilder<HTMLElement[]> {
 class SingleDOMQueryBuilder extends BaseQueryBuilder<HTMLElement | null> {
     private allCalled = false;
 
-    constructor(el: HTMLElement, Alpine: Alpine, startSettings: Omit<QueryBuilderSettings, "selectorFunction"> = {}) {
-        super(el, Alpine, startSettings);
+    constructor(Alpine: Alpine, startSettings: QueryBuilderSettings = {}) {
+        super(Alpine, startSettings);
         this.selectorFunction = "querySelector";
+    }
+
+    get closest(): this {
+        if (this.searchStartNode instanceof Document) {
+            console.warn(`Cannot query closest element of Document`);
+            return this;
+        }
+        this.selectorFunction = "closest";
+        return this;
     }
 
     get all(): InstanceType<typeof MultiDOMQueryBuilder> {
@@ -117,16 +123,15 @@ class SingleDOMQueryBuilder extends BaseQueryBuilder<HTMLElement | null> {
         }
         this.allCalled = true;
 
-        return new MultiDOMQueryBuilder(this.el, this.Alpine, {
+        return new MultiDOMQueryBuilder(this.Alpine, {
             filters: this.filters,
-            from: this.from,
-            shouldLookInsideElement: this.shouldLookInsideElement,
+            searchStartNode: this.searchStartNode,
         });
     }
 
-    query(selector: string): HTMLElement | null {
+    query(query: string): HTMLElement | null {
         //@ts-ignore
-        const result = this.from[this.selectorFunction].call(this.from, selector) as (HTMLElement | null);
+        const result = this.searchStartNode[this.selectorFunction].call(this.searchStartNode, query) as (HTMLElement | null);
         const resultAfterFiltration = this.applyFilters(result === null ? [] : [result]).at(0) || null;
         return resultAfterFiltration === null ? null : this.createProxyForQueryResultHTMLElement(resultAfterFiltration);
     }
@@ -136,7 +141,15 @@ class AlpineDOMPlugin extends AlpinePluginBase {
     protected PLUGIN_NAME = "domPlugin"
 
     protected magics: PluginMagics = {
-        find: (el, { Alpine }) => new SingleDOMQueryBuilder(el, Alpine),
+        find: (el, { Alpine }) => new SingleDOMQueryBuilder(Alpine),
+    }
+
+    protected afterInstall(Alpine: Alpine): void {
+        Object.defineProperty(Alpine, "$find", {
+            get() {
+                return new SingleDOMQueryBuilder(Alpine);
+            },
+        });
     }
 }
 
