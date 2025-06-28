@@ -45,3 +45,7 @@
 .align-self-\(--align-self\) {
   align-self: var(--align-self);
 }
+
+.grid-template-\(--grid-template\) {
+  grid-template: var(--grid-template);
+}
