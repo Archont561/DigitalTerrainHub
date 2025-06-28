@@ -1,5 +1,8 @@
 import type { GridContentPlacementMap, GridPlacementMap } from "./gridPropMaps";
 
+export type PropConverter = (value: any, propName?: string) => Record<string, string>;
+export type PropConverterMap = Record<string, PropConverter>;
+
 export type Breakpoints = 'base' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 export type GridUnit = 'auto' | `${number}px` | `${number}fr` | `${number}rem`;
 export type GridColRowValue = number | GridUnit[] | string;

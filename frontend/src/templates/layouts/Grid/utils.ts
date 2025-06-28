@@ -1,14 +1,12 @@
-import type { GridProps, GridCellProps } from "./types";
+import type { GridProps, GridCellProps, PropConverterMap } from "./types";
 import { GridPlacementMap, GridContentPlacementMap } from "./gridPropMaps";
 import _ from "lodash";
 import { createCSSVarName } from "@utils";
 
-type PropConverter = (value: any, propName?: string) => Record<string, string>;
-
 const getBreakpointSuffix = (bp: string) => bp === "base" ? "" : `-${bp}`;
 const createAstroGridVarName = (...parts: string[]) => createCSSVarName("astro", ...parts);
 
-const propConverters: Record<string, PropConverter> = new Proxy({
+const propConverters: PropConverterMap = new Proxy({
     default: (value, propName) => {
         const varName = {
             colStart: createAstroGridVarName("col", "start"),
@@ -49,7 +47,7 @@ const propConverters: Record<string, PropConverter> = new Proxy({
         [createAstroGridVarName("place", "content")]: GridContentPlacementMap[value],
     }),
 }, {
-    get(target, prop: string): PropConverter {
+    get(target, prop: string) {
         //@ts-ignore
         return (prop in target) ? target[prop] : target.default;
     },

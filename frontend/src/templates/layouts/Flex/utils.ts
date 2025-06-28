@@ -1,6 +1,7 @@
 import type {
     FlexProps,
     FlexItemProps,
+    PropConverterMap,
 } from "./types";
 import {
     FlexItemPlacementMap,
@@ -10,14 +11,11 @@ import {
 import _ from "lodash";
 import { createCSSVarName } from "@utils";
 
-
-type PropConverter = (value: any, propName?: string) => Record<string, string>;
-
 const toWidth = (value: any) => _.isNumber(value) ? `${value}px` : value;
 const getBreakpointSuffix = (bp: string) => bp === "base" ? "" : `-${bp}`;
 const createAstroFlexVarName = (...parts: string[]) => createCSSVarName("astro", ...parts);
 
-const propConverters: Record<string, PropConverter> = new Proxy({
+const propConverters: PropConverterMap = new Proxy({
     default: (value, propName) => ({}),
     direction: (value) => {
         let flexDirValue = value;
@@ -58,7 +56,7 @@ const propConverters: Record<string, PropConverter> = new Proxy({
         return vars;
     },
 }, {
-    get(target, prop: string): PropConverter {
+    get(target, prop: string) {
         //@ts-ignore
         return (prop in target) ? target[prop] : target.default;
     },

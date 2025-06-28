@@ -1,4 +1,8 @@
 import type { FlexPlacementMap, FlexMultilinePlacementMap, FlexItemPlacementMap } from "./flexPropMaps";
+
+export type PropConverter = (value: any, propName?: string) => Record<string, string>;
+export type PropConverterMap = Record<string, PropConverter>;
+
 export type Breakpoints = 'base' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 export type ResponsiveProp<T> = T | Partial<Record<Breakpoints, T>>;
 
