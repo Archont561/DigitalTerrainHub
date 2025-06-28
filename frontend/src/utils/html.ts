@@ -16,3 +16,11 @@ export function replaceElementContent(el: Element, htmlString: string) {
     el.appendChild(fragment);
     return el;
 }
+
+export function toggleCSSProperty(element: HTMLElement, varName: string, value: string) {
+    if (element.style.getPropertyValue(varName)) {
+        element.style.removeProperty(varName);
+    } else {
+        element.style.setProperty(varName, value);
+    }
+}
