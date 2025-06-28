@@ -146,7 +146,28 @@ class AlpineAjaxPlugin extends AlpinePluginBase<AjaxSettings> {
     };
 
     protected directives: PluginDirectives<AjaxAlpineElement> = {
-        ajax: [(el,
+        'ajax-target': (el,
+            { value, modifiers, expression },
+            { evaluate }
+        ) => {
+            let from = document.querySelector;
+            if (value === "closest") from = el.closest;
+            else if (value === "inside") from = el.querySelector;
+            el._x_ajax_target = (from(evaluate(expression) as string) || el) as HTMLElement;
+            el._x_ajax_swap_strategy = (modifiers.at(0) || this.settings.swapStrategy) as SwapStrategy;
+        },
+        'ajax-headers': (el, { expression }, { evaluate }) => {
+            el._x_ajax_headers = JSON.parse(evaluate(expression));
+        },
+        'ajax-values': (el, { expression, value }, { evaluate }) => {
+            const values = JSON.parse(evaluate(expression) || "");
+            if (value === "append") {
+                el._x_ajax_values = Object.assign(el._x_ajax_values || {}, values);
+            } else {
+                el._x_ajax_values = values;
+            }
+        },
+        ajax: (el,
             { value, modifiers, expression },
             { Alpine, effect, cleanup, evaluateLater, evaluate }
         ) => {
@@ -183,28 +204,7 @@ class AlpineAjaxPlugin extends AlpinePluginBase<AjaxSettings> {
                     });
                 });
             }
-        }, "ajax-sse"],
-        'ajax-target': [(el,
-            { value, modifiers, expression },
-            { evaluate }
-        ) => {
-            let from = document.querySelector;
-            if (value === "closest") from = el.closest;
-            else if (value === "inside") from = el.querySelector;
-            el._x_ajax_target = (from(evaluate(expression) as string) || el) as HTMLElement;
-            el._x_ajax_swap_strategy = (modifiers.at(0) || this.settings.swapStrategy) as SwapStrategy;
-        }, "ajax"],
-        'ajax-headers': [(el, { expression }, { evaluate }) => {
-            el._x_ajax_headers = JSON.parse(evaluate(expression));
-        }, "ajax"],
-        'ajax-values': [(el, { expression, value }, { evaluate }) => {
-            const values = JSON.parse(evaluate(expression) || "");
-            if (value === "append") {
-                el._x_ajax_values = Object.assign(el._x_ajax_values || {}, values);
-            } else {
-                el._x_ajax_values = values;
-            }
-        }, "ajax"],
+        },
         'ajax-sse': (el,
             { value, expression },
             { cleanup, evaluate }
