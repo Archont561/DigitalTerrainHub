@@ -6,6 +6,7 @@ import type {
     HTMLOlTileLayerProps,
     HTMLOlVectorLayerProps,
 } from '@lib/WebComponents';
+import { AlpineComponent } from 'alpinejs';
 
 export { };
 
@@ -24,6 +25,8 @@ declare global {
         type GCPEditor = import("./alpineComponents/GCPEditor").GCPEditorComponent;
         type OptionsForm = import("./alpineComponents/OptionsForm").FormComponent;
         type UppyWidget = import("./alpineComponents/UppyWidgets").UppyWidgetComponent;
+
+        type Generic<T> = AlpineComponent<T>; 
     }
 
     namespace Astro {
