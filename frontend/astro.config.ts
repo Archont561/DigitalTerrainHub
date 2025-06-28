@@ -5,12 +5,13 @@ import icon from 'astro-icon';
 import dotenv from 'dotenv';
 import node from '@astrojs/node';
 import { strictCustomRouting } from '@inox-tools/custom-routing';
-import { getRoutes } from "@pages";
-import AlpineJSEntrypointURL from "@lib/Alpine/index?url";
+import { getRoutes } from "./src/templates/pages";
 
 dotenv.config();
 export const isDev = import.meta.env.DEV;
 export const baseURL = process.env.ASTRO_BASE_URL ?? "/astro";
+
+const AlpineJSEntrypointURL = "./src/lib/Alpine/index.ts";
 
 export default defineConfig({
   base: isDev ? undefined : baseURL,
