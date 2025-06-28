@@ -50,7 +50,7 @@ class AlpineTimePlugin extends AlpinePluginBase<TimeSettings> {
                 const globalInterval = Alpine.store('globalInterval');
                 effect(() => {
                     globalInterval.flag;
-                    evaluate(expression, { "$globalInterval": globalInterval });
+                    evaluate(expression, { scope: { "$globalInterval": globalInterval } });
                 });
             } else {
                 let intervalID: ReturnType<typeof setInterval>;

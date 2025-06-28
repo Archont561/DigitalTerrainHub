@@ -224,7 +224,8 @@ class AlpineAjaxPlugin extends AlpinePluginBase<AjaxSettings> {
                     const hasTarget = el.getAttributeNames().some(attr => attr.startsWith("x-ajax-target"));
                     const isExpressionEmpty = expression.trim() === "";
     
-                    if (!isExpressionEmpty) return (event: MessageEvent) => evaluate(expression, { $sse: event, $swap: this.swap });
+                    if (!isExpressionEmpty) return (event: MessageEvent) => evaluate(
+                        expression, { scope: { $sse: event, $swap: this.swap } });
     
                     if (hasTarget) return (event: MessageEvent) => this.swap(
                         el._x_ajax_target as HTMLElement,

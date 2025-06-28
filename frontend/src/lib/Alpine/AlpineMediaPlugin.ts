@@ -54,7 +54,7 @@ class AlpineMediaPlugin extends AlpinePluginBase<MediaSettings> {
                 mediaQueryTriggerMode,
                 evaluate,
                 expression,
-                { "$mediaQuery": mediaQuery }
+                { scope: { "$mediaQuery": mediaQuery } }
             );
     
             handler({ matches: mediaQuery.matches } as MediaQueryListEvent);
