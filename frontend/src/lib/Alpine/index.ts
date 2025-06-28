@@ -4,6 +4,7 @@ import dom from "./AlpineDOMPlugin";
 import time from "./AlpineTimePlugin";
 import media from "./AlpineMediaPlugin";
 import ajax from "./AlpineAjaxPlugin";
+import styles from "./AlpineStylesPlugin";
 
 
 export default (Alpine: Alpine) => {
@@ -11,6 +12,7 @@ export default (Alpine: Alpine) => {
     Alpine.plugin(dom);
     Alpine.plugin(time);
     Alpine.plugin(media);
+    Alpine.plugin(styles);
     Alpine.plugin(ajax.setSettings({
         headers: {
             "X-CSRF-Token": document.querySelector("meta[name='csrfToken']")?.getAttribute("content") || ""
