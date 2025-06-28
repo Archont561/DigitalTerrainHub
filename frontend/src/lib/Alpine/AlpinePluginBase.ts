@@ -22,8 +22,8 @@ interface PluginMagicCallback<T extends HTMLElement> {
 
 type StoreCallback<T extends keyof Stores> = (Alpine: Alpine) => Stores[T];
 
-export type PluginDirectives<T extends HTMLElement = HTMLElement, Keys extends string = string> = 
-    Record<string, PluginDirectiveCallback<T> | [PluginDirectiveCallback<T>, Keys]>;
+export type PluginDirectives<T extends HTMLElement = HTMLElement> = 
+    Record<string, PluginDirectiveCallback<T>>;
 export type PluginMagics<T extends HTMLElement = HTMLElement> = Record<string, PluginMagicCallback<T>>;
 export type PluginStore = Partial<{
     [K in keyof Stores]: StoreCallback<K>;
@@ -63,10 +63,7 @@ export default abstract class AlpinePluginBase<
             },
         });
         Object.entries(this.directives).forEach(([key, directiveBuilder]) => {
-            if (Array.isArray(directiveBuilder)) {
-                const [callback, before] = directiveBuilder;
-                Alpine.directive(key, callback).before(before);
-            } else Alpine.directive(key, directiveBuilder);
+            Alpine.directive(key, directiveBuilder);
         });
         Object.entries(this.magics).forEach(([key, callback]) => {
             Alpine.magic(key, callback);
