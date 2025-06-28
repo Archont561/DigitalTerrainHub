@@ -1,6 +1,7 @@
 import Base from "./Base.astro";
 import Melt from "./Melt.astro";
 import Clamp from "./Clamp.astro";
+import Drawer from "./Drawer.astro";
 import Flex from "./Flex/Self.astro";
 import Grid from "./Grid/Self.astro";
 import GreatestGrid from "./Grid/Variants/Greatest.astro";
@@ -21,6 +22,7 @@ export default {
     Base,
     Melt,
     Clamp,
+    Drawer,
     Grid,
     Flex,
     GreatestGrid,

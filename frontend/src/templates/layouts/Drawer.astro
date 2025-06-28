@@ -1,0 +1,136 @@
+---
+import { clsx as mergeCSSClasses } from "clsx";
+import _ from "lodash";
+
+type TailwindCSSBreakpoint = "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
+
+export interface Props extends Astro.ComponentProps {
+    drawerSide?: "left" | "right" | "top" | "bottom";
+    breakpoint: TailwindCSSBreakpoint | number;
+}
+
+const {
+    drawerSide = "left",
+    breakpoint,
+    class: className,
+    style,
+    ...props
+} = Astro.props;
+
+const isDrawerVertical = ["top", "bottom"].includes(drawerSide);
+const isSidebarFirst = ["top", "left"].includes(drawerSide);
+
+const drawerClasses = mergeCSSClasses("grid grid-template-(--grid-template) relative isolate", className);
+
+let gridTemplate: string[] = [];
+if (isDrawerVertical) {
+    gridTemplate = [`"drawer-aside" auto`, `"drawer-content" 1fr`];
+    if (!isSidebarFirst) {
+        gridTemplate.reverse();
+    }
+} else {
+    if (isSidebarFirst) {
+        // horizontal layout, aside first
+        gridTemplate = [`"drawer-aside drawer-content" auto / auto 1fr`];
+    } else {
+        // horizontal layout, content first
+        gridTemplate = [`"drawer-content drawer-aside" auto / 1fr auto`];
+    }
+}
+
+const drawerStyles = mergeCSSClasses(
+    style,
+    `--grid-template: ${gridTemplate.join(" ")};`,
+);
+
+const dynamicProps = {
+    [`x-screen:${breakpoint}`]: `handlePassingBreakpoint($mediaQuery.matches)`,
+};
+const drawerSidebarStyles = mergeCSSClasses(
+    `${drawerSide}: 0;`,
+    `${isDrawerVertical ? "left": "top"}: 0;`,
+    `${isDrawerVertical ? "right": "bottom"}: 0;`,
+);
+---
+
+<script>
+    interface DrawerLayout {
+        mode: "largeScreen" | "smallScreen";
+        isSidebarOpen: boolean;
+        isSmallScreenSidebarOverlayVisible: boolean;
+        wasSidebarOpenInSmallScreenMode: ReturnType<typeof window.Alpine.$persist<boolean>>;
+
+        openSidebar(): void;
+        closeSidebar(): void;
+        toggleSidebar(): void;
+        handlePassingBreakpoint(flag: boolean): void;
+    }
+    //@ts-ignore
+    window.DrawerLayout = function () {
+        return {
+            mode: "largeScreen",
+            isSmallScreenSidebarOverlayVisible: false,
+            isSidebarOpen: false,
+            wasSidebarOpenInSmallScreenMode: window.Alpine.$persist(false).using(localStorage),
+
+            openSidebar() {
+                if (this.mode === "smallScreen") {
+                    this.isSmallScreenSidebarOverlayVisible = true;
+                    this.wasSidebarOpenInSmallScreenMode = true;
+                }
+                this.isSidebarOpen = true;
+            },
+
+            closeSidebar() {
+                if (this.mode === "largeScreen") return;
+
+                this.wasSidebarOpenInSmallScreenMode = false;
+                this.isSidebarOpen = false;
+                this.isSmallScreenSidebarOverlayVisible = false;
+            },
+
+            toggleSidebar() {
+                this.isSidebarOpen ? this.closeSidebar() : this.openSidebar();
+            },
+
+            handlePassingBreakpoint(flag) {
+                if (flag) {
+                    this.mode = "largeScreen";
+                    this.openSidebar();
+                    this.isSmallScreenSidebarOverlayVisible = false;
+                } else {
+                    this.mode = "smallScreen";
+                    this.wasSidebarOpenInSmallScreenMode
+                        ? this.openSidebar()
+                        : this.closeSidebar();
+                }
+            },
+        } as AlpineJSComponent.Generic<DrawerLayout>;
+    };
+</script>
+
+<div
+    x-data="DrawerLayout()"
+    class={drawerClasses}
+    style={drawerStyles}
+    {...dynamicProps}
+    {...props}
+>
+    <main style="grid-area: drawer-content" class="-z-1">
+        <slot name="drawer-content" />
+    </main>
+    <aside
+        class="z-999"
+        x-bind:class="{ 'hidden': !isSidebarOpen, 'absolute': mode ==='smallScreen' }"
+        style={drawerSidebarStyles}
+    >
+        <slot name="drawer-sidebar" />
+    </aside>
+
+    <label 
+        x-cloak
+        x-show="isSmallScreenSidebarOverlayVisible"
+        @click="closeSidebar()"
+        class="absolute inset-0 z-1 bg-neutral-900/50"
+        aria-label="close sidebar"></label>
+</div>
