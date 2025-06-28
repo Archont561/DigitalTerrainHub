@@ -37,7 +37,7 @@ class AlpineMediaPlugin extends AlpinePluginBase<MediaSettings> {
         screen: (el, { modifiers, expression, value }, { evaluate, cleanup }) => {
             let mediaQueryString: string;
             let mediaQueryTriggerMode: MediaQueryEventTriggerMode = "change";
-    
+
             if (value.includes("-")) {
                 const [minBreakpoint, maxBreakpoint] = value.split("-").map(this.getBreakpointValue.bind(this));
                 mediaQueryString = `(min-width: ${minBreakpoint}) and (max-width: calc(${maxBreakpoint} - 0.02px))`;
@@ -47,32 +47,56 @@ class AlpineMediaPlugin extends AlpinePluginBase<MediaSettings> {
                 if (modifiers.includes("larger")) mediaQueryTriggerMode = "match";
                 if (modifiers.includes("smaller")) mediaQueryTriggerMode = "noMatch";
             }
-    
+
             const mediaQuery = this.getMediaQuery(mediaQueryString);
-    
+
             const handler = this.createMediaQueryHandler(
                 mediaQueryTriggerMode,
                 evaluate,
                 expression,
                 { scope: { "$mediaQuery": mediaQuery } }
             );
-    
+
             handler({ matches: mediaQuery.matches } as MediaQueryListEvent);
-    
+
             mediaQuery.addEventListener("change", handler);
-    
+
             cleanup(() => {
                 mediaQuery.removeEventListener("change", handler);
             });
         }
     }
 
+    private normalizeLength(length: number | string): string {
+        if (typeof length === "number"
+            || (typeof length === "string" && (/^\d+(\.\d+)?$/.test(length)))) {
+            return `${length}px`;
+        }
+        return length;
+    }
+
+    private replaceBreakpointAliases(expr: string): string {
+        return expr.replace(/\b([a-zA-Z_][\w-]*)\b/g, (match) => {
+            // Only replace if alias exists in breakpoints
+            if (match in this.settings.breakpoints) {
+                return this.normalizeLength(this.settings.breakpoints[match]);
+            }
+            return match;
+        });
+    };
+
     private getBreakpointValue(value: string): string {
-        return value in this.settings.breakpoints
-            ? this.settings.breakpoints[value]
-            : /^\d+(\.\d+)?$/.test(value)
-                ? `${value}px`
-                : value;
+        if (/^calc\(.+\)$/.test(value.trim())) {
+            // Extract inside of calc() and replace aliases
+            const insideCalc = value.trim().slice(5, -1); // remove 'calc(' and ')'
+            const replaced = this.replaceBreakpointAliases(insideCalc);
+            return `calc(${replaced})`;
+        }
+
+        const toReturn = value in this.settings.breakpoints ? 
+            this.settings.breakpoints[value] : value;
+
+        return this.normalizeLength(toReturn);
     }
 
     private getMediaQuery(query: string): MediaQueryList {
@@ -89,7 +113,7 @@ class AlpineMediaPlugin extends AlpinePluginBase<MediaSettings> {
         if (mode === "noMatch") return (e: MediaQueryListEvent) => !e.matches && callback(...args);
         throw new Error(`Invalid MediaQueryEventTriggerMode: ${mode}`);
     }
-    
+
 }
 
 export default AlpineMediaPlugin.expose();
