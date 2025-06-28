@@ -1,6 +1,5 @@
 ---
-import { clsx as mergeCSSClasses } from "clsx";
-import _ from "lodash";
+import { mergeClass, mergeStyle } from "@utils";
 
 type TailwindCSSBreakpoint = "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
 
@@ -20,7 +19,7 @@ const {
 const isDrawerVertical = ["top", "bottom"].includes(drawerSide);
 const isSidebarFirst = ["top", "left"].includes(drawerSide);
 
-const drawerClasses = mergeCSSClasses("grid grid-template-(--grid-template) relative isolate", className);
+const drawerClasses = mergeClass("grid grid-template-(--grid-template) relative isolate", className);
 
 let gridTemplate: string[] = [];
 if (isDrawerVertical) {
@@ -38,19 +37,18 @@ if (isDrawerVertical) {
     }
 }
 
-const drawerStyles = mergeCSSClasses(
-    style,
-    `--grid-template: ${gridTemplate.join(" ")};`,
-);
+const drawerStyles = mergeStyle(style, {
+    "--grid-template": gridTemplate.join(" "),
+});
 
 const dynamicProps = {
     [`x-screen:${breakpoint}`]: `handlePassingBreakpoint($mediaQuery.matches)`,
 };
-const drawerSidebarStyles = mergeCSSClasses(
-    `${drawerSide}: 0;`,
-    `${isDrawerVertical ? "left": "top"}: 0;`,
-    `${isDrawerVertical ? "right": "bottom"}: 0;`,
-);
+const drawerSidebarStyles = mergeStyle({
+    [drawerSide]: "0",
+    [`${isDrawerVertical ? "left": "top"}`]: "0",
+    [`${isDrawerVertical ? "right": "bottom"}`]: "0",
+});
 ---
 
 <script>
