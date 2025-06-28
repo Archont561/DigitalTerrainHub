@@ -19,35 +19,38 @@ const {
 const isDrawerVertical = ["top", "bottom"].includes(drawerSide);
 const isSidebarFirst = ["top", "left"].includes(drawerSide);
 
-const drawerClasses = mergeClass("grid grid-template-(--grid-template) relative isolate", className);
+const drawerClasses = mergeClass(
+    "grid grid-template-(--grid-template) relative isolate",
+    className,
+);
 
-let gridTemplate: string[] = [];
-if (isDrawerVertical) {
-    gridTemplate = [`"drawer-aside" auto`, `"drawer-content" 1fr`];
-    if (!isSidebarFirst) {
-        gridTemplate.reverse();
-    }
-} else {
-    if (isSidebarFirst) {
-        // horizontal layout, aside first
-        gridTemplate = [`"drawer-aside drawer-content" auto / auto 1fr`];
-    } else {
-        // horizontal layout, content first
-        gridTemplate = [`"drawer-content drawer-aside" auto / 1fr auto`];
-    }
-}
+const gridTemplate = (() => {
+    const layout = [
+        { area: "drawer-sidebar", size: "auto" },
+        { area: "drawer-content", size: "1fr" },
+    ];
+
+    if (!isSidebarFirst) layout.reverse();
+
+    const [first, second] = layout;
+
+    return isDrawerVertical
+        ? `"${first.area}" ${first.size} "${second.area}" ${second.size} / auto`
+        : `"${first.area} ${second.area}" auto / ${first.size} ${second.size}`;
+})();
 
 const drawerStyles = mergeStyle(style, {
-    "--grid-template": gridTemplate.join(" "),
+    "--grid-template": gridTemplate,
 });
 
 const dynamicProps = {
     [`x-screen:${breakpoint}`]: `handlePassingBreakpoint($mediaQuery.matches)`,
 };
 const drawerSidebarStyles = mergeStyle({
+    "grid-area": "drawer-sidebar",
     [drawerSide]: "0",
-    [`${isDrawerVertical ? "left": "top"}`]: "0",
-    [`${isDrawerVertical ? "right": "bottom"}`]: "0",
+    [`${isDrawerVertical ? "left" : "top"}`]: "0",
+    [`${isDrawerVertical ? "right" : "bottom"}`]: "0",
 });
 ---
 
@@ -56,7 +59,9 @@ const drawerSidebarStyles = mergeStyle({
         mode: "largeScreen" | "smallScreen";
         isSidebarOpen: boolean;
         isSmallScreenSidebarOverlayVisible: boolean;
-        wasSidebarOpenInSmallScreenMode: ReturnType<typeof window.Alpine.$persist<boolean>>;
+        wasSidebarOpenInSmallScreenMode: ReturnType<
+            typeof window.Alpine.$persist<boolean>
+        >;
 
         openSidebar(): void;
         closeSidebar(): void;
@@ -69,7 +74,8 @@ const drawerSidebarStyles = mergeStyle({
             mode: "largeScreen",
             isSmallScreenSidebarOverlayVisible: false,
             isSidebarOpen: false,
-            wasSidebarOpenInSmallScreenMode: window.Alpine.$persist(false).using(localStorage),
+            wasSidebarOpenInSmallScreenMode:
+                window.Alpine.$persist(false).using(localStorage),
 
             openSidebar() {
                 if (this.mode === "smallScreen") {
@@ -125,7 +131,7 @@ const drawerSidebarStyles = mergeStyle({
         <slot name="drawer-sidebar" />
     </aside>
 
-    <label 
+    <label
         x-cloak
         x-show="isSmallScreenSidebarOverlayVisible"
         @click="closeSidebar()"
