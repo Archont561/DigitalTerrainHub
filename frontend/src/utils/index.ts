@@ -17,11 +17,14 @@ type CallableMethods<T> = {
 }[keyof T];
 
 export abstract class CallableClass<T> extends Function {
-    constructor(methodName: CallableMethods<T>) {
-        super('...args', `return this.${String(methodName)}(...args)`);
-        return Object.setPrototypeOf(this, new.target.prototype);
+    constructor(methodName: keyof T & string) {
+        super()
+        return new Proxy(this, {
+            apply: (target, thisArg, args) => (target as any)[methodName](...args)
+        });
     }
 }
+
 
 export function getOrCreateStylesheet(href: string) {
     let link = document.querySelector(`link[href=${href}]`) as HTMLLinkElement | null;
