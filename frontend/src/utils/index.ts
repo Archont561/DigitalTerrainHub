@@ -13,12 +13,12 @@ export function toTitleCase(str: string) {
     return _.startCase(_.toLower(str));
 }
 
-type CallableMethods<T> = {
+type CallableMethods<T> = Exclude<{
     [K in keyof T]: T[K] extends (...args: any[]) => any ? K : never;
-}[keyof T];
+}[keyof T], keyof Function>;
 
 export abstract class CallableClass<T> extends Function {
-    constructor(methodName: keyof T & string) {
+    constructor(methodName: CallableMethods<T>) {
         super()
         return new Proxy(this, {
             apply: (target, thisArg, args) => (target as any)[methodName](...args)
