@@ -22,11 +22,9 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     # django extensions
     'drf_spectacular',
-    'django_htmx',
     'rest_framework',
     'rest_framework_gis',
     'django_eventstream',
-    'heroicons',
     'django_tus',
     # created apps,
     "Core",
@@ -46,8 +44,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    ####
-    'django_htmx.middleware.HtmxMiddleware',
 ]
 
 ROOT_URLCONF = 'Core.urls'
