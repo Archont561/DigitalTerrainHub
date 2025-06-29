@@ -1,6 +1,6 @@
 ---
 import * as Flow from "@astropub/flow";
-import { clsx as mergeCSSClasses } from "clsx";
+import { mergeClass } from "@utils";
 
 type ModalType = "backdrop" | "btn" | "btn trigger" | "custom";
 type ModalPlacement =
@@ -36,7 +36,7 @@ const isBackdrop = type === "backdrop";
 const isButton = type === "btn";
 const isButtonAsTrigger = type === "btn trigger";
 
-const modalBoxClass = mergeCSSClasses(
+const modalBoxClass = mergeClass(
     "modal-box",
     placementClassesMap[placement],
     { "modal-open": forceOpen },

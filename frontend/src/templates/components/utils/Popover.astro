@@ -1,6 +1,6 @@
 ---
 import * as Flow from "@astropub/flow";
-import { clsx as mergeCSSClasses } from "clsx";
+import { mergeClass } from "@utils";
 import { Window } from 'happy-dom';
 
 type PopoverType = "default" | "focus" | "anchor";
@@ -45,16 +45,11 @@ function getDropdownClasses(placement: PopoverPlacement): string {
     return [vertical[vPlacement], horizontal[hPlacement]].join(" ");
 }
 
-Object.assign(props, {
-    class: mergeCSSClasses(
-        "dropdown",
-        "apperance-none",
-        getDropdownClasses(placement),
-        { "dropdown-open": forceOpen },
-        { "dropdown-hover": openOnHover },
-        className,
-    ),
-});
+const popoverClass = mergeClass(
+    className, 
+    "dropdown apperance-none",
+    getDropdownClasses(placement),
+)
 const anchorRandId = crypto.randomUUID(); 
 
 
@@ -92,7 +87,7 @@ const popoverContentInnerHTML = contentEl?.innerHTML || "";
             set:html={popoverTriggerInnerHTML}
             {...popoverTriggerAttributes}>
         </button>
-        <div {...props}
+        <div class={popoverClass} {...props}
             popover
             id={`popover-${anchorRandId}`}
             style={`position-anchor:--anchor-${anchorRandId}`}>
@@ -103,21 +98,21 @@ const popoverContentInnerHTML = contentEl?.innerHTML || "";
         </div>
     </Flow.Case>
     <Flow.Case of="focus">
-        <div {...props}>
+        <div class={popoverClass} {...props}>
             <div tabindex="0" role="button" class={popoverTriggerClass}
                 set:html={popoverTriggerInnerHTML}
                 {...popoverTriggerAttributes}></div>
-            <div tabindex="0" class={mergeCSSClasses('dropdown-content', popoverContentClass)}
+            <div tabindex="0" class={mergeClass('dropdown-content', popoverContentClass)}
                 set:html={popoverContentInnerHTML}
                 {...popoverContentAttributes}></div>
         </div>
     </Flow.Case>
     <Flow.Case default>
-        <details {...props}>
-            <summary class={mergeCSSClasses("apperance-none block", popoverTriggerClass)}
+        <details class={popoverClass} {...props}>
+            <summary class={mergeClass("apperance-none block", popoverTriggerClass)}
                 set:html={popoverTriggerInnerHTML}
                 {...popoverTriggerAttributes}></summary>
-            <div class={mergeCSSClasses('dropdown-content', popoverContentClass)}
+            <div class={mergeClass('dropdown-content', popoverContentClass)}
                 set:html={popoverContentInnerHTML}
                 {...popoverContentAttributes}></div>
         </details>
