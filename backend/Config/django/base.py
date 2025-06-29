@@ -136,21 +136,11 @@ TUS_MAX_FILE_SIZE = DATA_UPLOAD_MAX_MEMORY_SIZE
 
 EVENTSTREAM_CHANNELMANAGER_CLASS = 'Core.sse.DelegatingChannelManager'
 
-REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-}
-
 APPEND_SLASH = False
-
-SPECTACULAR_SETTINGS = {
-    'TITLE': 'DIGITAL TERRAIN HUB API',
-    'DESCRIPTION': 'Not yet implemented!',
-    'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
-}
 
 
 from Config.settings.NodeODM import *
 from Config.settings.Stripe import *
 from Config.settings.Astro import *
 from Config.settings.email import *
+from Config.settings.api import *
