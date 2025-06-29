@@ -7,13 +7,14 @@ declare module "alpinejs" {
     }
 }
 
-interface MediaQueryObj {
+interface MediaQueryBroadcaster {
     mediaQuery: MediaQueryList;
-    directivesThatUsesQuery: number;
-    reactive: {
-        matches: boolean;
-    };
-    cleanup(): void;
+    callbacks: CallableFunction[];
+    
+    init(): void;
+    broadcast(e: MediaQueryListEvent): void;
+    unsubscrbe(callback: CallableFunction): void;
+    subscribe(callback: CallableFunction): void;
 }
 
 interface MediaSettings {
@@ -22,7 +23,7 @@ interface MediaSettings {
 
 class AlpineMediaPlugin extends AlpinePluginBase<MediaSettings> {
     protected PLUGIN_NAME = "mediaPlugin";
-    private mediaQueriesStorage = new Map<string, MediaQueryObj>();
+    private mediaQueriesStorage = new Map<string, MediaQueryBroadcaster>();
 
     protected settings = {
         breakpoints: {
@@ -41,7 +42,11 @@ class AlpineMediaPlugin extends AlpinePluginBase<MediaSettings> {
     }
 
     protected directives: PluginDirectives = {
-        screen: (el, { expression, value }, { evaluate, cleanup, effect }) => {
+        screen: (el, { expression, value }, { evaluate, cleanup }) => {
+            if (value.trim() === "") {
+                throw new Error("x-screen directive must have value defined!");
+            }
+
             const mediaQueryString = (() => {
                 if (value.includes("-")) {
                     const [minBreakpoint, maxBreakpoint] = value.split("-").map(this.getBreakpointValue.bind(this));
@@ -51,16 +56,15 @@ class AlpineMediaPlugin extends AlpinePluginBase<MediaSettings> {
                 }
             })();
 
-            const mediaQueryObj = this.getMediaQueryObj(mediaQueryString);
+            const callback = (mediaQuery: MediaQueryList) => {
+                evaluate(expression, { scope: { "$mediaQuery": mediaQuery } });
+            };
 
-            effect(() => {
-                mediaQueryObj.reactive.matches;
-                evaluate(expression, { scope: { $mediaQuery: mediaQueryObj.mediaQuery } });
-            });
+            const mediaQueryBroadcaster = this.getMediaQueryBroadcaster(mediaQueryString);
+            mediaQueryBroadcaster.subscribe(callback);
 
             cleanup(() => {
-                mediaQueryObj.directivesThatUsesQuery--;
-                mediaQueryObj.cleanup();
+                mediaQueryBroadcaster.unsubscrbe(callback);
             });
         }
     }
@@ -97,40 +101,45 @@ class AlpineMediaPlugin extends AlpinePluginBase<MediaSettings> {
         return this.normalizeLength(toReturn);
     }
 
-    private getMediaQueryObj(query: string) {
-        const mediaQueryObj = this.mediaQueriesStorage.has(query) 
+    private getMediaQueryBroadcaster(query: string) {
+        return this.mediaQueriesStorage.has(query) 
             ? this.mediaQueriesStorage.get(query)! 
-            : this.registerMediaQuery(query);
-        mediaQueryObj.directivesThatUsesQuery++;
-        return mediaQueryObj;
+            : this.registerMediaQueryBroadcaster(query);
     }
 
-    private registerMediaQuery(query: string) {
-        const mediaQuery = window.matchMedia(query);
-        // Create reactive proxy with initial matches state
-        const reactiveMediaQueryMatches = this.Alpine.reactive({ matches: mediaQuery.matches });
-        reactiveMediaQueryMatches
-
-        // Update reactive state on native media query change event
-        const listener = (e: MediaQueryListEvent) => {
-            reactiveMediaQueryMatches.matches = e.matches;
-        };
-        mediaQuery.addEventListener("change", listener);
-        
+    private registerMediaQueryBroadcaster(query: string) {
         const mediaQueriesStorage = this.mediaQueriesStorage;
-        const mediaQueryObj: MediaQueryObj = {
-            mediaQuery,
-            directivesThatUsesQuery: 0,
-            reactive: reactiveMediaQueryMatches,
-            cleanup() {
-                if (!this.directivesThatUsesQuery) {
-                    mediaQuery.removeEventListener("change", listener);
+        const mediaQueryBroadcaster: MediaQueryBroadcaster = {
+            mediaQuery: window.matchMedia(query),
+            callbacks: [],
+
+            init() {
+                this.mediaQuery.addEventListener("change", this.broadcast.bind(this));
+            },
+
+            subscribe(callback) {
+                this.callbacks.push(callback);
+                this.mediaQuery.matches && callback(this.mediaQuery)
+            },
+
+            unsubscrbe(callback) {
+                const i =  this.callbacks.findIndex(el => el === callback);
+                if (i !== -1) {
+                    this.callbacks.splice(i, 1);
+                }
+                if (!this.callbacks.length) {
+                    this.mediaQuery.removeEventListener("change", this.broadcast.bind(this));
                     mediaQueriesStorage.delete(query);
                 }
             },
+
+            broadcast(e) {
+                this.callbacks.forEach(callback => callback(this.mediaQuery));
+            },
         };
-        this.mediaQueriesStorage.set(query, mediaQueryObj);
-        return mediaQueryObj;
+        mediaQueryBroadcaster.init();
+        this.mediaQueriesStorage.set(query, mediaQueryBroadcaster);
+        return mediaQueryBroadcaster;
     }
 
 }
