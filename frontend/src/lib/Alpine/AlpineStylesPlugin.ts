@@ -16,7 +16,7 @@ class AlpineStylesPlugin extends AlpinePluginBase {
     protected PLUGIN_NAME = "stylesPlugin";
 
     protected magics: PluginMagics = {
-        $toggleCSSProperty: () => toggleCSSProperty,
+        toggleCSSProperty: () => toggleCSSProperty,
     };
 }
 
