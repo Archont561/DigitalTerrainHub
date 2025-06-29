@@ -131,4 +131,13 @@ declare global {
             }
         }
     }
+
+    declare namespace App {
+        interface Locals {
+            isLoggedIn: boolean;
+            isAdmin: boolean;
+            user: DjangoAPI.User | null;
+            crsfToken: string | null;
+        }
+    }
 }
