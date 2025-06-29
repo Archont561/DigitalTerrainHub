@@ -1,43 +1,73 @@
 ---
-const {
-    label,
-    mimes,
-    id,
-} = Astro.props;
+interface Props extends Astro.ComponentProps {
+    mimes: string[];
+}
+
+const { mimes, ...props } = Astro.props;
 ---
 
-<label 
-    x-data="{
-        currentFile: null,
-        validateFile(file) {
-            const accept = this.$refs.fileInput.getAttribute('accept').split(',').map(type => type.trim().toLowerCase());
-            if (accept.includes(file.type)) return true;
-            const fileExt = file.name.split('.').pop().toLowerCase();
-            return accept.some(ext => ext.endsWith(fileExt));
-        },
-        handleDrop(event) {
-            const file = event.dataTransfer.files?.[0];
-            if (file && this.validateFile(file)) this.currentFile = file;
-        },
-    }"
-    id={id} 
-    for="{id}-file-input" 
-    class="flex flex-col items-center justify-center size-full border-2 border-dashed border-base-300 rounded-lg cursor-pointer bg-base-200 hover:bg-base-300 dark:bg-base-800 dark:hover:bg-base-700"
-    @drop.prevent="handleDrop"
+<script>
+    interface FileDropzone {
+        currentFile: File | null;
+
+        validateFile(file: File): boolean;
+        handleDrop(event: DragEvent): void;
+        handleFileChange(event: Event): void;
+    }
+
+    //@ts-ignore
+    window.FileDropzone = function () {
+        return {
+            currentFile: null,
+
+            validateFile(file: File): boolean {
+                const acceptAttr =
+                    this.$refs.fileInput.getAttribute("accept") || "";
+                const accept = acceptAttr
+                    .split(",")
+                    .map((type: string) => type.trim().toLowerCase());
+
+                if (accept.includes(file.type)) return true;
+
+                const fileExt = file.name.split(".").pop()?.toLowerCase();
+                return accept.some((ext: string) =>
+                    ext.startsWith(".")
+                        ? ext.endsWith(fileExt || "")
+                        : ext === fileExt,
+                );
+            },
+
+            handleDrop(event: DragEvent): void {
+                const file = event.dataTransfer?.files?.[0] || null;
+                if (file && this.validateFile(file)) {
+                    this.currentFile = file;
+                }
+            },
+
+            handleFileChange(event: Event): void {
+                const input = event.target as HTMLInputElement;
+                const file = input.files?.[0] || null;
+                if (file) {
+                    this.currentFile = file;
+                }
+            },
+        } as AlpineJSComponent.Generic<FileDropzone>;
+    };
+</script>
+
+<label
+    x-data="FileDropzone()"
+    @drop.prevent="handleDrop($event)"
     @dragover.prevent
-    x-effect="currentFile && $dispatch('file-upload', { file: currentFile })"
+    {...props}
 >
-    <slot />
-    <p class="mb-2 text-sm text-base-content">
-        <span class="font-semibold">Click to upload</span> or drag and drop
-    </p>
-    <p class="text-xs text-base-content">{label}</p>
-    <input 
-        id="{id}-file-input" 
-        type="file" 
-        class="hidden" 
-        accept={mimes}
+    <input
+        type="file"
+        hidden
+        accept={mimes.join()}
         x-ref="fileInput"
-        @change="currentFile = $event.target.files?.[0]"
+        x-effect="currentFile && $dispatch('file-upload', { file: currentFile })"
+        @change="handleFileChange($event)"
     />
+    <slot />
 </label>
