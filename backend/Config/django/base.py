@@ -115,26 +115,10 @@ AUTH_USER_MODEL = 'User.CustomUser'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-TUS_UPLOAD_DIR = MEDIA_ROOT / 'uploads'
-TUS_DESTINATION_DIR  = TUS_UPLOAD_DIR
-TUS_FILE_NAME_FORMAT = 'random-suffix'
-TUS_EXISTING_FILE = 'overwrite'
-WORKSPACES_DIR = MEDIA_ROOT / "workspaces"
-THUMBNAIL_DIR_NAME = "thumbnail"
-IMAGES_DIR_NAME = "images"
-OUTPUT_DIR_NAME = "outputs"
-WORKSPACE_ALLOWED_FILE_MIME_TYPES = [
-    "image/jpeg", "image/png", "image/bmp", 
-    "image/webp", "image/tiff", "image/heif",
-    "image/heic",
-]
-DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024**2
-TUS_MAX_FILE_SIZE = DATA_UPLOAD_MAX_MEMORY_SIZE
 
-EVENTSTREAM_CHANNELMANAGER_CLASS = 'Core.sse.DelegatingChannelManager'
+DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024**2
 
 APPEND_SLASH = True
 
