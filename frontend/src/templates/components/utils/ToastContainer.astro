@@ -1,0 +1,36 @@
+---
+import { mergeClass } from "@utils";
+
+type ToastPosition =
+    | "top-left"
+    | "top-center"
+    | "top-right"
+    | "bottom-left"
+    | "bottom-center"
+    | "bottom-right"
+    | "center"
+    | "center-left"
+    | "center-right";
+
+export interface Props extends Astro.ComponentProps {
+    position?: ToastPosition;
+};
+
+const { position = "bottom-right", class: className, ...props } = Astro.props;
+
+const toastContainerClass = mergeClass("toast", className, {
+    "toast-top toast-start": position === "top-left",
+    "toast-top toast-center": position === "top-center",
+    "toast-top toast-end": position === "top-right",
+    "toast-bottom toast-start": position === "bottom-left",
+    "toast-bottom toast-center": position === "bottom-center",
+    "toast-bottom toast-end": position === "bottom-right",
+    "toast-center toast-middle": position === "center",
+    "toast-middle toast-start": position === "center-left",
+    "toast-middle toast-end": position === "center-right",
+});
+---
+
+<div class={toastContainerClass} {...props}>
+    <slot />
+</div>

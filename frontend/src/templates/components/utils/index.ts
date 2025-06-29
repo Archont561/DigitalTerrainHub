@@ -5,6 +5,7 @@ import FileDropzone from "./FileDropzone.astro";
 import Popover from "./Popover.astro";
 import DaisyUIThemeSwitcher from "./DaisyUIThemeSwitcher";
 import Loader from "./Loader.astro";
+import ToastContainer from "./ToastContainer.astro";
 
 export {
     Modal,
@@ -13,5 +14,6 @@ export {
     Popover,
     Alert,
     Loader,
+    ToastContainer,
     DaisyUIThemeSwitcher,
 }
