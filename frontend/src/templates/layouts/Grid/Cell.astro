@@ -1,13 +1,13 @@
 ---
 import type { ComponentProps } from "astro/types";
 import type { GridCellProps } from "./types";
-import { getGridCSSVariables } from "./utils";
-import { clsx as mergeCSSClasses } from "clsx";
-import Layout from "@layouts";
+import { getGridCSSVariables, getAlpineMediaPluginAttributes, getGridStyles } from "./utils";
+import { mergeClass } from "@utils";
+import Layouts from "@layouts";
 
 export type Props = GridCellProps &
   Astro.ComponentProps &
-  ComponentProps<typeof Layout.Melt>;
+  ComponentProps<typeof Layouts.Melt>;
 
 const {
   placement,
@@ -22,37 +22,33 @@ const {
   ...props
 } = Astro.props;
 
-const gridCellClasses = mergeCSSClasses(
-  className,
-  "astro-responsive-grid-cell",
-  {
-    "col-start-(--col-start)": colStart,
-    "col-span-(--col-span)": colSpan,
-    "col-end-(--col-end)": colEnd,
-    "row-start-(--row-start)": rowStart,
-    "row-span-(--row-span)": rowSpan,
-    "row-end-(--row-end)": rowEnd,
-    "place-self-(--place-self)": placement,
-  },
-);
+const gridCellClasses = mergeClass(className, {
+  "col-start-(--col-start)": colStart,
+  "col-span-(--col-span)": colSpan,
+  "col-end-(--col-end)": colEnd,
+  "row-start-(--row-start)": rowStart,
+  "row-span-(--row-span)": rowSpan,
+  "row-end-(--row-end)": rowEnd,
+  "place-self-(--place-self)": placement,
+});
 
-const gridCellStyles = mergeCSSClasses(
-  style,
-  getGridCSSVariables({
-    props: {
-      placement,
-      colStart,
-      colSpan,
-      colEnd,
-      rowStart,
-      rowSpan,
-      rowEnd,
-    },
-    asInlineStyle: true,
-  }),
-);
+const { baseVariables, mediaVariables } = getGridCSSVariables({
+  placement,
+  colStart,
+  colSpan,
+  colEnd,
+  rowStart,
+  rowSpan,
+  rowEnd,
+});
+
 ---
 
-<Layout.Melt class={gridCellClasses} {...props} style={gridCellStyles}>
+<Layouts.Melt
+  {...getAlpineMediaPluginAttributes({ mediaVariables, baseVariables })}
+  {...props}
+  class={gridCellClasses}
+  style={getGridStyles(style, baseVariables)}
+>
   <slot />
-</Layout.Melt>
+</Layouts.Melt>

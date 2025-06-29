@@ -13,6 +13,12 @@ export type GridContentPlacementMapKeys = keyof typeof GridContentPlacementMap;
 export type NewGridCellPlacement = "row" | "column" | "row dense" | "column dense";
 export type SubgridVariants = "both" | "row" | "col"; 
 
+export interface CSSVariable {
+  cssVariableName: string;
+  value: string;
+  breakpoint: string;
+}
+
 export interface GridProps {
   inline?: boolean;
   subgrid?: SubgridVariants;

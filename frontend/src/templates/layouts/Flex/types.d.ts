@@ -11,6 +11,12 @@ export type FlexDirection = "row" | "col" | "row-reverse" | "col-reverse";
 type FlexMultilinePlacementMapKeys = keyof typeof FlexMultilinePlacementMap
 export type FlexMultilinePlacement = FlexMultilinePlacementMapKeys | `${FlexMultilinePlacementMapKeys}-wrap-reverse`;
 
+export interface CSSVariable {
+    cssVariableName: string;
+    value: string;
+    breakpoint: string;
+  }
+
 export interface FlexProps {
     inline?: boolean;
     gap?: ResponsiveProp<number | string>;

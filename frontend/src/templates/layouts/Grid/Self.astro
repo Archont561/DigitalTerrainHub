@@ -1,13 +1,13 @@
 ---
 import type { ComponentProps } from "astro/types";
 import type { GridProps } from "./types";
-import { getGridCSSVariables } from "./utils";
-import { clsx as mergeCSSClasses } from "clsx";
-import Layout from "@layouts";
+import { getGridCSSVariables, getAlpineMediaPluginAttributes, getGridStyles } from "./utils";
+import { mergeClass } from "@utils";
+import Layouts from "@layouts";
 
 export type Props = GridProps &
   Astro.ComponentProps &
-  ComponentProps<typeof Layout.Melt>;
+  ComponentProps<typeof Layouts.Melt>;
 
 const {
   inline,
@@ -25,30 +25,36 @@ const {
   ...props
 } = Astro.props;
 
-const gridClasses = mergeCSSClasses(
-  className,
-  "astro-responsive-grid",
-  inline ? "inline-grid" : "grid",
-  {
-    "grid-cols-subgrid": subgrid && subgrid !== "row",
-    "grid-rows-subgrid": subgrid && subgrid !== "col",
-    "grid-rows-(--grid-rows)": subgrid !== "row" && rows,
-    "grid-cols-(--grid-cols)": subgrid !== "col" && cols,
-    "gap-(--grid-gap)": gap,
-    "place-content-(--place-content)": contentPlacement,
-    "place-items-(--place-items)": cellsPlacement,
-    "auto-rows-(--auto-rows)": newRowSize,
-    "auto-cols-(--auto-cols)": newColSize,
-    "grid-flow-(--grid-flow)": newCellAutoPlacement,
-  },
-);
+const gridClasses = mergeClass(className, inline ? "inline-grid" : "grid", {
+  "grid-cols-subgrid": subgrid && subgrid !== "row",
+  "grid-rows-subgrid": subgrid && subgrid !== "col",
+  "grid-rows-(--grid-rows)": subgrid !== "row" && rows,
+  "grid-cols-(--grid-cols)": subgrid !== "col" && cols,
+  "gap-(--grid-gap)": gap,
+  "place-content-(--place-content)": contentPlacement,
+  "place-items-(--place-items)": cellsPlacement,
+  "auto-rows-(--auto-rows)": newRowSize,
+  "auto-cols-(--auto-cols)": newColSize,
+  "grid-flow-(--grid-flow)": newCellAutoPlacement,
+});
 
-const gridStyles = mergeCSSClasses(style, getGridCSSVariables({
-  props: { cols, rows, gap, contentPlacement, cellsPlacement, newColSize, newRowSize, newCellAutoPlacement },
-  asInlineStyle: true,
-}));
+const { baseVariables, mediaVariables } = getGridCSSVariables({
+  cols,
+  rows,
+  gap,
+  contentPlacement,
+  cellsPlacement,
+  newColSize,
+  newRowSize,
+  newCellAutoPlacement,
+});
 ---
 
-<Layout.Melt class={gridClasses} {...props} style={gridStyles}>
+<Layouts.Melt
+  {...getAlpineMediaPluginAttributes({ mediaVariables, baseVariables })}
+  {...props}
+  class={gridClasses}
+  style={getGridStyles(style, baseVariables)}
+>
   <slot />
-</Layout.Melt>
+</Layouts.Melt>

@@ -1,45 +1,55 @@
 ---
 import type { ComponentProps } from "astro/types";
 import type { FlexProps } from "./types";
+import { getFlexCSSVariables, getAlpineMediaPluginAttributes, getFlexStyles } from "./utils";
+import { mergeClass } from "@utils";
 import Layout from "@layouts";
-import { getFlexCSSVariables } from "./utils";
-import { clsx as mergeCSSClasses } from "clsx";
 
 type Props = FlexProps &
-    Astro.ComponentProps &
-    ComponentProps<typeof Layout.Melt>;
+  Astro.ComponentProps &
+  ComponentProps<typeof Layout.Melt>;
 
 const {
-    placement,
-    multilinePlacement,
-    inline,
-    gap,
-    direction,
-    wrap,
-    class: className,
-    style,
-    ...props
+  placement,
+  multilinePlacement,
+  inline,
+  gap,
+  direction,
+  wrap,
+  class: className,
+  style,
+  ...props
 } = Astro.props;
 
-const flexClasses = mergeCSSClasses(
+const flexClasses = mergeClass(
   className,
   "astro-responsive-flex",
-  inline ? "inline-flex" : "flex",  
+  inline ? "inline-flex" : "flex",
   {
     "gap-(--flex-gap)": gap,
-    "align-items-(--align-items) justify-content-(--justify-content)": placement,
+    "align-items-(--align-items) justify-content-(--justify-content)":
+      placement,
     "align-content-(--align-content)": multilinePlacement,
-    [wrap === "reverse" ? "flex-wrap-reverse" : "flex-wrap"]: multilinePlacement,
+    [wrap === "reverse" ? "flex-wrap-reverse" : "flex-wrap"]:
+      multilinePlacement,
     "flex-direction-(--flex-direction)": direction,
   },
 );
 
-const flexStyles = mergeCSSClasses(style, getFlexCSSVariables({
-  props: { placement, multilinePlacement, gap, direction },
-  asInlineStyle: true,
-}));
+const { baseVariables, mediaVariables } = getFlexCSSVariables({
+  placement,
+  multilinePlacement,
+  inline,
+  gap,
+  direction,
+});
 ---
 
-<Layout.Melt class={flexClasses} {...props} style={flexStyles}>
-    <slot />
+<Layout.Melt
+  {...getAlpineMediaPluginAttributes({ mediaVariables, baseVariables })}
+  {...props}
+  class={flexClasses}
+  style={getFlexStyles(style, baseVariables)}
+>
+  <slot />
 </Layout.Melt>

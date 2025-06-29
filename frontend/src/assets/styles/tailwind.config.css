@@ -3,7 +3,6 @@
 @import "./tailwind.animations.css";
 @import "./tailwind.typography.css";
 @import "./tailwind.breakpoints.css";
-@import "./tailwind.components.css" layer(components);
 @import "./tailwind.utilities.css" layer(utilities);
 
 @source "../../**/*.{astro,ts,css}";
