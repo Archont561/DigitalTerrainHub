@@ -1,31 +1,52 @@
 ---
 import { Icon } from 'astro-icon/components';
-import { Alert as DaisyUIAlert } from '@codemint/astro-ui';
+import { mergeClass } from '@utils';
 
-type AlertProps = Parameters<typeof DaisyUIAlert>[0] & Astro.HTMLComponentProps<"div">;
-
-interface Props extends AlertProps {
+export interface Props extends Astro.ComponentProps {
     message: string;
+    alertStyle?: "outline" | "soft" | "dash";
+    type?: "info" | "warning" | "error" | "success" | "default";
+    direction?: "horizontal" | "vertical";
 }
 
 const {
     message = "",
-    type,
+    type: alertType = "default",
+    direction = "horizontal",
+    alertStyle,
+    class: className,
     ...props
 } = Astro.props;
 
 const svgIconName = {
     default: "",
     info: "heroicons:information-circle-20-solid",
-    warning: "mid:warni",
+    warning: "mid:warning",
     error: "ooui:error",
     success: "ooui:success",
-}[type || "default"];
+}[alertType];
+
+const alertClass = mergeClass(
+    className,
+    "alert",
+    {
+        "alert-info": alertType === "info",
+        "alert-warning": alertType === "warning",
+        "alert-error": alertType === "error",
+        "alert-success": alertType === "success",
+        "alert-default": alertType === "default",
+        "alert-outline": alertStyle === "outline",
+        "alert-soft": alertStyle === "soft",
+        "alert-dash": alertStyle === "dash",
+        "alert-horizontal": direction === "horizontal",
+        "alert-vertical": direction === "vertical"
+    }
+);
 ---
 
-<DaisyUIAlert {...props}>
+<div class={alertClass} {...props}>
     <slot>
         {svgIconName && <Icon name={svgIconName} />}
         <span>{message}</span>
     </slot>
-</DaisyUIAlert>
+</div>
