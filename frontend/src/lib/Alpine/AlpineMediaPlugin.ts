@@ -7,15 +7,23 @@ declare module "alpinejs" {
     }
 }
 
-type MediaQueryEventTriggerMode = "change" | "match" | "noMatch";
+interface MediaQueryObj {
+    mediaQuery: MediaQueryList;
+    directivesThatUsesQuery: number;
+    reactive: {
+        matches: boolean;
+    };
+    cleanup(): void;
+}
 
 interface MediaSettings {
     breakpoints: Record<string, string>;
-    mediaQueriesStorage: Map<string, MediaQueryList>;
 }
 
 class AlpineMediaPlugin extends AlpinePluginBase<MediaSettings> {
     protected PLUGIN_NAME = "mediaPlugin";
+    private mediaQueriesStorage = new Map<string, MediaQueryObj>();
+
     protected settings = {
         breakpoints: {
             xs: '30rem',   // 480px
@@ -25,7 +33,6 @@ class AlpineMediaPlugin extends AlpinePluginBase<MediaSettings> {
             xl: '80rem',   // 1280px
             '2xl': '96rem' // 1536px
         },
-        mediaQueriesStorage: new Map(),
     } as MediaSettings;
 
     setBreakpoints(breakpoints: Record<string, string>) {
@@ -34,35 +41,26 @@ class AlpineMediaPlugin extends AlpinePluginBase<MediaSettings> {
     }
 
     protected directives: PluginDirectives = {
-        screen: (el, { modifiers, expression, value }, { evaluate, cleanup }) => {
-            let mediaQueryString: string;
-            let mediaQueryTriggerMode: MediaQueryEventTriggerMode = "change";
+        screen: (el, { expression, value }, { evaluate, cleanup, effect }) => {
+            const mediaQueryString = (() => {
+                if (value.includes("-")) {
+                    const [minBreakpoint, maxBreakpoint] = value.split("-").map(this.getBreakpointValue.bind(this));
+                    return `(min-width: ${minBreakpoint}) and (max-width: calc(${maxBreakpoint} - 0.02px))`;
+                } else {
+                    return `(min-width: ${this.getBreakpointValue(value)})`;
+                }
+            })();
 
-            if (value.includes("-")) {
-                const [minBreakpoint, maxBreakpoint] = value.split("-").map(this.getBreakpointValue.bind(this));
-                mediaQueryString = `(min-width: ${minBreakpoint}) and (max-width: calc(${maxBreakpoint} - 0.02px))`;
-                mediaQueryTriggerMode = "match";
-            } else {
-                mediaQueryString = `(min-width: ${this.getBreakpointValue(value)})`;
-                if (modifiers.includes("larger")) mediaQueryTriggerMode = "match";
-                if (modifiers.includes("smaller")) mediaQueryTriggerMode = "noMatch";
-            }
+            const mediaQueryObj = this.getMediaQueryObj(mediaQueryString);
 
-            const mediaQuery = this.getMediaQuery(mediaQueryString);
-
-            const handler = this.createMediaQueryHandler(
-                mediaQueryTriggerMode,
-                evaluate,
-                expression,
-                { scope: { "$mediaQuery": mediaQuery } }
-            );
-
-            handler({ matches: mediaQuery.matches } as MediaQueryListEvent);
-
-            mediaQuery.addEventListener("change", handler);
+            effect(() => {
+                mediaQueryObj.reactive.matches;
+                evaluate(expression, { scope: { $mediaQuery: mediaQueryObj.mediaQuery } });
+            });
 
             cleanup(() => {
-                mediaQuery.removeEventListener("change", handler);
+                mediaQueryObj.directivesThatUsesQuery--;
+                mediaQueryObj.cleanup();
             });
         }
     }
@@ -99,19 +97,40 @@ class AlpineMediaPlugin extends AlpinePluginBase<MediaSettings> {
         return this.normalizeLength(toReturn);
     }
 
-    private getMediaQuery(query: string): MediaQueryList {
-        const storage = this.settings.mediaQueriesStorage;
-        if (!storage.has(query)) {
-            storage.set(query, window.matchMedia(query));
-        }
-        return storage.get(query)!;
+    private getMediaQueryObj(query: string) {
+        const mediaQueryObj = this.mediaQueriesStorage.has(query) 
+            ? this.mediaQueriesStorage.get(query)! 
+            : this.registerMediaQuery(query);
+        mediaQueryObj.directivesThatUsesQuery++;
+        return mediaQueryObj;
     }
 
-    private createMediaQueryHandler(mode: MediaQueryEventTriggerMode, callback: CallableFunction, ...args: any[]) {
-        if (mode === "change") return (e: MediaQueryListEvent) => callback(...args);
-        if (mode === "match") return (e: MediaQueryListEvent) => e.matches && callback(...args);
-        if (mode === "noMatch") return (e: MediaQueryListEvent) => !e.matches && callback(...args);
-        throw new Error(`Invalid MediaQueryEventTriggerMode: ${mode}`);
+    private registerMediaQuery(query: string) {
+        const mediaQuery = window.matchMedia(query);
+        // Create reactive proxy with initial matches state
+        const reactiveMediaQueryMatches = this.Alpine.reactive({ matches: mediaQuery.matches });
+        reactiveMediaQueryMatches
+
+        // Update reactive state on native media query change event
+        const listener = (e: MediaQueryListEvent) => {
+            reactiveMediaQueryMatches.matches = e.matches;
+        };
+        mediaQuery.addEventListener("change", listener);
+        
+        const mediaQueriesStorage = this.mediaQueriesStorage;
+        const mediaQueryObj: MediaQueryObj = {
+            mediaQuery,
+            directivesThatUsesQuery: 0,
+            reactive: reactiveMediaQueryMatches,
+            cleanup() {
+                if (!this.directivesThatUsesQuery) {
+                    mediaQuery.removeEventListener("change", listener);
+                    mediaQueriesStorage.delete(query);
+                }
+            },
+        };
+        this.mediaQueriesStorage.set(query, mediaQueryObj);
+        return mediaQueryObj;
     }
 
 }
