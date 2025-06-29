@@ -1,0 +1,54 @@
+---
+import { mergeStyle, mergeClass } from "@utils";
+
+type LoaderType =
+    | "custom"
+    | "spinner"
+    | "dots"
+    | "ring"
+    | "ball"
+    | "bars"
+    | "infinity";
+
+export interface Props extends Astro.ComponentProps {
+    baseSize?: `${number}rem`;
+    type?: LoaderType;
+    global?: boolean;
+}
+
+const {
+    type: loaderType = "spinner",
+    global: isGlobal = false,
+    baseSize,
+    class: className,
+    ...props
+} = Astro.props;
+
+const componentClass = mergeClass(
+    className,
+    isGlobal ? "fixed" : "absolute",
+    "inset-0 grid place-content-center",
+);
+
+const loaderStyle = mergeStyle({
+    '--size-selector': baseSize,
+});
+
+const loaderClass = mergeClass(
+    "loading",
+    {
+        "loading-spinner": loaderType === "spinner",
+        "loading-dots": loaderType === "dots",
+        "loading-ring": loaderType === "ring",
+        "loading-ball": loaderType === "ball",
+        "loading-bars": loaderType === "bars",
+        "loading-infinity": loaderType === "infinity",
+    },
+);
+---
+
+<div {...props} class={componentClass}>
+    <slot>
+        <div class={loaderClass} style={loaderStyle}></div>
+    </slot>
+</div>
