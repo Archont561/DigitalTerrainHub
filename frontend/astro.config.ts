@@ -5,7 +5,7 @@ import icon from 'astro-icon';
 import dotenv from 'dotenv';
 import node from '@astrojs/node';
 import { strictCustomRouting } from '@inox-tools/custom-routing';
-import { getRoutes } from "./src/templates/pages";
+import { getRoutes } from "./src/routes";
 
 dotenv.config();
 export const isDev = import.meta.env.DEV;
