@@ -5,7 +5,7 @@ export function mergeClass(...args: ClassValue[]) {
     return clsx(...args);
 }
 
-type StyleValue = boolean | string | string[] | Record<string, string>;
+type StyleValue = boolean | string | string[] | Record<string, any>;
 
 export function mergeStyle(...args: StyleValue[]) {
     const styles: string[] = [];
