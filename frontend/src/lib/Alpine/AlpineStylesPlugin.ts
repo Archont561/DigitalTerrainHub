@@ -19,7 +19,6 @@ class CSSPropertyHandler {
     }
 
     set(name: string, value: string, important = false) {
-        console.log(name, value)
         this.el.style.setProperty(name, value, important ? "important" : undefined);
         return this;
     }
