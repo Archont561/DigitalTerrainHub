@@ -1,5 +1,5 @@
 ---
-import { Notifications } from "@components";
+import { Notifications, Utils } from "@components";
 import { DjangoURLs, SVGURLs, StylesURLs } from "@assets";
 
 export interface Props extends Astro.HTMLComponentProps<"body"> {
@@ -23,7 +23,7 @@ const csrfToken = Astro.request.headers.get("x-csrftoken") || "";
 	</head>
 	<body {...props}>
 		<slot />
-		<Notifications.ToastContainer 
+		<Utils.ToastContainer 
 			notificationChannelURL={DjangoURLs.sseEventChannel("notifications").self()} />
 	</body>
 </html>
