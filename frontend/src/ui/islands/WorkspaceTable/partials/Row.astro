@@ -1,0 +1,66 @@
+---
+import { Icon } from "astro-icon/components";
+import { ImageCount, RunTaskDropdown } from ".";
+import { getRelativeTimeBetweenDates } from "@utils";
+
+export interface Props extends Astro.HTMLComponentProps<"li"> {
+    workspace?: DjangoAPI.Workspace;
+    presets?: DjangoAPI.Preset[];
+}
+
+const { 
+    workspace = {} as DjangoAPI.Workspace,
+    presets = [] as DjangoAPI.Preset[],
+    ...props
+} = Astro.props;
+
+if (!Object.keys(workspace).length) Object.assign(workspace, (await import("@assets")).DummyData.Workspace);
+---
+
+<li
+    x-data={`{createdEpoch: ${workspace.created_at_epoch}, relativeTime: null, handleDelete }`}
+    x-init="wsCount++"
+    class="list-row place-items-center"
+    data-uuid={workspace.uuid}
+    x-effect="$store.globalInterval.flag; relativeTime = $relativeTime(createdEpoch);"
+    @click.capture="$store.currentWorkspaceUUID = $el.dataset.uuid"
+    {...props}
+>
+    <ImageCount workspace={workspace} />
+
+    <div class="text-sm flex flex-col list-col-grow items-start w-full">
+        <form
+            @submit.prevent="$actions.changeWorkspaceName($refs.workspaceNameInput.value).then(data => $refs.workspaceNameInput.blur()).catch(error => console.log(error))"
+            class="contents"
+        >
+            <input x-ref="workspaceNameInput"
+                name="name"
+                value={workspace.name}
+                class="text-xs uppercase font-semibold opacity-60 truncate"
+            />
+        </form>
+        <p>Created: <span x-text="relativeTime">{getRelativeTimeBetweenDates(workspace.created_at_epoch)}</span></p>
+    </div>
+
+    <button
+        @click="($find('#workspace-edit-dialog')).open = true;"
+        class="btn btn-square btn-ghost"
+        title="Edit"
+    ><Icon name="mage:edit"/></button>
+
+    <button
+        @click="$find('#upload-images-dialog').showModal();"
+        class="btn btn-square btn-ghost"
+        title="Upload images"
+    ><Icon name="ooui:upload" /></button>
+
+    <RunTaskDropdown workspace={workspace} presets={presets}>
+        <slot name="header"><Icon name="ooui:upload" /></slot>
+    </RunTaskDropdown>
+    
+    <button
+        @click.self="$actions.deleteWorkspace($root.dataset.uuid).then(() => $swap.target($root).delete()).catch(error => $showAlert.warning(`Cannot delete workspace!: ${error}`))"
+        class="btn btn-square btn-ghost" 
+        title="Delete"
+    ><Icon name="tabler:trash" /></button>
+</li>

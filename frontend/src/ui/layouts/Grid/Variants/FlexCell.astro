@@ -1,0 +1,53 @@
+---
+import type { ComponentProps } from "astro/types";
+import { GridCell } from "..";
+import { FlexLayout } from "@layouts";
+
+type FlexLayoutProps = ComponentProps<typeof FlexLayout>;
+type GridCellProps = ComponentProps<typeof GridCell>;
+type AlowedGridProps = "colStart" | "colSpan" | "colEnd" | "rowStart" | "rowSpan" | "rowEnd";
+type ReducedGridCellProps = Pick<GridCellProps, AlowedGridProps>
+
+export interface Props extends FlexLayoutProps, ReducedGridCellProps {
+    cellPlacement?: GridCellProps["placement"];
+}
+
+const {
+    cellPlacement,
+    colStart,
+    colSpan,
+    colEnd,
+    rowStart,
+    rowSpan,
+    rowEnd,
+    placement,
+    multilinePlacement,
+    gap,
+    direction,
+    ...props
+} = Astro.props;
+
+const gridCellProps = {
+    placement: cellPlacement,
+    colStart,
+    colSpan,
+    colEnd,
+    rowStart,
+    rowSpan,
+    rowEnd,
+};
+
+const flexItemProps = {
+    placement,
+    multilinePlacement,
+    gap,
+    direction,
+    ...props,
+};
+---
+
+<GridCell melt={true} {...gridCellProps}>
+    <FlexLayout {...flexItemProps}>
+        <slot />
+    </FlexLayout>
+</GridCell>

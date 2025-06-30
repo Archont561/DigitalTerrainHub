@@ -1,0 +1,22 @@
+---
+import { DjangoURLs } from "@assets";
+import { Icon } from "astro-icon/components";
+
+export interface Props extends Astro.HTMLComponentProps<"div"> {
+    workspace?: DjangoAPI.Workspace;
+}
+
+const { 
+    workspace = {} as DjangoAPI.Workspace,
+    ...props
+} = Astro.props;
+
+---
+
+<div class="grid place-items-center grid-cols-[auto_auto] gap-1" {...props}>
+    <Icon name="ion:images-outline" />
+    <div
+        class="image-count text-3xl font-bold text-nowrap p-2"
+        @upload:done="$actions.getWorkspaceImageCount($root.dataset.uuid).then(data => ($el.innerHTML = data.image_count))"
+    >{workspace.image_count}</div>
+</div>

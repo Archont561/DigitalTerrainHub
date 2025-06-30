@@ -1,0 +1,76 @@
+---
+import * as Flow from "@astropub/flow";
+import { mergeClass } from "@utils";
+
+type ModalType = "backdrop" | "btn" | "btn trigger" | "custom";
+type ModalPlacement =
+    `${"top" | "center" | "bottom"} ${"start" | "center" | "end"}`;
+
+export interface Props extends Astro.HTMLComponentProps<"dialog"> {
+    type?: ModalType;
+    placement?: ModalPlacement;
+    forceOpen?: boolean;
+}
+
+const {
+    type = "backdrop",
+    placement = "center center",
+    forceOpen = false,
+    class: className,
+    ...props
+} = Astro.props;
+
+const placementClassesMap: Record<ModalPlacement, string> = {
+    "top start": "modal-top modal-start",
+    "top center": "modal-top",
+    "top end": "modal-top modal-end",
+    "center start": "modal-middle modal-start",
+    "center center": "modal-middle",
+    "center end": "modal-middle modal-end",
+    "bottom start": "modal-bottom modal-start",
+    "bottom center": "modal-bottom",
+    "bottom end": "modal-bottom modal-end",
+};
+
+const isBackdrop = type === "backdrop";
+const isButton = type === "btn";
+const isButtonAsTrigger = type === "btn trigger";
+
+const modalBoxClass = mergeClass(
+    "modal-box",
+    className,
+    placementClassesMap[placement],
+    { 
+        "modal-open": forceOpen
+    },
+);
+---
+
+<dialog class="modal isolate" {...props}>
+    <div class={modalBoxClass}>
+        <slot />
+
+        <Flow.When test={isButton}>
+            <div class="modal-action">
+                <form method="dialog">
+                    <slot name="btn" />
+                </form>
+            </div>
+        </Flow.When>
+
+        <Flow.When test={isButtonAsTrigger}>
+            <form method="dialog">
+                <slot name="trigger-btn" />
+            </form>
+        </Flow.When>
+    </div>
+
+    <Flow.When test={isBackdrop}>
+        <form method="dialog" class="modal-backdrop -z-10">
+            <input type="submit" />
+        </form>
+        <Fragment slot="else" >
+            <slot name="custom-backdrop"/>
+        </Fragment>
+    </Flow.When>
+</dialog>

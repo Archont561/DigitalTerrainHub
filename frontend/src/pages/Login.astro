@@ -1,12 +1,12 @@
 ---
 import { DjangoURLs } from "@assets";
 import { Icon } from "astro-icon/components";
-import Layouts from "@layouts";
-import { Forms } from "@components";
+import { BaseLayout } from "@layouts";
+import { LoginForm } from "@islands";
 import { getURLWithBaseIfDev } from "@utils";
 ---
 
-<Layouts.Base title="Login">
+<BaseLayout title="Login">
     <div class="grid place-items-center h-screen bg-base-200">
         <section class="container p-8 xs:p-4 sm:max-w-md text-base-content">
             <a href={getURLWithBaseIfDev(DjangoURLs.home())}
@@ -19,7 +19,7 @@ import { getURLWithBaseIfDev } from "@utils";
                     <h1 class="card-title text-2xl justify-center">
                         Log in
                     </h1>
-                    <Forms.Login loginURL={DjangoURLs.api.user.auth.login()} fields={[]} />
+                    <LoginForm loginURL={DjangoURLs.api.user.auth.login()} fields={[]} />
                     <div class="divider my-4">{'Don’t have an account?'}</div>
                     <a href={getURLWithBaseIfDev(DjangoURLs.register())} class="btn btn-outline btn-block">
                         Register
@@ -38,4 +38,4 @@ import { getURLWithBaseIfDev } from "@utils";
             </div>
         </section>
     </div>
-</Layouts.Base>
+</BaseLayout>

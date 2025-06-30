@@ -1,0 +1,115 @@
+---
+import type { ComponentProps } from "astro/types";
+import { MeltLayout } from ".";
+import { mergeClass, mergeStyle } from "@utils";
+import _ from "lodash";
+
+type CSSLengthUnit =
+    | `px`
+    | `em`
+    | `rem`
+    | `%`
+    | `vw`
+    | `vh`
+    | `dvw`
+    | `dvh`
+    | `vmin`
+    | `vmax`
+    | `ch`
+    | `ex`
+    | `pt`
+    | `pc`
+    | `in`
+    | `cm`
+    | `mm`;
+
+type CSSLengthKeyword =
+    | "auto"
+    | "fit-content"
+    | "max-content"
+    | "min-content"
+    | "inherit"
+    | "initial"
+    | "unset";
+
+type Length = number | `${number}${CSSLengthUnit}` | CSSLengthKeyword;
+type LengthObject = {
+    min?: Length;
+    base?: Length;
+    max?: Length;
+};
+type LengthVar = Length | [Length, Length] | [Length, Length, Length] | LengthObject;
+
+export interface Props extends Astro.ComponentProps, ComponentProps<typeof MeltLayout> {
+    width?: LengthVar;
+    height?: LengthVar;
+}
+
+const { width, height, class: className, style, ...props } = Astro.props;
+
+function resolveLengthVars(lengthVar?: LengthVar | LengthObject): LengthObject {
+    if (!lengthVar || _.isEmpty(lengthVar)) return {};
+
+    if (_.isNumber(lengthVar) || _.isString(lengthVar)) {
+        return { base: lengthVar };
+    }
+
+    if (_.isArray(lengthVar)) {
+        switch (lengthVar.length) {
+            case 2:
+                return { min: lengthVar[0], max: lengthVar[1] };
+            case 3:
+                return {
+                    min: lengthVar[0],
+                    base: lengthVar[1],
+                    max: lengthVar[2],
+                };
+            default:
+                return {};
+        }
+    }
+
+    return lengthVar;
+}
+function normalizeLength(value: Length | undefined) {
+    return _.isNumber(value) ? `${value}px` : value;
+}
+
+const {
+    min: minWidth,
+    base: baseWidth,
+    max: maxWidth,
+} = resolveLengthVars(width);
+const {
+    min: minHeight,
+    base: baseHeight,
+    max: maxHeight,
+} = resolveLengthVars(height);
+
+const combinedClass = mergeClass(className, {
+    "min-w-(--min-width)": minWidth,
+    "w-(--base-width)": baseWidth,
+    "max-w-(--max-width)": maxWidth,
+    "min-h-(--min-height)": minHeight,
+    "h-(--base-height)": baseHeight,
+    "max-h-(--max-height)": maxHeight,
+});
+
+const combinedStyle = mergeStyle(
+    style,
+    _.map({
+            "min-width": minWidth,
+            "base-width": baseWidth,
+            "max-width": maxWidth,
+            "min-height": minHeight,
+            "base-height": baseHeight,
+            "max-height": maxHeight,
+        },
+        (value, key) => `--${key}: ${normalizeLength(value as any)};`,
+    ),
+);
+---
+
+<MeltLayout {...{ ...props, class: combinedClass, style: combinedStyle }}>
+    <slot />
+</MeltLayout>

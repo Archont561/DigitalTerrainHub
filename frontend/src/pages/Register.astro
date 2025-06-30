@@ -1,11 +1,11 @@
 ---
 import { DjangoURLs } from "@assets";
-import Layouts from "@layouts";
-import { Forms } from "@components";
+import { BaseLayout } from "@layouts";
+import { RegisterForm } from "@islands";
 import { getURLWithBaseIfDev } from "@utils";
 ---
 
-<Layouts.Base title="Register">
+<BaseLayout title="Register">
     <div class="grid place-items-center h-screen bg-base-200">
         <section class="container sm:max-w-md flex flex-col gap-5">
             <a href={getURLWithBaseIfDev(DjangoURLs.home())}
@@ -18,7 +18,7 @@ import { getURLWithBaseIfDev } from "@utils";
                     Register
                 </h1>
                 <div class="card-body p-0">
-                    <Forms.Register registerURL={DjangoURLs.api.user.auth.register()} fields={[]} />
+                    <RegisterForm registerURL={DjangoURLs.api.user.auth.register()} fields={[]} />
                     <p class="text-sm text-base-content/70 text-center">
                         Already have an account? 
                         <a href={getURLWithBaseIfDev(DjangoURLs.login())} class="text-primary hover:underline">
@@ -29,4 +29,4 @@ import { getURLWithBaseIfDev } from "@utils";
             </div>
         </section>
     </div>
-</Layouts.Base>
+</BaseLayout>

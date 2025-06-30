@@ -1,0 +1,46 @@
+---
+import * as Flow from "@astropub/flow";
+import { toTitleCase } from "@utils";
+import { type DaisyUITheme } from "./daisyUIThemes";
+
+type ThemeSwitcherType = "default" | "button";
+
+interface Props extends Astro.HTMLComponentProps<"div"> {
+    id?: string;
+    type?: ThemeSwitcherType;
+    themes: DaisyUITheme[];
+    defaultTheme: DaisyUITheme;
+}
+
+const {
+    id = "daisyui-theme-controller",
+    type = "default",
+    themes = [],
+    defaultTheme,
+    ...props
+} = Astro.props;
+
+if (!themes.includes(defaultTheme)) {
+    throw new Error(`Could not find defaultTheme in themes!`);
+}
+
+const isButton = type === "button";
+---
+
+<div id={id} {...props} class:list={[isButton ? "join join-vertical" : "fieldset"]}
+    x-data={`{theme: $persist("${defaultTheme}").as("daisyUITheme").using(sessionStorage) }`}>
+    <Flow.For of={themes}>{theme => 
+        <label class="flex gap-2 cursor-pointer items-center">
+            <input
+                type="radio"
+                name={`theme-${isButton ? "buttons" : "radios"}`}
+                class:list={["theme-controller", isButton ? "btn join-item" : "radio radio-sm"]}
+                value={theme}
+                aria-label={toTitleCase(theme)}
+                x-model="theme"
+                checked={theme === defaultTheme ? true : undefined}
+            />
+            {isButton || toTitleCase(theme)}
+        </label>
+    }</Flow.For>
+</div>

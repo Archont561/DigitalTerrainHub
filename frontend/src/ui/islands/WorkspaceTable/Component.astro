@@ -1,0 +1,87 @@
+---
+import * as Flow from "@astropub/flow";
+import { Icon } from "astro-icon/components";
+import {
+    UppyWidget,
+    Row,
+    GCPEditor,
+} from "./partials";
+import { mergeClass } from "@utils";
+import { Modal } from "@components";
+import { ClampLayout } from "@layouts";
+import { TaskOptionsForm } from "./partials";
+
+
+interface Props extends Astro.HTMLComponentProps<"section"> {
+    id?: string;
+    workspaces?: DjangoAPI.Workspace[];
+    options?: DjangoAPI.TaskOption[];
+}
+
+const {
+    id = "workspace-management-board",
+    workspaces = [] as DjangoAPI.Workspace[],
+    options = [] as DjangoAPI.TaskOption[],
+    class: className,
+    ...props
+} = Astro.props as Props;
+
+if (!workspaces.length) {
+    const workspace = (await import("@assets")).DummyData
+        .Workspace as DjangoAPI.Workspace;
+    for (let i = 0; i < 10; i++) workspaces.push(workspace);
+}
+
+const componentClass = mergeClass(className, "");
+---
+
+<section class={componentClass} id={id} {...props}>
+    <div class="mx-auto min-w-md max-w-xl">
+        <h2 class="text-2xl mb-3">Workspace management board</h2>
+
+        <div class="bg-base-100 rounded-box p-1">
+            <nav class="flex justify-end p-2 bg-base-200 rounded-box">
+                <button
+                    @click="$actions.createWorkspace().then(data => $swap.prepend(data.text()))"
+                    x-ajax-target={`${id} .list`}
+                    class="btn btn-primary">Create new</button
+                >
+            </nav>
+            <ul
+                x-data="{ wsCount: 0 }"
+                class="relative list min-h-[20rem] gap-2"
+            >
+                <template x-if="!wsCount">
+                    <div
+                        class="size-full grid place-content-center"
+                    >
+                        <h2 class="text-lg">No workspaces created yet!</h2>
+                    </div>
+                </template>
+
+                <Flow.For of={workspaces}
+                    >{
+                        (workspace) => (
+                            <Row workspace={workspace} />
+                        )
+                    }</Flow.For
+                >
+            </ul>
+        </div>
+    </div>
+    <GCPEditor id="workspace-edit-dialog" />
+    <Modal
+        id="upload-images-dialog"
+        class="p-0 -z-1 xs:h-3/4 md:w-3/5 md:max-w-full"
+    >
+        <UppyWidget class="size-full"/>
+    </Modal>
+    <Modal
+        id="options-dialog"
+        class="p-0 xs:h-3/4 md:w-3/5 md:max-w-full overflow-y-scroll"
+        @options-form:submited="$store.optionsData = $event.data; $el.close()"
+    >
+        <Icon slot="trigger" name="heroicons:x-mark" />
+        <TaskOptionsForm options={options} />
+    </Modal>
+</section>

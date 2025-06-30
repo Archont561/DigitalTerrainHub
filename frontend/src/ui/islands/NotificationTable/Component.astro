@@ -1,0 +1,21 @@
+---
+import * as Flow from "@astropub/flow";
+import { Row } from "./partials";
+
+export interface Props extends Astro.ComponentProps {
+    notifications: DjangoAPI.Notification[];
+}
+
+const {
+    notifications = [] as DjangoAPI.Notification[],
+} = Astro.props as Props;
+
+if (!notifications.length) {
+    const notificaton = (await import("@assets")).DummyData.Notification;
+    for (let i=0; i < 10; i++) notifications.push(notificaton);
+}
+---
+
+<Flow.For of={notifications}>{notification => 
+    <Row notification={notification} />
+}</Flow.For>

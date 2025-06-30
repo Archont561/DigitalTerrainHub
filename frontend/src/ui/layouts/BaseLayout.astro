@@ -1,0 +1,29 @@
+---
+import { ToastContainer } from "@components";
+import { DjangoURLs, SVGURLs, StylesURLs } from "@assets";
+
+export interface Props extends Astro.HTMLComponentProps<"body"> {
+	title: string;
+}
+
+const { title, ...props } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href={SVGURLs.Favicon} />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="csrfToken" content={Astro.locals.crsfToken || ""} />
+		<title>{title}</title>
+		<link rel="stylesheet" href={StylesURLs.Global}>
+	</head>
+	<body {...props}>
+		<slot />
+		<ToastContainer 
+			x-ajax-sse="'/events'"
+			x-ajax-sse:message="$swap.append($el, $sse.data)" />
+	</body>
+</html>

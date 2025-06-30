@@ -1,0 +1,29 @@
+---
+import type { ComponentProps } from "astro/types";
+import { mergeClass } from "@utils";
+import { MeltLayout } from ".";
+
+export interface Props 
+    extends Astro.ComponentProps,
+        ComponentProps<typeof MeltLayout> {
+    clip?: "both" | "x" | "y";
+}
+
+const {
+    clip = "both",
+    class: className,
+    style,
+    ...props
+} = Astro.props;
+
+const layoutClass = mergeClass(className, "h-[100dvh] w-[100dvw]", {
+    "overflow-clip": clip === "both",
+    "overflow-clip-x": clip === "x",
+    "overflow-clip-y": clip === "y",
+});
+
+---
+
+<MeltLayout {...props} class={layoutClass}>
+  <slot />
+</MeltLayout>

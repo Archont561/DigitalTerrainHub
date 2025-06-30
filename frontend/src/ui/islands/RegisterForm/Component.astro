@@ -1,0 +1,20 @@
+---
+export interface Props extends Astro.HTMLComponentProps<"form"> {
+    registerURL: URLString;
+    fields: any[];
+}
+
+const {
+    registerURL,
+    fields,
+    ...props
+} = Astro.props;
+---
+
+<form 
+    @submit.prevent="$actions.registerUser($jsonify($el)).catch(error => console.log(error))"
+    class="space-y-6"
+    {...props}
+>
+    <input type="submit" class="btn btn-primary w-full" value="Create an account" />
+</form>

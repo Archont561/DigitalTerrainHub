@@ -1,0 +1,28 @@
+---
+import { DjangoURLs } from "@assets";
+import { Alert } from "@components";
+
+export interface Props extends Astro.HTMLComponentProps<"div"> {
+    timeout?: number;
+    notification: DjangoAPI.SSENotification;
+}
+
+const {
+    notification = {} as DjangoAPI.SSENotification,
+    timeout = 3000,
+    ...props
+} = Astro.props;
+
+if (!Object.keys(notification).length) {
+    Object.assign(notification, (await import("@assets")).DummyData.Notification);
+}
+---
+
+<Alert 
+    data-id={notification.id}
+    x-init={`$nextTick(() => { setTimeout(() => { $el.remove() }, ${timeout}) })`}
+    @submit.prevent="$actions.markNotificationAsRead($el.dataset.id)"
+    type={notification.status.name}
+    message={notification.message}
+    {...props}
+><slot /></Alert>

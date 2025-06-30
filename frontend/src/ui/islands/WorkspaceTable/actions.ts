@@ -1,0 +1,11 @@
+import { defineAction } from 'astro:actions';
+import { z } from 'astro:schema';
+
+export default {
+  createWorkspace: defineAction({
+    input: z.object({  }),
+    handler(input, context) {
+        return;
+    },
+  })
+}

@@ -1,0 +1,31 @@
+---
+import { DjangoURLs } from "@assets";
+import { Icon } from "astro-icon/components";
+import { getRelativeTimeBetweenDates } from "@utils";
+
+interface Props {
+    task: DjangoAPI.Task;
+}
+
+const {
+    task = {} as DjangoAPI.Task,
+    ...props
+} = Astro.props as Props;
+
+if (!Object.keys(task).length) Object.assign(task, (await import("@assets")).DummyData.Task);
+---
+
+<div class="p-5 border border-neutral rounded-xl shadow-theme-sm">
+    <div class="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+        <div x-data={`{createdEpoch: ${task.created_at_epoch}, relativeTime: null }`}
+            x-effect="$store.globalInterval.flag; relativeTime = $relativeTime(createdEpoch)"
+            class="flex items-start w-full gap-4" >
+            <Icon name="heroicons:bars-4-16-solid" />
+            <div>{task.uuid}</div>
+            <div>{task.name}</div>
+            <div>{task.workspace_uuid}</div>
+            <div x-ajax-sse:task-${task.uuid}-status-="$swap.inside($el, $sse.text())">{task.status}</div>
+            <div x-text="relativeTime">{getRelativeTimeBetweenDates(task.created_at_epoch)}</div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,50 @@
+---
+import type { ComponentProps } from "astro/types";
+import type { FlexItemProps } from "./types";
+import { getFlexCSSVariables, getAlpineMediaPluginAttributes, getFlexStyles } from "./utils";
+import { mergeClass } from "@utils";
+import { MeltLayout } from "@layouts";
+
+type Props = FlexItemProps &
+    Astro.ComponentProps &
+    ComponentProps<typeof MeltLayout>;
+
+const {
+    shrink,
+    grow,
+    base,
+    order,
+    placement,
+    class: className,
+    style,
+    ...props
+} = Astro.props;
+
+
+const flexItemClasses = mergeClass(
+    className,
+    {
+        "shrink-(--shrink)": shrink,
+        "grow-(--grow)": grow,
+        "basis-(--basis)": base,
+        "align-self-(--align-self)": placement,
+    },
+);
+
+const { baseVariables, mediaVariables } = getFlexCSSVariables({
+    shrink,
+    grow,
+    base,
+    order,
+    placement,
+});
+---
+
+<MeltLayout
+  {...getAlpineMediaPluginAttributes({ mediaVariables, baseVariables })}
+  {...props}
+  class={flexItemClasses}
+  style={getFlexStyles(style, baseVariables)}
+>
+  <slot />
+</MeltLayout>

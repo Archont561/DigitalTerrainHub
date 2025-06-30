@@ -1,0 +1,19 @@
+---
+import GridLayout, { type Props as BaseGridProps } from "../GridLayout.astro";
+
+interface Props extends Omit<BaseGridProps, "cols"> {
+  colMinWidth: string;
+  extraSpace: "fit" | "fill";
+  smallScreenSafe?: boolean;
+}
+
+const { cols, colMinWidth, extraSpace, smallScreenSafe = false, ...props } = Astro.props;
+const colsGreatestTemplate = smallScreenSafe
+  ? `repeat(auto-${extraSpace}, minmax(min(${colMinWidth}, 100%), 1fr))`
+  : `repeat(auto-${extraSpace}, minmax(${colMinWidth}, 1fr))`;
+---
+
+<GridLayout cols={colsGreatestTemplate} {...props}>
+  <slot />
+</GridLayout>
+
