@@ -4,7 +4,7 @@ import _ from "lodash";
 
 const routesDir = resolve(dirname(fileURLToPath(import.meta.url)))
 const srcDir = join(routesDir, "..");
-const pagesDir = join(srcDir, "templates", "pages");
+const pagesDir = join(srcDir, "pages");
 
 const prodRoutes = {
     "/": getPage("Home"),
