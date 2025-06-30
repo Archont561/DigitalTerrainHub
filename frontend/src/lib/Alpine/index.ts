@@ -3,8 +3,8 @@ import persist from "@alpinejs/persist";
 import dom from "./AlpineDOMPlugin";
 import time from "./AlpineTimePlugin";
 import media from "./AlpineMediaPlugin";
-import ajax from "./AlpineAjaxPlugin";
 import styles from "./AlpineStylesPlugin";
+import astro from "./AlpineAstroPlugin";
 
 
 export default (Alpine: Alpine) => {
@@ -13,10 +13,6 @@ export default (Alpine: Alpine) => {
     Alpine.plugin(time);
     Alpine.plugin(media);
     Alpine.plugin(styles);
-    Alpine.plugin(ajax.setSettings({
-        headers: {
-            "X-CSRF-Token": document.querySelector("meta[name='csrfToken']")?.getAttribute("content") || ""
-        }
-    }));
+    Alpine.plugin(astro);
     window.Alpine = Alpine;
 }
