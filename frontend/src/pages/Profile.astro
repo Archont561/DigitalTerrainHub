@@ -4,7 +4,6 @@ import { Icon } from "astro-icon/components";
 import Layouts from "@layouts";
 import { Utils, Tabs } from "@components";
 import * as Flow from "@astropub/flow";
-import { Button } from "@codemint/astro-ui";
 
 type TabType = {
     name: string;
@@ -58,9 +57,9 @@ const tabs: TabType[] = [
                     <Layouts.Partials.Subgrid melt axis="row" rowSpan={2}>
                         <aside class="w-64 p-6 border-none">
                             <Layouts.Flex placement={"start center"} gap={3} class="mb-6">
-                                <Button modifier="circle" buttonStyle="ghost" size="md" class="p-1">
+                                <button class="p-1">
                                     <Icon class="size-full" name="heroicons:bars-4"/>
-                                </Button>
+                                </button>
                                 <img class="w-20 h-10" src="https://picsum.photos/100/200" alt="Logo" />
                                 <h1 class="text-xl font-bold">DTH</h1>
                             </Layouts.Flex>
@@ -115,9 +114,9 @@ const tabs: TabType[] = [
                                             lightTheme="bumblebee"
                                         />
                                         
-                                        <Button modifier="circle" buttonStyle="ghost" size="lg" class="p-1">
+                                        <button class="p-1">
                                             <Icon class="size-full" name="mdi:bell"/>
-                                        </Button>
+                                        </button>
                                         
                                         <Utils.Popover placement="bottom end" openOnHover={true}>
                                             <label slot="popover-trigger" class="avatar online size-10">
@@ -152,9 +151,9 @@ const tabs: TabType[] = [
                     </Layouts.Partials.Subgrid>
             
                     <Utils.Modal id="accountDeletionConfirmModal" type="btn trigger">
-                        <Button slot="trigger-btn">
+                        <button slot="trigger-btn">
                             <Icon name="heroicons:x-mark-16-solid"/>
-                        </Button>
+                        </button>
                         <div>TO IMPLEMENT</div>
                     </Utils.Modal>
                 </div>
