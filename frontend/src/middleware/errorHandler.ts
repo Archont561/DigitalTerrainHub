@@ -1,9 +1,14 @@
 import { defineMiddleware } from "astro:middleware";
+import { render } from "@utils";
+import { ServerErrorPage, NotFoundErrorPage } from "@pages";
+import { ErrorFlow, Errors } from "@utils";
 
-export default defineMiddleware(async (_, next) => {
-    try {
-        return await next();
-    } catch (error) {
-        return new Response(JSON.stringify({ error: "Internal Server Error" }));
-    }
+const { NotFoundError, InternalError } = Errors;
+
+export default defineMiddleware(async (context, next) => {
+    return (await ErrorFlow.runAsync(next))
+        .onError(NotFoundError, () => render(NotFoundErrorPage, context, 404))
+        .onError(InternalError, () => render(ServerErrorPage, context, 500))
+        .otherwise(result => result)!;
 });
+
