@@ -1,23 +1,23 @@
 //@ts-ignore
 import { actions } from "astro:actions";
-import AlpinePluginBase from "./AlpinePluginBase";
-import type { PluginMagics } from "./AlpinePluginBase";
+import AlpinePluginBuilder from "./AlpinePluginBuilder";
 
 declare module "alpinejs" {
     interface Alpine {
-        astroPlugin: AlpineAstroPlugin;
+        astroPlugin: typeof AlpineAstroPlugin;
     }
     interface Magics<T> {
         $actions: {};
     }
 }
 
-class AlpineAstroPlugin extends AlpinePluginBase {
-    protected PLUGIN_NAME = "astroPlugin";
+const AlpineAstroPlugin = AlpinePluginBuilder.create("astroPlugin")
+.addMagic(plugin => ({
+    name: "actions",
+    callback: () => actions
+})).addGlobalMagic(plugin => ({
+    name: "actions",
+    callback: () => actions
+}));
 
-    protected magics: PluginMagics = {
-        actions: (el) => actions,
-    };
-}
-
-export default AlpineAstroPlugin.expose();
+export default AlpineAstroPlugin;
